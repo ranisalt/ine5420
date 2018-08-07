@@ -1,0 +1,3 @@
+[submodule "tests/ext/catch2"]
+	path = tests/ext/catch2
+	url = git@github.com:catchorg/catch2.git
