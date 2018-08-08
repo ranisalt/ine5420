@@ -6,9 +6,6 @@
 class MainWindow : public Gtk::Window
 {
 public:
-    static const int width = 600;
-    static const int height = 450;
-
     MainWindow();
     virtual ~MainWindow();
 
@@ -19,10 +16,10 @@ protected:
     {
     public:
 
-      Column()
-      { add(object); }
+        Column()
+        { add(object); }
 
-      Gtk::TreeModelColumn<Glib::ustring> object;
+        Gtk::TreeModelColumn<Glib::ustring> object;
     };
 
     Gtk::Box function_box;
@@ -44,15 +41,24 @@ protected:
     Gtk::Button left_button;
     Gtk::Button down_button;
     Gtk::Button right_button;
-
     Gtk::Button in_button;
     Gtk::Button out_button;
+    Gtk::Button x_button;
+    Gtk::Button y_button;
+    Gtk::Button z_button;
+
+    Gtk::Label step_label;
+    Gtk::Label degree_label;
+    Gtk::Label zoom_label;
 
     Gtk::Entry step_entry;
-    Gtk::Entry rotation_entry;
+    Gtk::Entry degree_entry;
 
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
+
+    static const int width = 600;
+    static const int height = 450;
  };
 
 #endif
