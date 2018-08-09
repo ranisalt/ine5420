@@ -1,7 +1,9 @@
 #include <iostream>
-#include "includeobjectwindow.h"
 
-IncludeObjectWindow::IncludeObjectWindow()
+#include "includeobjectwindow.h"
+#include "mainwindow.h"
+
+IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
 : notebook_box(Gtk::ORIENTATION_VERTICAL)
 , point_box(Gtk::ORIENTATION_VERTICAL)
 , line_box(Gtk::ORIENTATION_VERTICAL)
@@ -17,12 +19,16 @@ IncludeObjectWindow::IncludeObjectWindow()
 , z2_label("z2")
 , ok_button("OK")
 , cancel_button("Cancel")
+, mainwindow{mainwindow}
 {
     // Basic configuration for window
     set_title("Include object");
     set_border_width(5);
     set_default_size(IncludeObjectWindow::width, IncludeObjectWindow::height);
     set_resizable(false);
+
+    ok_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::ok_button_clicked));
+    cancel_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::cancel_button_clicked));
 
     create_box_point_tab();
     create_box_line_tab();
@@ -32,6 +38,7 @@ IncludeObjectWindow::IncludeObjectWindow()
     add(notebook_box);
 
     notebook.set_border_width(10);
+    notebook_box.pack_start(name_entry, Gtk::PACK_EXPAND_WIDGET);
     notebook_box.pack_start(notebook, Gtk::PACK_EXPAND_WIDGET, 10);
     notebook_box.pack_start(ok_button, Gtk::PACK_EXPAND_WIDGET, 10);
     notebook_box.pack_start(cancel_button, Gtk::PACK_EXPAND_WIDGET, 10);
@@ -92,4 +99,37 @@ void IncludeObjectWindow::create_box_wireframes_tab()
 void IncludeObjectWindow::create_box_curves_tab()
 {
   // TODO
+}
+
+bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
+{
+    double x1, y1, z1, x2, y2, z2;
+    auto name = name_entry.get_text();
+    switch(notebook.get_current_page())
+    {
+        case 0:
+            // mainwindow.add_shape(Point{});
+            break;
+        case 1:
+            x1 = std::stod(x1_entry.get_text());
+            y1 = std::stod(y1_entry.get_text());
+            z1 = std::stod(z1_entry.get_text());
+
+            x2 = std::stod(x2_entry.get_text());
+            y2 = std::stod(y2_entry.get_text());
+            z2 = std::stod(z2_entry.get_text());
+            mainwindow.add_shape(Line{{x1, y1, z1}, {x2, y2, z2}}, name);
+            close();
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+    }
+    return true;
+}
+
+bool IncludeObjectWindow::cancel_button_clicked(GdkEventButton* button_event)
+{
+    return true;
 }

@@ -1,13 +1,17 @@
 #ifndef GTKMM_INCLUDEOBJECTWINDOW_H
 #define GTKMM_INCLUDEOBJECTWINDOW_H
 
+class MainWindow;
+
 #include <gtkmm.h>
+
+#include "numericentry.h"
 
 class IncludeObjectWindow : public Gtk::Window
 {
 public:
 
-    IncludeObjectWindow();
+    IncludeObjectWindow(MainWindow &mainwindow);
     virtual ~IncludeObjectWindow();
 
 protected:
@@ -16,6 +20,8 @@ protected:
     void create_box_line_tab();
     void create_box_wireframes_tab();
     void create_box_curves_tab();
+    bool ok_button_clicked(GdkEventButton* button_event);
+    bool cancel_button_clicked(GdkEventButton* button_event);
 
     Gtk::Notebook notebook;
 
@@ -38,16 +44,18 @@ protected:
     Gtk::Label y2_label;
     Gtk::Label z2_label;
 
-    Gtk::Entry x1_entry;
-    Gtk::Entry y1_entry;
-    Gtk::Entry z1_entry;
-    Gtk::Entry x2_entry;
-    Gtk::Entry y2_entry;
-    Gtk::Entry z2_entry;
+    Gtk::Entry name_entry;
+    NumericEntry x1_entry;
+    NumericEntry y1_entry;
+    NumericEntry z1_entry;
+    NumericEntry x2_entry;
+    NumericEntry y2_entry;
+    NumericEntry z2_entry;
 
     Gtk::Button ok_button;
     Gtk::Button cancel_button;
 
+    MainWindow &mainwindow;
     static const int width = 200;
     static const int height = 300;
 };

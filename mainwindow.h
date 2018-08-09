@@ -3,7 +3,10 @@
 
 #include <gtkmm.h>
 #include <string>
+
+#include "includeobjectwindow.h"
 #include "numericentry.h"
+#include "shapes.h"
 #include "viewportdraw.h"
 
 class MainWindow : public Gtk::Window
@@ -12,8 +15,11 @@ public:
     MainWindow();
     virtual ~MainWindow();
 
+    void add_shape(Shape, std::string);
+
 protected:
-    bool key_pressed(GdkEventKey* event);
+    bool add_button_clicked(GdkEventButton* button_event);
+    bool remove_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -55,6 +61,8 @@ protected:
     Gtk::TreeView objects_tree_view;
     Glib::RefPtr<Gtk::TreeStore> objects_refptr;
 
+    Gtk::Button add_button;
+    Gtk::Button remove_button;
     Gtk::Button up_button;
     Gtk::Button left_button;
     Gtk::Button down_button;
@@ -85,8 +93,10 @@ protected:
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
 
-    static const int window_width = 650;
-    static const int window_height = 500;
+    IncludeObjectWindow popup;
+
+    static const int window_width = 700;
+    static const int window_height = 550;
 
     static const int console_width = 60;
     static const int console_height = 65;

@@ -14,7 +14,6 @@ NumericEntry::~NumericEntry()
 bool NumericEntry::on_key_press_event(GdkEventKey* key_event)
 {
     auto old_num = get_text();
-    std::cout << key_event->keyval << std::endl;
     switch (key_event->keyval)
     {
       case GDK_KEY_0:

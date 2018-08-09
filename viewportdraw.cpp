@@ -79,6 +79,7 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 void ViewPortDraw::on_realize()
 {
+    add_events(Gdk::BUTTON_PRESS_MASK);
     auto allocation = get_allocation();
     x_min = 0;
     x_max = allocation.get_width();

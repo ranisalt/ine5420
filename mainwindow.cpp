@@ -21,6 +21,7 @@ MainWindow::MainWindow()
 , rotation_frame("Rotation")
 , projection_frame("Projection")
 , viewport_frame("Viewport")
+, add_button("Add"), remove_button("Remove")
 , up_button("Up"), left_button("Left")
 , down_button("Down"), right_button("Right")
 , in_button("In"), out_button("Out")
@@ -32,13 +33,15 @@ MainWindow::MainWindow()
 , zoom_label("Zoom:")
 , parallel_radio_button("Parallel")
 , perspective_radio_button("Perspective")
+, popup{*this}
 {
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
     set_border_width(5);
     set_default_size(MainWindow::window_width, MainWindow::window_height);
-    step_entry.signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::key_pressed), true);
     text_buffer = Gtk::TextBuffer::create();
+    add_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::add_button_clicked));
+    remove_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::remove_button_clicked));
     degree_entry.set_input_purpose(Gtk::INPUT_PURPOSE_PASSWORD);
     console_text_view.set_buffer(text_buffer);
     set_resizable(false);
@@ -58,6 +61,8 @@ MainWindow::MainWindow()
     function_box.pack_start(objects_scrolled_window);
     function_box.set_border_width(5);
     function_frame.add(function_box);
+    function_box.pack_start(add_button, Gtk::PACK_SHRINK);
+    function_box.pack_start(remove_button, Gtk::PACK_SHRINK);
     function_box.pack_start(window_frame, Gtk::PACK_EXPAND_WIDGET);
 
     // Create list of objects
@@ -82,7 +87,7 @@ MainWindow::MainWindow()
     step_row3_box.pack_start(left_button, Gtk::PACK_EXPAND_WIDGET);
     step_row3_box.pack_start(right_button, Gtk::PACK_EXPAND_WIDGET);
     step_row3_box.pack_start(step_row3_box_separator, Gtk::PACK_EXPAND_WIDGET);
-    step_row3_box_separator.set_size_request(90, 0);
+    step_row3_box_separator.set_size_request(95, 0);
 
     step_box.pack_start(step_row4_box, Gtk::PACK_EXPAND_WIDGET);
     step_row4_box.pack_start(down_button, Gtk::PACK_EXPAND_WIDGET, 20);
@@ -130,9 +135,6 @@ MainWindow::MainWindow()
     // add_events(Gdk::KEY_PRESS_MASK);
     // up_button.signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::key_pressed));
 
-    // Lines to add a new object in view
-    // Gtk::TreeModel::Row row = *(objects_refptr->append());
-    // row[objects_records.object] = "Teste";
 }
 
 MainWindow::~MainWindow()
@@ -141,7 +143,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
-    std::cout << "Hello, there!" << std::endl;
 }
 
 void MainWindow::log(std::string l)
@@ -150,8 +151,22 @@ void MainWindow::log(std::string l)
     text_buffer->set_text(old_text + l);
 }
 
-bool MainWindow::key_pressed(GdkEventKey* event)
+bool MainWindow::add_button_clicked(GdkEventButton* button_event)
 {
-    std::cout << "Hello, there!" << std::endl;
+    popup.show();
     return true;
+}
+
+bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
+{
+    return true;
+}
+
+void MainWindow::add_shape(Shape s, std::string object_name)
+{
+    // Lines to add a new object in view
+    Gtk::TreeModel::Row row = *(objects_refptr->append());
+    row[objects_records.object] = std::move(object_name);
+
+    drawing_area.add_shape(std::move(s));
 }
