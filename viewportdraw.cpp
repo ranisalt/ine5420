@@ -3,6 +3,13 @@
 
 #include <cairomm/context.h>
 
+void ViewPortDraw::add_shape(Shape s)
+{
+    df.emplace(std::move(s));
+
+    queue_draw();
+}
+
 void ViewPortDraw::on_zoom_in_click()
 {
     constexpr auto DELTA = 0.05;

@@ -12,7 +12,7 @@ TEST_CASE("displayfile#parse_stream", "[displayfile]") {
         ss << "point 1.0,3.0,1.0" << std::endl;
 
         auto df = parse_stream(ss);
-        auto point = *df.shapes.begin();
+        auto point = *df.begin();
         REQUIRE(point == Point{1.0, 3.0, 1.0});
     }
 
@@ -21,7 +21,7 @@ TEST_CASE("displayfile#parse_stream", "[displayfile]") {
         ss << "line 1.0,3.0,1.0 2.0,3.0,1.0" << std::endl;
 
         auto df = parse_stream(ss);
-        auto line = *df.shapes.begin();
+        auto line = *df.begin();
         REQUIRE(line == Line{{1.0, 3.0, 1.0}, {2.0, 3.0, 1.0}});
     }
 
@@ -30,7 +30,7 @@ TEST_CASE("displayfile#parse_stream", "[displayfile]") {
         ss << "polygon 1.0,3.0,1.0 2.0,3.0,1.0, 0.0,4.0,1.0" << std::endl;
 
         auto df = parse_stream(ss);
-        auto line = *df.shapes.begin();
+        auto line = *df.begin();
         REQUIRE(line == Polygon{{1.0, 3.0, 1.0}, {2.0, 3.0, 1.0}, {0.0, 4.0, 1.0}});
     }
 }

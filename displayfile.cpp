@@ -28,7 +28,7 @@ Point parse_point(const std::string& coordinates)
 
 DisplayFile parse_stream(std::istream& is)
 {
-    std::unordered_set<Shape> shapes;
+    DisplayFile df;
 
     for (std::string line; std::getline(is, line); ) {
         std::istringstream iss{line};
@@ -40,14 +40,14 @@ DisplayFile parse_stream(std::istream& is)
             std::string coordinates;
             iss >> coordinates;
 
-            shapes.emplace(parse_point(coordinates));
+            df.emplace(parse_point(coordinates));
         } else if (shape == "line") {
             std::string vertices[2];
             iss >> vertices[0] >> vertices[1];
 
             Point parsed[2] = {parse_point(vertices[0]), parse_point(vertices[1])};
 
-            shapes.emplace(Line{parsed[0], parsed[1]});
+            df.emplace(Line{parsed[0], parsed[1]});
         } else if (shape == "polygon") {
             std::vector<Point> vertices;
             std::string coordinates;
@@ -55,8 +55,8 @@ DisplayFile parse_stream(std::istream& is)
                 vertices.push_back(parse_point(coordinates));
             }
 
-            shapes.emplace(Polygon{std::move(vertices)});
+            df.emplace(Polygon{std::move(vertices)});
         }
     }
-    return {shapes};
+    return df;
 }

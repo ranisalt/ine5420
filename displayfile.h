@@ -5,10 +5,7 @@
 #include <iosfwd>
 #include <unordered_set>
 
-struct DisplayFile
-{
-    const std::unordered_set<Shape> shapes;
-};
+using DisplayFile = std::unordered_set<Shape>;
 
 DisplayFile parse_stream(std::istream&);
 
