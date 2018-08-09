@@ -10,6 +10,13 @@ void ViewPortDraw::add_shape(std::string name, Shape shape)
     queue_draw();
 }
 
+void ViewPortDraw::remove_shape(const std::string& name)
+{
+    df.erase(name);
+
+    queue_draw();
+}
+
 void ViewPortDraw::on_zoom_in_click()
 {
     constexpr auto DELTA = 0.05;
