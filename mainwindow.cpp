@@ -147,8 +147,3 @@ void MainWindow::log(std::string l)
     std::string old_text = text_buffer->get_text() + '\n';
     text_buffer->set_text(old_text + l);
 }
-
-void MainWindow::error(std::string e)
-{
-
-}

@@ -14,7 +14,6 @@ public:
 protected:
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
-    void error(std::string e);
 
     class Column : public Gtk::TreeModel::ColumnRecord
     {
