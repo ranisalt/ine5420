@@ -66,13 +66,12 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     cr->set_line_width(pen_width);
 
-    Shape point = Point{xc, yc};
-    Shape line = Line{{0.0, 0.0}, {xc - 10, yc + 10}};
-
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
-    point.draw(cr, window);
-    line.draw(cr, window);
+
+    for (auto& s: df) {
+        s.draw(cr, window);
+    }
     cr->stroke();
 
     return true;
