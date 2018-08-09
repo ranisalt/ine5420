@@ -6,8 +6,6 @@
 #include <regex>
 #include <sstream>
 
-using namespace std::literals;
-
 TEST_CASE("displayfile#parse_stream", "[displayfile]") {
     SECTION("parse_stream(...) point") {
         std::stringstream ss;

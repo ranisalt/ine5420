@@ -3,8 +3,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-using namespace std::literals;
-
 TEST_CASE("shapes#point", "[shape]") {
     Shape point = Point{1.0, 3.0};
 
@@ -17,7 +15,7 @@ TEST_CASE("shapes#point", "[shape]") {
     }
 
     SECTION("type() == 'point'") {
-        REQUIRE(point.type() == "point"s);
+        REQUIRE(point.type() == "point");
     }
 }
 
@@ -33,7 +31,7 @@ TEST_CASE("shapes#line", "[shape]") {
     }
 
     SECTION("type() == 'line'") {
-        REQUIRE(line.type() == "line"s);
+        REQUIRE(line.type() == "line");
     }
 }
 
@@ -49,6 +47,6 @@ TEST_CASE("shapes#polygon", "[shape]") {
     }
 
     SECTION("type() == 'polygon'") {
-        REQUIRE(polygon.type() == "polygon"s);
+        REQUIRE(polygon.type() == "polygon");
     }
 }
