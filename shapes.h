@@ -3,10 +3,21 @@
 #include <cairomm/context.h>
 
 #include <cmath>
-#include <iostream>
 #include <memory>
 #include <vector>
 #include <tuple>
+
+class cairo_context_guard final
+{
+    public:
+        cairo_context_guard(const Cairo::RefPtr<Cairo::Context>& ctx): ctx{ctx}
+        { ctx->save(); }
+
+        ~cairo_context_guard() { ctx->restore(); }
+
+    private:
+        const Cairo::RefPtr<Cairo::Context>& ctx;
+};
 
 class Shape
 {
@@ -105,9 +116,10 @@ struct Point
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
     {
+        cairo_context_guard guard{ctx};
         double x, y;
         std::tie(x, y, std::ignore) = coordinates;
-		constexpr auto tau = std::atan(1) * 8;
+        constexpr auto tau = std::atan(1) * 8;
         ctx->arc(x, y, 1., 0, tau);
         return true;
     }
@@ -126,12 +138,12 @@ struct Line
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
     {
+        cairo_context_guard guard{ctx};
         double x, y;
         std::tie(x, y, std::ignore) = vertices.first.coordinates;
         ctx->move_to(x, y);
         std::tie(x, y, std::ignore) = vertices.second.coordinates;
         ctx->line_to(x, y);
-        std::cout << "Draw line\n";
         return true;
     }
 
@@ -150,6 +162,7 @@ struct Polygon
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
     {
+        cairo_context_guard guard{ctx};
         auto begin = std::begin(vertices);
         double x, y;
         std::tie(x, y, std::ignore) = begin->coordinates;
