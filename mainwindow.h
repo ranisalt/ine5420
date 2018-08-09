@@ -45,6 +45,7 @@ protected:
 
     Column objects_records;
     Gtk::ScrolledWindow objects_scrolled_window;
+    Gtk::ScrolledWindow console_scrolled_window;
     Gtk::TreeView objects_tree_view;
     Glib::RefPtr<Gtk::TreeStore> objects_refptr;
 
@@ -65,11 +66,16 @@ protected:
     Gtk::Label degree_label;
     Gtk::Label zoom_label;
 
+    Gtk::DrawingArea drawing_area;
+
+    Gtk::TextView console_text_view;
+
     Gtk::Entry step_entry;
     Gtk::Entry degree_entry;
 
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
+    // Glib::RefPtr<Gtk::TextBuffer> m_refTextBuffer1, m_refTextBuffer2
 
     static const int width = 650;
     static const int height = 450;

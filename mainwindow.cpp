@@ -43,6 +43,9 @@ MainWindow::MainWindow()
     perspective_radio_button.join_group(parallel_radio_button);
     objects_scrolled_window.add(objects_tree_view);
     objects_scrolled_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+    console_scrolled_window.add(console_text_view);
+    console_scrolled_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+    console_text_view.set_editable(false);
 
     add(main_box);
     // Add boxes
@@ -105,18 +108,22 @@ MainWindow::MainWindow()
     projection_box.pack_start(parallel_radio_button, Gtk::PACK_EXPAND_WIDGET);
     projection_box.pack_start(perspective_radio_button, Gtk::PACK_EXPAND_WIDGET);
 
-    viewport_box.set_border_width(100);
+    viewport_box.set_border_width(5);
+    viewport_box.set_homogeneous(false);
     viewport_frame.add(viewport_box);
-    viewport_box.pack_start(viewport_frame);
+    // viewport_box.pack_start(drawing_area, Gtk::PACK_EXPAND_WIDGET, true, true);
+    viewport_box.pack_start(viewport_frame, Gtk::PACK_EXPAND_WIDGET, true, true);
+    viewport_frame.add(drawing_area);
+    viewport_box.pack_start(console_scrolled_window, Gtk::PACK_EXPAND_WIDGET);
 
     show_all_children();
 
     // add_events(Gdk::KEY_PRESS_MASK);
     // up_button.signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::key_pressed));
 
-    // Lines to add a new object in view
-    // Gtk::TreeModel::Row row = *(objects_refptr->append());
-    // row[objects_records.object] = "Teste";
+    Lines to add a new object in view
+    Gtk::TreeModel::Row row = *(objects_refptr->append());
+    row[objects_records.object] = "Teste";
 }
 
 MainWindow::~MainWindow()
