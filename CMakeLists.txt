@@ -25,6 +25,7 @@ target_link_libraries(cg ${GTKMM_LIBRARIES})
 add_library(ui
     includeobjectwindow.cpp
     mainwindow.cpp
+    numericentry.cpp
     viewportdraw.cpp
     )
 

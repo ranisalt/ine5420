@@ -3,6 +3,7 @@
 
 #include <gtkmm.h>
 #include <string>
+#include "numericentry.h"
 #include "viewportdraw.h"
 
 class MainWindow : public Gtk::Window
@@ -12,6 +13,7 @@ public:
     virtual ~MainWindow();
 
 protected:
+    bool key_pressed(GdkEventKey* event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -75,8 +77,8 @@ protected:
     Gtk::TextView console_text_view;
     Glib::RefPtr<Gtk::TextBuffer> text_buffer;
 
-    Gtk::Entry step_entry;
-    Gtk::Entry degree_entry;
+    NumericEntry step_entry;
+    NumericEntry degree_entry;
 
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
