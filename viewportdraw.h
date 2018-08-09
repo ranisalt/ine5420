@@ -9,6 +9,9 @@ public:
     ViewPortDraw();
     virtual ~ViewPortDraw();
 
+    void on_zoom_in_click();
+    void on_zoom_out_click();
+
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 

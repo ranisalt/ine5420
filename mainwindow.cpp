@@ -109,6 +109,9 @@ MainWindow::MainWindow()
     zoom_box.pack_start(zoom_in_button, Gtk::PACK_EXPAND_WIDGET);
     zoom_box.pack_start(zoom_out_button, Gtk::PACK_EXPAND_WIDGET);
 
+    zoom_in_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_in_click));
+    zoom_out_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_out_click));
+
     projection_box.set_border_width(5);
     projection_frame.add(projection_box);
     projection_box.pack_start(parallel_radio_button, Gtk::PACK_EXPAND_WIDGET);
