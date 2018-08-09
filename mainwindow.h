@@ -2,6 +2,7 @@
 #define GTKMM_MAINWINDOW_H
 
 #include <gtkmm.h>
+#include <string>
 #include "viewportdraw.h"
 
 class MainWindow : public Gtk::Window
@@ -12,6 +13,8 @@ public:
 
 protected:
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
+    void log(std::string l);
+    void error(std::string e);
 
     class Column : public Gtk::TreeModel::ColumnRecord
     {
@@ -71,6 +74,7 @@ protected:
     ViewPortDraw drawing_area;
 
     Gtk::TextView console_text_view;
+    Glib::RefPtr<Gtk::TextBuffer> text_buffer;
 
     Gtk::Entry step_entry;
     Gtk::Entry degree_entry;

@@ -37,6 +37,8 @@ MainWindow::MainWindow()
     set_title("INE5420 - SGI - Gustavo & Ranieri");
     set_border_width(5);
     set_default_size(MainWindow::window_width, MainWindow::window_height);
+    text_buffer = Gtk::TextBuffer::create();
+    console_text_view.set_buffer(text_buffer);
     set_resizable(false);
 
     main_box.set_homogeneous(false);
@@ -118,7 +120,11 @@ MainWindow::MainWindow()
     console_scrolled_window.set_size_request(MainWindow::console_width, MainWindow::console_height);
 
     show_all_children();
-
+    log("teste");
+    log("teste");
+    log("teste");
+    log("teste");
+    log("teste");
     // add_events(Gdk::KEY_PRESS_MASK);
     // up_button.signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::key_pressed));
 
@@ -134,4 +140,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
     std::cout << "Hello, there!" << std::endl;
+}
+
+void MainWindow::log(std::string l)
+{
+    std::string old_text = text_buffer->get_text() + '\n';
+    text_buffer->set_text(old_text + l);
+}
+
+void MainWindow::error(std::string e)
+{
+
 }
