@@ -36,7 +36,7 @@ MainWindow::MainWindow()
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
     set_border_width(5);
-    set_default_size(MainWindow::width, MainWindow::height);
+    set_default_size(MainWindow::window_width, MainWindow::window_height);
     set_resizable(false);
 
     main_box.set_homogeneous(false);
@@ -114,16 +114,17 @@ MainWindow::MainWindow()
     // viewport_box.pack_start(drawing_area, Gtk::PACK_EXPAND_WIDGET, true, true);
     viewport_box.pack_start(viewport_frame, Gtk::PACK_EXPAND_WIDGET, true, true);
     viewport_frame.add(drawing_area);
-    viewport_box.pack_start(console_scrolled_window, Gtk::PACK_EXPAND_WIDGET);
+    viewport_box.pack_start(console_scrolled_window, false, true);
+    console_scrolled_window.set_size_request(MainWindow::console_width, MainWindow::console_height);
 
     show_all_children();
 
     // add_events(Gdk::KEY_PRESS_MASK);
     // up_button.signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::key_pressed));
 
-    Lines to add a new object in view
-    Gtk::TreeModel::Row row = *(objects_refptr->append());
-    row[objects_records.object] = "Teste";
+    // Lines to add a new object in view
+    // Gtk::TreeModel::Row row = *(objects_refptr->append());
+    // row[objects_records.object] = "Teste";
 }
 
 MainWindow::~MainWindow()

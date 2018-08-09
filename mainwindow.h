@@ -36,6 +36,7 @@ protected:
     Gtk::Box zoom_box;
     Gtk::Box projection_box;
     Gtk::Box viewport_box;
+    Gtk::Box console_box;
 
     Gtk::Frame function_frame;
     Gtk::Frame window_frame;
@@ -77,8 +78,11 @@ protected:
     Gtk::RadioButton perspective_radio_button;
     // Glib::RefPtr<Gtk::TextBuffer> m_refTextBuffer1, m_refTextBuffer2
 
-    static const int width = 650;
-    static const int height = 450;
+    static const int window_width = 650;
+    static const int window_height = 450;
+
+    static const int console_width = 60;
+    static const int console_height = 65;
  };
 
 #endif
