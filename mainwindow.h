@@ -68,6 +68,8 @@ protected:
     Gtk::Button zoom_out_button;
     Gtk::Button set_window_button;
 
+    Gtk::Separator step_row3_box_separator;
+
     Gtk::Label step_label;
     Gtk::Label degree_label;
     Gtk::Label zoom_label;
@@ -82,10 +84,9 @@ protected:
 
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
-    // Glib::RefPtr<Gtk::TextBuffer> m_refTextBuffer1, m_refTextBuffer2
 
     static const int window_width = 650;
-    static const int window_height = 450;
+    static const int window_height = 500;
 
     static const int console_width = 60;
     static const int console_height = 65;

@@ -81,6 +81,8 @@ MainWindow::MainWindow()
     step_box.pack_start(step_row3_box, Gtk::PACK_EXPAND_WIDGET);
     step_row3_box.pack_start(left_button, Gtk::PACK_EXPAND_WIDGET);
     step_row3_box.pack_start(right_button, Gtk::PACK_EXPAND_WIDGET);
+    step_row3_box.pack_start(step_row3_box_separator, Gtk::PACK_EXPAND_WIDGET);
+    step_row3_box_separator.set_size_request(90, 0);
 
     step_box.pack_start(step_row4_box, Gtk::PACK_EXPAND_WIDGET);
     step_row4_box.pack_start(down_button, Gtk::PACK_EXPAND_WIDGET, 20);
