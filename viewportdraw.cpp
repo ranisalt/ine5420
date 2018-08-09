@@ -3,9 +3,11 @@
 
 #include <cairomm/context.h>
 
-ViewPortDraw::ViewPortDraw()
+ViewPortDraw::ViewPortDraw(): x_min{0}, y_min{0}
 {
-
+    Gtk::Allocation allocation = get_allocation();
+    x_max = allocation.get_width();
+    y_max = allocation.get_height();
 }
 
 ViewPortDraw::~ViewPortDraw()
@@ -19,6 +21,15 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
+    auto window = [=](const Coordinates& orig) -> Coordinates {
+        double x, y, z;
+        std::tie(x, y, z) = orig;
+
+        x = (x - x_min) / (x_max - x_min) * width;
+        y = (1 - (y - y_min) / (y_max - y_min)) * height;
+        return {x, y, z};
+    };
+
     // coordinates for the center of the window
     int xc, yc;
     xc = width / 2;
@@ -31,8 +42,8 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
-    point.draw(cr);
-    line.draw(cr);
+    point.draw(cr, window);
+    line.draw(cr, window);
     cr->stroke();
 
     return true;
