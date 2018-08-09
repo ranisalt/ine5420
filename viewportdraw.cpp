@@ -3,9 +3,9 @@
 
 #include <cairomm/context.h>
 
-void ViewPortDraw::add_shape(Shape s)
+void ViewPortDraw::add_shape(std::string name, Shape shape)
 {
-    df.emplace(std::move(s));
+    df.emplace(std::move(name), std::move(shape));
 
     queue_draw();
 }
@@ -69,8 +69,8 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
 
-    for (auto& s: df) {
-        s.draw(cr, window);
+    for (auto& entry: df) {
+        entry.second.draw(cr, window);
     }
     cr->stroke();
 

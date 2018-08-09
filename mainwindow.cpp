@@ -162,11 +162,11 @@ bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
     return true;
 }
 
-void MainWindow::add_shape(Shape s, std::string object_name)
+void MainWindow::add_shape(std::string object_name, Shape s)
 {
     // Lines to add a new object in view
     Gtk::TreeModel::Row row = *(objects_refptr->append());
-    row[objects_records.object] = std::move(object_name);
+    row[objects_records.object] = object_name;
 
-    drawing_area.add_shape(std::move(s));
+    drawing_area.add_shape(std::move(object_name), std::move(s));
 }

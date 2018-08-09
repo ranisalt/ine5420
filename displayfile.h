@@ -3,9 +3,9 @@
 #include "shapes.h"
 
 #include <iosfwd>
-#include <unordered_set>
+#include <unordered_map>
 
-using DisplayFile = std::unordered_set<Shape>;
+using DisplayFile = std::unordered_map<std::string, Shape>;
 
 DisplayFile parse_stream(std::istream&);
 

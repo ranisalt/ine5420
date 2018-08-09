@@ -33,21 +33,21 @@ DisplayFile parse_stream(std::istream& is)
     for (std::string line; std::getline(is, line); ) {
         std::istringstream iss{line};
 
-        std::string shape;
-        iss >> shape;
+        std::string shape, name;
+        iss >> shape >> name;
 
         if (shape == "point") {
             std::string coordinates;
             iss >> coordinates;
 
-            df.emplace(parse_point(coordinates));
+            df.emplace(std::move(name), parse_point(coordinates));
         } else if (shape == "line") {
             std::string vertices[2];
             iss >> vertices[0] >> vertices[1];
 
             Point parsed[2] = {parse_point(vertices[0]), parse_point(vertices[1])};
 
-            df.emplace(Line{parsed[0], parsed[1]});
+            df.emplace(std::move(name), Line{parsed[0], parsed[1]});
         } else if (shape == "polygon") {
             std::vector<Point> vertices;
             std::string coordinates;
@@ -55,7 +55,7 @@ DisplayFile parse_stream(std::istream& is)
                 vertices.push_back(parse_point(coordinates));
             }
 
-            df.emplace(Polygon{std::move(vertices)});
+            df.emplace(std::move(name), Polygon{std::move(vertices)});
         }
     }
     return df;

@@ -15,7 +15,7 @@ public:
     MainWindow();
     virtual ~MainWindow();
 
-    void add_shape(Shape, std::string);
+    void add_shape(std::string, Shape);
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);

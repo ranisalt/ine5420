@@ -118,7 +118,7 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
             x2 = std::stod(x2_entry.get_text());
             y2 = std::stod(y2_entry.get_text());
             z2 = std::stod(z2_entry.get_text());
-            mainwindow.add_shape(Line{{x1, y1, z1}, {x2, y2, z2}}, name);
+            mainwindow.add_shape(std::move(name), Line{{x1, y1, z1}, {x2, y2, z2}});
             close();
             break;
         case 2:

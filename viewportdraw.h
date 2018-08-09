@@ -8,7 +8,7 @@
 class ViewPortDraw final : public Gtk::DrawingArea
 {
 public:
-    void add_shape(Shape);
+    void add_shape(std::string, Shape);
 
     void on_zoom_in_click();
     void on_zoom_out_click();
