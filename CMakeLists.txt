@@ -18,6 +18,7 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 
 add_library(cg
     displayfile.cpp
+    shapes.cpp
     )
 
 target_link_libraries(cg ${GTKMM_LIBRARIES})
