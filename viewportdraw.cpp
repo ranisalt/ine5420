@@ -1,4 +1,6 @@
+#include "shapes.h"
 #include "viewportdraw.h"
+
 #include <cairomm/context.h>
 
 ViewPortDraw::ViewPortDraw()
