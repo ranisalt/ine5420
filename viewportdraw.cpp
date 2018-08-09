@@ -3,18 +3,6 @@
 
 #include <cairomm/context.h>
 
-ViewPortDraw::ViewPortDraw(): x_min{0}, y_min{0}
-{
-    Gtk::Allocation allocation = get_allocation();
-    x_max = allocation.get_width();
-    y_max = allocation.get_height();
-}
-
-ViewPortDraw::~ViewPortDraw()
-{
-
-}
-
 void ViewPortDraw::on_zoom_in_click()
 {
     constexpr auto DELTA = 0.05;
@@ -27,12 +15,14 @@ void ViewPortDraw::on_zoom_in_click()
     y_min += w_height / 2;
     y_max -= w_height / 2;
 
+    pen_width *= 1 + DELTA;
+
     queue_draw();
 }
 
 void ViewPortDraw::on_zoom_out_click()
 {
-    constexpr auto DELTA = 0.05;
+    constexpr auto DELTA = 0.05 / 1.05;
 
     auto w_width = (x_max - x_min) * DELTA;
     x_min -= w_width / 2;
@@ -42,12 +32,14 @@ void ViewPortDraw::on_zoom_out_click()
     y_min -= w_height / 2;
     y_max += w_height / 2;
 
+    pen_width *= 1 - DELTA;
+
     queue_draw();
 }
 
 bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    Gtk::Allocation allocation = get_allocation();
+    auto allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
@@ -65,10 +57,10 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     xc = width / 2;
     yc = height / 2;
 
-    cr->set_line_width(10.0);
+    cr->set_line_width(pen_width);
 
     Shape point = Point{xc, yc};
-    Shape line = Line{{0.0, 0.0}, {xc - 20, yc + 20}};
+    Shape line = Line{{0.0, 0.0}, {xc - 10, yc + 10}};
 
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
@@ -77,4 +69,15 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     cr->stroke();
 
     return true;
+}
+
+void ViewPortDraw::on_realize()
+{
+    auto allocation = get_allocation();
+    x_min = 0;
+    x_max = allocation.get_width();
+    y_min = 0;
+    y_max = allocation.get_height();
+
+    Gtk::DrawingArea::on_realize();
 }
