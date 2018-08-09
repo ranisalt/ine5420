@@ -7,14 +7,26 @@ project(cg CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-add_compile_options(-Wall -Werror)
+add_compile_options(-Wall)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(PkgConfig)
+pkg_check_modules(GTKMM gtkmm-3.0)
+include_directories(${GTKMM_INCLUDE_DIRS})
+
 add_library(cg
     displayfile.cpp
     )
+
+add_library(ui
+    includeobjectwindow.cpp
+    mainwindow.cpp
+    )
+
+add_executable(main main.cpp)
+target_link_libraries(main cg ui ${GTKMM_LIBRARIES})
 
 if(BUILD_TESTING)
     enable_testing()
