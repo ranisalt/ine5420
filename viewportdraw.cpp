@@ -24,13 +24,13 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     cr->set_line_width(10.0);
 
+    Shape point = Point{xc, yc};
+    Shape line = Line{{0.0, 0.0}, {xc - 20, yc + 20}};
+
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
-    cr->move_to(0, 0);
-    cr->line_to(xc, yc);
-    cr->line_to(0, height);
-    cr->move_to(xc, yc);
-    cr->line_to(width, yc);
+    point.draw(cr);
+    line.draw(cr);
     cr->stroke();
 
     return true;

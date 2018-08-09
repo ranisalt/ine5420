@@ -20,9 +20,12 @@ add_library(cg
     displayfile.cpp
     )
 
+target_link_libraries(cg ${GTKMM_LIBRARIES})
+
 add_library(ui
     includeobjectwindow.cpp
     mainwindow.cpp
+    viewportdraw.cpp
     )
 
 add_executable(main main.cpp)

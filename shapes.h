@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cairomm/context.h>
+
+#include <cmath>
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <tuple>
@@ -29,6 +33,10 @@ class Shape
         bool operator!=(const Shape& other) const
         { return not (*ptr == *other.ptr); }
 
+        bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const {
+            return ptr ? ptr->draw(ctx) : true;
+        }
+
         size_t hash() const {
             return std::hash<decltype(ptr)>{}(ptr);
         }
@@ -45,6 +53,7 @@ class Shape
             virtual ~concept() = default;
             virtual bool operator==(const concept&) const = 0;
             virtual std::unique_ptr<concept> copy() const = 0;
+            virtual bool draw(const Cairo::RefPtr<Cairo::Context>&) const = 0;
             virtual std::string type() const = 0;
         };
 
@@ -60,6 +69,9 @@ class Shape
 
             std::unique_ptr<concept> copy() const override
             { return std::make_unique<model<T>>(data); }
+
+            bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const override
+            { return data.draw(ctx); }
 
             std::string type() const override
             { return data.type(); }
@@ -91,6 +103,15 @@ struct Point
     bool operator==(const Point& rhs) const
     { return coordinates == rhs.coordinates; };
 
+    bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
+    {
+        double x, y;
+        std::tie(x, y, std::ignore) = coordinates;
+		constexpr auto tau = std::atan(1) * 8;
+        ctx->arc(x, y, 1., 0, tau);
+        return true;
+    }
+
     std::string type() const { return "point"; }
 
     const std::tuple<double, double, double> coordinates;
@@ -102,6 +123,17 @@ struct Line
 
     bool operator==(const Line& rhs) const
     { return vertices == rhs.vertices; };
+
+    bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
+    {
+        double x, y;
+        std::tie(x, y, std::ignore) = vertices.first.coordinates;
+        ctx->move_to(x, y);
+        std::tie(x, y, std::ignore) = vertices.second.coordinates;
+        ctx->line_to(x, y);
+        std::cout << "Draw line\n";
+        return true;
+    }
 
     std::string type() const { return "line"; }
 
@@ -115,6 +147,19 @@ struct Polygon
 
     bool operator==(const Polygon& rhs) const
     { return vertices == rhs.vertices; };
+
+    bool draw(const Cairo::RefPtr<Cairo::Context>& ctx) const
+    {
+        auto begin = std::begin(vertices);
+        double x, y;
+        std::tie(x, y, std::ignore) = begin->coordinates;
+        ctx->move_to(x, y);
+        for (auto it = begin + 1; it != std::end(vertices); ++it) {
+            std::tie(x, y, std::ignore) = begin->coordinates;
+            ctx->line_to(x, y);
+        }
+        return true;
+    }
 
     std::string type() const { return "polygon"; }
 
