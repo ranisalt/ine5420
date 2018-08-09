@@ -2,6 +2,7 @@
 #define GTKMM_MAINWINDOW_H
 
 #include <gtkmm.h>
+#include "viewportdraw.h"
 
 class MainWindow : public Gtk::Window
 {
@@ -67,7 +68,7 @@ protected:
     Gtk::Label degree_label;
     Gtk::Label zoom_label;
 
-    Gtk::DrawingArea drawing_area;
+    ViewPortDraw drawing_area;
 
     Gtk::TextView console_text_view;
 
