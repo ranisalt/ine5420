@@ -22,15 +22,26 @@ protected:
         Gtk::TreeModelColumn<Glib::ustring> object;
     };
 
+    Gtk::Box main_box;
     Gtk::Box function_box;
     Gtk::Box window_box;
-    Gtk::Box rotation_box;
+    Gtk::Box step_box;
+    Gtk::Box step_row1_box;
+    Gtk::Box step_row2_box;
+    Gtk::Box step_row3_box;
+    Gtk::Box step_row4_box;
+    Gtk::Box rotation_main_box;
+    Gtk::Box rotation1_box;
+    Gtk::Box rotation2_box;
+    Gtk::Box zoom_box;
     Gtk::Box projection_box;
+    Gtk::Box viewport_box;
 
     Gtk::Frame function_frame;
     Gtk::Frame window_frame;
     Gtk::Frame rotation_frame;
     Gtk::Frame projection_frame;
+    Gtk::Frame viewport_frame;
 
     Column objects_records;
     Gtk::ScrolledWindow objects_scrolled_window;
@@ -46,6 +57,9 @@ protected:
     Gtk::Button x_button;
     Gtk::Button y_button;
     Gtk::Button z_button;
+    Gtk::Button zoom_in_button;
+    Gtk::Button zoom_out_button;
+    Gtk::Button set_window_button;
 
     Gtk::Label step_label;
     Gtk::Label degree_label;
@@ -57,7 +71,7 @@ protected:
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
 
-    static const int width = 600;
+    static const int width = 650;
     static const int height = 450;
  };
 

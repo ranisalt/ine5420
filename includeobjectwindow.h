@@ -48,8 +48,8 @@ protected:
     Gtk::Button ok_button;
     Gtk::Button cancel_button;
 
-    static const int width = 300;
-    static const int height = 200;
+    static const int width = 200;
+    static const int height = 300;
 };
 
 #endif

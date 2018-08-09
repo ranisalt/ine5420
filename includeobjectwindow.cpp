@@ -52,7 +52,7 @@ IncludeObjectWindow::~IncludeObjectWindow()
 
 void IncludeObjectWindow::on_notebook_switch_page(Gtk::Widget* page, guint page_num)
 {
-    std::cout << "Hello, there!" << std::endl;
+
 }
 
 void IncludeObjectWindow::create_box_point_tab()
