@@ -23,6 +23,18 @@ class cairo_context_guard final
         const Cairo::RefPtr<Cairo::Context>& ctx;
 };
 
+#if __cplusplus < 201402L
+namespace std {
+
+template<class T, class... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+}
+#endif
+
 class Shape
 {
     public:
