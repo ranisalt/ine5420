@@ -4,19 +4,27 @@
 #include "mainwindow.h"
 
 IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
-: notebook_box(Gtk::ORIENTATION_VERTICAL)
+: name_box(Gtk::ORIENTATION_HORIZONTAL)
+, notebook_box(Gtk::ORIENTATION_VERTICAL)
 , point_box(Gtk::ORIENTATION_VERTICAL)
 , line_box(Gtk::ORIENTATION_VERTICAL)
 , wireframes_box(Gtk::ORIENTATION_VERTICAL)
 , curves_box(Gtk::ORIENTATION_VERTICAL)
 , initial_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , final_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
+, buttons_box(Gtk::ORIENTATION_HORIZONTAL)
 , initial_coordinates_frame("Initial point coordinates")
 , final_coordinates_frame("Final point coordinates")
-, name_label("Name"), x1_label("x1:")
-, y1_label("y1:"), z1_label("z1:")
-, x2_label("x2:"), y2_label("y2:")
-, z2_label("z2")
+, name_label("Name"), x1_line_label("x1:")
+, y1_line_label("y1:"), z1_line_label("z1:")
+, x2_line_label("x2:"), y2_line_label("y2:")
+, z2_line_label("z2")
+, x1_line_entry(false)
+, y1_line_entry(false)
+, z1_line_entry(false)
+, x2_line_entry(false)
+, y2_line_entry(false)
+, z2_line_entry(false)
 , ok_button("OK")
 , cancel_button("Cancel")
 , mainwindow{mainwindow}
@@ -38,13 +46,22 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     add(notebook_box);
 
     notebook.set_border_width(10);
-    notebook_box.pack_start(name_entry, Gtk::PACK_EXPAND_WIDGET);
+    notebook_box.pack_start(name_box, Gtk::PACK_EXPAND_WIDGET, 10);
+    name_box.set_homogeneous(false);
+    name_box.pack_start(name_label, Gtk::PACK_EXPAND_WIDGET);
+    name_box.pack_start(name_entry, Gtk::PACK_EXPAND_WIDGET);
+    // name_line_entry.set_size_request(500,0);
     notebook_box.pack_start(notebook, Gtk::PACK_EXPAND_WIDGET, 10);
-    notebook_box.pack_start(ok_button, Gtk::PACK_EXPAND_WIDGET, 10);
-    notebook_box.pack_start(cancel_button, Gtk::PACK_EXPAND_WIDGET, 10);
+    // notebook.set_size_request(10,10);
+    notebook_box.pack_start(buttons_box, Gtk::PACK_EXPAND_WIDGET, 10);
+    buttons_box.set_homogeneous(false);
+    buttons_box.pack_start(cancel_button, Gtk::PACK_EXPAND_WIDGET, 10);
+    buttons_box.pack_start(button_separator, Gtk::PACK_EXPAND_WIDGET, 10);
+    buttons_box.pack_start(ok_button, Gtk::PACK_EXPAND_WIDGET, 10);
+    // button_separator.set_size_request(70,0);
     notebook.append_page(point_box, "Point");
     notebook.append_page(line_box, "Line");
-    notebook.append_page(wireframes_box, "Wireframe");
+    // notebook.append_page(wireframes_box, "Wireframe");
     notebook.append_page(curves_box, "Curves");
     notebook.signal_switch_page().connect(sigc::mem_fun(
         *this, &IncludeObjectWindow::on_notebook_switch_page));
@@ -69,26 +86,26 @@ void IncludeObjectWindow::create_box_point_tab()
 
 void IncludeObjectWindow::create_box_line_tab()
 {
-    line_box.pack_start(initial_coordinates_frame, Gtk::PACK_EXPAND_WIDGET, 10);
-    line_box.pack_start(final_coordinates_frame, Gtk::PACK_EXPAND_WIDGET, 10);
+    line_box.pack_start(initial_coordinates_frame, Gtk::PACK_EXPAND_WIDGET, 15);
+    line_box.pack_start(final_coordinates_frame, Gtk::PACK_EXPAND_WIDGET, 15);
 
-    initial_coordinates_box.set_border_width(0);
+    initial_coordinates_box.set_border_width(10);
     initial_coordinates_frame.add(initial_coordinates_box);
-    initial_coordinates_box.pack_start(x1_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    initial_coordinates_box.pack_start(x1_entry, Gtk::PACK_EXPAND_WIDGET, 10);
-    initial_coordinates_box.pack_start(y1_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    initial_coordinates_box.pack_start(y1_entry, Gtk::PACK_EXPAND_WIDGET, 10);
-    initial_coordinates_box.pack_start(z1_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    initial_coordinates_box.pack_start(z1_entry, Gtk::PACK_EXPAND_WIDGET, 10);
+    initial_coordinates_box.pack_start(x1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    initial_coordinates_box.pack_start(x1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    initial_coordinates_box.pack_start(y1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    initial_coordinates_box.pack_start(y1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    // initial_coordinates_box.pack_start(z1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    // initial_coordinates_box.pack_start(z1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 
-    final_coordinates_box.set_border_width(0);
-    final_coordinates_frame.add(final_coordinates_box);
-    final_coordinates_box.pack_start(x2_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    final_coordinates_box.pack_start(x2_entry, Gtk::PACK_EXPAND_WIDGET, 10);
-    final_coordinates_box.pack_start(y2_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    final_coordinates_box.pack_start(y2_entry, Gtk::PACK_EXPAND_WIDGET, 10);
-    final_coordinates_box.pack_start(z2_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    final_coordinates_box.pack_start(z2_entry, Gtk::PACK_EXPAND_WIDGET, 10);
+    // final_coordinates_box.set_border_width(5);
+    // final_coordinates_frame.add(final_coordinates_box);
+    // final_coordinates_box.pack_start(x2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    // final_coordinates_box.pack_start(x2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    // final_coordinates_box.pack_start(y2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    // final_coordinates_box.pack_start(y2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    // final_coordinates_box.pack_start(z2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    // final_coordinates_box.pack_start(z2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 }
 
 void IncludeObjectWindow::create_box_wireframes_tab()
@@ -105,25 +122,56 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
 {
     double x1, y1, z1, x2, y2, z2;
     auto name = name_entry.get_text();
+    bool is_valid;
     switch(notebook.get_current_page())
     {
         case 0:
-            // mainwindow.add_shape(Point{});
+            is_valid = validate_point();
+            if (is_valid) {
+                // mainwindow.add_shape(Point{});
+            } else {
+                Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+                dialog.run();
+            }
             break;
         case 1:
-            x1 = std::stod(x1_entry.get_text());
-            y1 = std::stod(y1_entry.get_text());
-            z1 = std::stod(z1_entry.get_text());
+            is_valid = validate_line();
+            if (is_valid) {
+                x1 = std::stod(x1_line_entry.get_text());
+                y1 = std::stod(y1_line_entry.get_text());
+                z1 = std::stod(z1_line_entry.get_text());
 
-            x2 = std::stod(x2_entry.get_text());
-            y2 = std::stod(y2_entry.get_text());
-            z2 = std::stod(z2_entry.get_text());
-            mainwindow.add_shape(std::move(name), Line{{x1, y1, z1}, {x2, y2, z2}});
-            close();
+                x2 = std::stod(x2_line_entry.get_text());
+                y2 = std::stod(y2_line_entry.get_text());
+                z2 = std::stod(z2_line_entry.get_text());
+                mainwindow.add_shape(std::move(name), Line{{x1, y1, z1}, {x2, y2, z2}});
+                close();
+            } else {
+                Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+                dialog.run();
+            }
             break;
         case 2:
+            is_valid = validate_wireframe();
+            if (is_valid) {
+
+            } else {
+                Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+                dialog.run();
+            }
             break;
         case 3:
+            is_valid = validate_curve();
+            if (is_valid) {
+
+            } else {
+                Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+                dialog.run();
+            }
             break;
     }
     return true;
@@ -131,5 +179,37 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
 
 bool IncludeObjectWindow::cancel_button_clicked(GdkEventButton* button_event)
 {
+    close();
     return true;
+}
+
+bool IncludeObjectWindow::validate_point()
+{
+    return false;
+}
+
+bool IncludeObjectWindow::validate_line()
+{
+    auto t_x1 = x1_line_entry.get_text();
+    auto t_y1 = y1_line_entry.get_text();
+    auto t_z1 = z1_line_entry.get_text();
+    auto t_x2 = x2_line_entry.get_text();
+    auto t_y2 = y2_line_entry.get_text();
+    auto t_z2 = z2_line_entry.get_text();
+    if (t_x1.empty() && t_y1.empty() && t_z1.empty()
+        && t_x2.empty() && t_y2.empty() && t_z2.empty()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool IncludeObjectWindow::validate_wireframe()
+{
+    return false;
+}
+
+bool IncludeObjectWindow::validate_curve()
+{
+    return false;
 }

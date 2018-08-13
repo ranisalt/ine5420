@@ -1,9 +1,9 @@
 #include <iostream>
 #include "numericentry.h"
 
-NumericEntry::NumericEntry()
+NumericEntry::NumericEntry(bool is_int/*=true*/)
 {
-
+  is_int = is_int;
 }
 
 NumericEntry::~NumericEntry()
@@ -28,6 +28,13 @@ bool NumericEntry::on_key_press_event(GdkEventKey* key_event)
       case GDK_KEY_9:
           set_text(old_num + std::to_string(key_event->keyval - GDK_KEY_0));
           break;
+      // dot
+      case 46:
+          if (!is_int && old_num.find(".") == std::string::npos) {
+              set_text(old_num + ".");
+          }
+          break;
+      // backspace
       case 65288:
           set_text(old_num.substr(0, old_num.size()-1));
           break;

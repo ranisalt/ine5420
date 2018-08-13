@@ -22,9 +22,14 @@ protected:
     void create_box_curves_tab();
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
+    bool validate_point();
+    bool validate_line();
+    bool validate_wireframe();
+    bool validate_curve();
 
     Gtk::Notebook notebook;
 
+    Gtk::Box name_box;
     Gtk::Box notebook_box;
     Gtk::Box point_box;
     Gtk::Box line_box;
@@ -32,32 +37,35 @@ protected:
     Gtk::Box curves_box;
     Gtk::Box initial_coordinates_box;
     Gtk::Box final_coordinates_box;
+    Gtk::Box buttons_box;
 
     Gtk::Frame initial_coordinates_frame;
     Gtk::Frame final_coordinates_frame;
 
     Gtk::Label name_label;
-    Gtk::Label x1_label;
-    Gtk::Label y1_label;
-    Gtk::Label z1_label;
-    Gtk::Label x2_label;
-    Gtk::Label y2_label;
-    Gtk::Label z2_label;
+    Gtk::Label x1_line_label;
+    Gtk::Label y1_line_label;
+    Gtk::Label z1_line_label;
+    Gtk::Label x2_line_label;
+    Gtk::Label y2_line_label;
+    Gtk::Label z2_line_label;
 
     Gtk::Entry name_entry;
-    NumericEntry x1_entry;
-    NumericEntry y1_entry;
-    NumericEntry z1_entry;
-    NumericEntry x2_entry;
-    NumericEntry y2_entry;
-    NumericEntry z2_entry;
+    NumericEntry x1_line_entry;
+    NumericEntry y1_line_entry;
+    NumericEntry z1_line_entry;
+    NumericEntry x2_line_entry;
+    NumericEntry y2_line_entry;
+    NumericEntry z2_line_entry;
 
     Gtk::Button ok_button;
     Gtk::Button cancel_button;
 
+    Gtk::Separator button_separator;
+
     MainWindow &mainwindow;
-    static const int width = 200;
-    static const int height = 300;
+    static const int width = 300;
+    static const int height = 340;
 };
 
 #endif

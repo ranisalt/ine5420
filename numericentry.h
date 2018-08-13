@@ -7,11 +7,13 @@
 class NumericEntry : public Gtk::Entry
 {
 public:
-    NumericEntry();
+    NumericEntry(bool is_int=true);
     virtual ~NumericEntry();
 
 protected:
     virtual bool on_key_press_event(GdkEventKey* key_event);
+
+    bool is_int;
 };
 
 #endif
