@@ -164,17 +164,17 @@ bool MainWindow::add_button_clicked(GdkEventButton* button_event)
 
 bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
 {
-    // Gtk::TreeModel::Row selected_row = *(objects_tree_view.get_selection()->get_selected());
-    // auto name = selected_row[objects_records.object];
-    // objects_refptr->erase(selected_row);
-    // drawing_area.remove_shape(name);
+    auto row = objects_tree_view.get_selection()->get_selected();
+    const auto &name = row->get_value(objects_records.object);
+    objects_refptr->erase(row);
+    drawing_area.remove_shape(name);
     return true;
 }
 
 void MainWindow::add_shape(std::string object_name, Shape s)
 {
     // Lines to add a new object in view
-    Gtk::TreeModel::Row row = *(objects_refptr->append());
+    auto row = *objects_refptr->append();
     row[objects_records.object] = object_name;
 
     drawing_area.add_shape(std::move(object_name), std::move(s));

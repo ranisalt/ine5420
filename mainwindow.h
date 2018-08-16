@@ -95,6 +95,8 @@ protected:
 
     IncludeObjectWindow popup;
 
+    std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
+
     static const int window_width = 700;
     static const int window_height = 550;
 
