@@ -51,6 +51,50 @@ void ViewPortDraw::on_zoom_out_click()
     queue_draw();
 }
 
+void ViewPortDraw::up_click()
+{
+    constexpr auto DELTA = 0.05 / 1.05;
+
+    auto w_height = (y_max - y_min) * DELTA;
+    y_min += w_height / 2;
+    y_max += w_height / 2;
+
+    queue_draw();
+}
+
+void ViewPortDraw::left_click()
+{
+    constexpr auto DELTA = 0.05 / 1.05;
+
+    auto w_width = (x_max - x_min) * DELTA;
+    x_min -= w_width / 2;
+    x_max -= w_width / 2;
+
+    queue_draw();
+}
+
+void ViewPortDraw::down_click()
+{
+    constexpr auto DELTA = 0.05 / 1.05;
+
+    auto w_height = (y_max - y_min) * DELTA;
+    y_min -= w_height / 2;
+    y_max -= w_height / 2;
+
+    queue_draw();
+}
+
+void ViewPortDraw::right_click()
+{
+    constexpr auto DELTA = 0.05 / 1.05;
+
+    auto w_width = (x_max - x_min) * DELTA;
+    x_min += w_width / 2;
+    x_max += w_width / 2;
+
+    queue_draw();
+}
+
 bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     auto allocation = get_allocation();

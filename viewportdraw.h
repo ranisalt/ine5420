@@ -14,6 +14,11 @@ public:
     void on_zoom_in_click();
     void on_zoom_out_click();
 
+    void up_click();
+    void left_click();
+    void down_click();
+    void right_click();
+
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     void on_realize() override;

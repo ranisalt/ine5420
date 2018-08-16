@@ -117,6 +117,11 @@ MainWindow::MainWindow()
     zoom_in_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_in_click));
     zoom_out_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_out_click));
 
+    up_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::up_click));
+    left_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::left_click));
+    down_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::down_click));
+    right_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::right_click));
+
     projection_box.set_border_width(5);
     projection_frame.add(projection_box);
     projection_box.pack_start(parallel_radio_button, Gtk::PACK_EXPAND_WIDGET);
@@ -159,6 +164,10 @@ bool MainWindow::add_button_clicked(GdkEventButton* button_event)
 
 bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
 {
+    // Gtk::TreeModel::Row selected_row = *(objects_tree_view.get_selection()->get_selected());
+    // auto name = selected_row[objects_records.object];
+    // objects_refptr->erase(selected_row);
+    // drawing_area.remove_shape(name);
     return true;
 }
 

@@ -38,10 +38,10 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     ok_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::ok_button_clicked));
     cancel_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::cancel_button_clicked));
 
-    create_box_point_tab();
+    // create_box_point_tab();
     create_box_line_tab();
-    create_box_wireframes_tab();
-    create_box_curves_tab();
+    // create_box_wireframes_tab();
+    // create_box_curves_tab();
 
     add(notebook_box);
 
@@ -61,7 +61,7 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     // button_separator.set_size_request(70,0);
     notebook.append_page(point_box, "Point");
     notebook.append_page(line_box, "Line");
-    // notebook.append_page(wireframes_box, "Wireframe");
+    notebook.append_page(wireframes_box, "Wireframe");
     notebook.append_page(curves_box, "Curves");
     notebook.signal_switch_page().connect(sigc::mem_fun(
         *this, &IncludeObjectWindow::on_notebook_switch_page));
@@ -91,21 +91,22 @@ void IncludeObjectWindow::create_box_line_tab()
 
     initial_coordinates_box.set_border_width(10);
     initial_coordinates_frame.add(initial_coordinates_box);
+    initial_coordinates_box.set_homogeneous(false);
     initial_coordinates_box.pack_start(x1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
     initial_coordinates_box.pack_start(x1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
     initial_coordinates_box.pack_start(y1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
     initial_coordinates_box.pack_start(y1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
-    // initial_coordinates_box.pack_start(z1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
-    // initial_coordinates_box.pack_start(z1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    initial_coordinates_box.pack_start(z1_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    initial_coordinates_box.pack_start(z1_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 
-    // final_coordinates_box.set_border_width(5);
-    // final_coordinates_frame.add(final_coordinates_box);
-    // final_coordinates_box.pack_start(x2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
-    // final_coordinates_box.pack_start(x2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
-    // final_coordinates_box.pack_start(y2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
-    // final_coordinates_box.pack_start(y2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
-    // final_coordinates_box.pack_start(z2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
-    // final_coordinates_box.pack_start(z2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.set_border_width(5);
+    final_coordinates_frame.add(final_coordinates_box);
+    final_coordinates_box.pack_start(x2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.pack_start(x2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.pack_start(y2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.pack_start(y2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.pack_start(z2_line_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    final_coordinates_box.pack_start(z2_line_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 }
 
 void IncludeObjectWindow::create_box_wireframes_tab()
@@ -190,14 +191,16 @@ bool IncludeObjectWindow::validate_point()
 
 bool IncludeObjectWindow::validate_line()
 {
+    auto name = name_entry.get_text();
     auto t_x1 = x1_line_entry.get_text();
     auto t_y1 = y1_line_entry.get_text();
     auto t_z1 = z1_line_entry.get_text();
     auto t_x2 = x2_line_entry.get_text();
     auto t_y2 = y2_line_entry.get_text();
     auto t_z2 = z2_line_entry.get_text();
-    if (t_x1.empty() && t_y1.empty() && t_z1.empty()
-        && t_x2.empty() && t_y2.empty() && t_z2.empty()) {
+    if (t_x1.empty() || t_y1.empty() || t_z1.empty()
+        || t_x2.empty() || t_y2.empty() || t_z2.empty()
+        || name.empty()) {
         return false;
     } else {
         return true;
