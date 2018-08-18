@@ -6,19 +6,26 @@
 IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
 : name_box(Gtk::ORIENTATION_HORIZONTAL)
 , notebook_box(Gtk::ORIENTATION_VERTICAL)
-, point_box(Gtk::ORIENTATION_VERTICAL)
+, point_box(Gtk::ORIENTATION_HORIZONTAL)
 , line_box(Gtk::ORIENTATION_VERTICAL)
-, wireframes_box(Gtk::ORIENTATION_VERTICAL)
+, wireframes_box(Gtk::ORIENTATION_HORIZONTAL)
 , curves_box(Gtk::ORIENTATION_VERTICAL)
 , initial_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , final_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , buttons_box(Gtk::ORIENTATION_HORIZONTAL)
+, point_frame("Point coordinates")
 , initial_coordinates_frame("Initial point coordinates")
 , final_coordinates_frame("Final point coordinates")
-, name_label("Name"), x1_line_label("x1:")
+, wireframes_frame("Wireframes coordinates")
+, name_label("Name")
+, x1_point_label("x1:"), y1_point_label("y1:")
+, z1_point_label("z1:"), x1_line_label("x1:")
 , y1_line_label("y1:"), z1_line_label("z1:")
 , x2_line_label("x2:"), y2_line_label("y2:")
-, z2_line_label("z2")
+, z2_line_label("z2:")
+, wireframes_message_label("To stop to add points, leave all fields in blank")
+, x1_wireframes_label("x1:")
+, y1_wireframes_label("y1:"), z1_wireframes_label("z1:")
 , x1_line_entry(false)
 , y1_line_entry(false)
 , z1_line_entry(false)
@@ -38,10 +45,10 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     ok_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::ok_button_clicked));
     cancel_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::cancel_button_clicked));
 
-    // create_box_point_tab();
+    create_box_point_tab();
     create_box_line_tab();
-    // create_box_wireframes_tab();
-    // create_box_curves_tab();
+    create_box_wireframes_tab();
+    create_box_curves_tab();
 
     add(notebook_box);
 
@@ -76,12 +83,22 @@ IncludeObjectWindow::~IncludeObjectWindow()
 
 void IncludeObjectWindow::on_notebook_switch_page(Gtk::Widget* page, guint page_num)
 {
+    clear_fields();
 
 }
 
 void IncludeObjectWindow::create_box_point_tab()
 {
-    // TODO
+    // point_box.pack_start(point_frame, Gtk::PACK_EXPAND_WIDGET, 5);
+
+    point_box.set_border_width(10);
+    // point_frame.add(point_box);
+    point_box.pack_start(x1_point_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    point_box.pack_start(x1_point_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    point_box.pack_start(y1_point_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    point_box.pack_start(y1_point_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    point_box.pack_start(z1_point_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    point_box.pack_start(z1_point_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 }
 
 void IncludeObjectWindow::create_box_line_tab()
@@ -111,12 +128,44 @@ void IncludeObjectWindow::create_box_line_tab()
 
 void IncludeObjectWindow::create_box_wireframes_tab()
 {
-  // TODO
+    // wireframes_box.pack_start(wireframes_frame, Gtk::PACK_EXPAND_WIDGET, 5);
+
+    // wireframes_box.set_border_width(10);
+    // wireframes_frame.add(wireframes_box);
+
+    wireframes_box.pack_start(x1_wireframes_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    wireframes_box.pack_start(x1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    wireframes_box.pack_start(y1_wireframes_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    wireframes_box.pack_start(y1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    wireframes_box.pack_start(z1_wireframes_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    wireframes_box.pack_start(z1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 }
 
 void IncludeObjectWindow::create_box_curves_tab()
 {
   // TODO
+}
+
+void IncludeObjectWindow::clear_fields()
+{
+    name_entry.set_text("");
+
+  x1_point_entry.set_text("");
+  y1_point_entry.set_text("");
+  z1_point_entry.set_text("");
+
+  x1_line_entry.set_text("");
+  y1_line_entry.set_text("");
+  z1_line_entry.set_text("");
+  x2_line_entry.set_text("");
+  y2_line_entry.set_text("");
+  z2_line_entry.set_text("");
+
+  x1_wireframes_entry.set_text("");
+  y1_wireframes_entry.set_text("");
+  z1_wireframes_entry.set_text("");
+
+  wireframes_points.clear();
 }
 
 bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
@@ -129,7 +178,12 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
         case 0:
             is_valid = validate_point();
             if (is_valid) {
-                // mainwindow.add_shape(Point{});
+                x1 = std::stod(x1_point_entry.get_text());
+                y1 = std::stod(y1_point_entry.get_text());
+                z1 = std::stod(z1_point_entry.get_text());
+                mainwindow.add_shape(std::move(name), Point{x1, y1, z1});
+                clear_fields();
+                close();
             } else {
                 Gtk::MessageDialog dialog(*this, "Every field must be filled!",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -147,6 +201,7 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
                 y2 = std::stod(y2_line_entry.get_text());
                 z2 = std::stod(z2_line_entry.get_text());
                 mainwindow.add_shape(std::move(name), Line{{x1, y1, z1}, {x2, y2, z2}});
+                clear_fields();
                 close();
             } else {
                 Gtk::MessageDialog dialog(*this, "Every field must be filled!",
@@ -157,7 +212,28 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
         case 2:
             is_valid = validate_wireframe();
             if (is_valid) {
+                auto t_x1 = x1_wireframes_entry.get_text();
+                auto t_y1 = y1_wireframes_entry.get_text();
+                auto t_z1 = z1_wireframes_entry.get_text();
 
+                if (t_x1.empty() && t_y1.empty() && t_z1.empty()) {
+                    mainwindow.add_shape(std::move(name), Polygon{wireframes_points});
+                    clear_fields();
+                    close();
+                } else {
+                    x1 = std::stod(x1_wireframes_entry.get_text());
+                    y1 = std::stod(y1_wireframes_entry.get_text());
+                    z1 = std::stod(z1_wireframes_entry.get_text());
+
+                    wireframes_points.push_back(Point{x1, y1, z1});
+
+                    x1_wireframes_entry.set_text("");
+                    y1_wireframes_entry.set_text("");
+                    z1_wireframes_entry.set_text("");
+
+                    Gtk::MessageDialog dialog(*this, "Point added!");
+                    dialog.run();
+                }
             } else {
                 Gtk::MessageDialog dialog(*this, "Every field must be filled!",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -186,7 +262,16 @@ bool IncludeObjectWindow::cancel_button_clicked(GdkEventButton* button_event)
 
 bool IncludeObjectWindow::validate_point()
 {
-    return false;
+    auto name = name_entry.get_text();
+    auto t_x1 = x1_point_entry.get_text();
+    auto t_y1 = y1_point_entry.get_text();
+    auto t_z1 = z1_point_entry.get_text();
+    if (t_x1.empty() || t_y1.empty()
+        || t_z1.empty() || name.empty()) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 bool IncludeObjectWindow::validate_line()
@@ -209,7 +294,19 @@ bool IncludeObjectWindow::validate_line()
 
 bool IncludeObjectWindow::validate_wireframe()
 {
-    return false;
+    auto name = name_entry.get_text();
+    auto t_x1 = x1_wireframes_entry.get_text();
+    auto t_y1 = y1_wireframes_entry.get_text();
+    auto t_z1 = z1_wireframes_entry.get_text();
+
+    if ((t_x1.empty() && t_y1.empty() && t_z1.empty()
+        && !name.empty()) || (!t_x1.empty()
+        && !t_y1.empty()  && !t_z1.empty()
+        && !name.empty())) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool IncludeObjectWindow::validate_curve()

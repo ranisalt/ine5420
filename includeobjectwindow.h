@@ -6,6 +6,7 @@ class MainWindow;
 #include <gtkmm.h>
 
 #include "numericentry.h"
+#include "shapes.h"
 
 class IncludeObjectWindow : public Gtk::Window
 {
@@ -20,6 +21,7 @@ protected:
     void create_box_line_tab();
     void create_box_wireframes_tab();
     void create_box_curves_tab();
+    void clear_fields();
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
     bool validate_point();
@@ -39,24 +41,40 @@ protected:
     Gtk::Box final_coordinates_box;
     Gtk::Box buttons_box;
 
+    Gtk::Frame point_frame;
     Gtk::Frame initial_coordinates_frame;
     Gtk::Frame final_coordinates_frame;
+    Gtk::Frame wireframes_frame;
 
     Gtk::Label name_label;
+    Gtk::Label x1_point_label;
+    Gtk::Label y1_point_label;
+    Gtk::Label z1_point_label;
     Gtk::Label x1_line_label;
     Gtk::Label y1_line_label;
     Gtk::Label z1_line_label;
     Gtk::Label x2_line_label;
     Gtk::Label y2_line_label;
     Gtk::Label z2_line_label;
+    Gtk::Label wireframes_message_label;
+    Gtk::Label x1_wireframes_label;
+    Gtk::Label y1_wireframes_label;
+    Gtk::Label z1_wireframes_label;
 
     Gtk::Entry name_entry;
+    NumericEntry x1_point_entry;
+    NumericEntry y1_point_entry;
+    NumericEntry z1_point_entry;
     NumericEntry x1_line_entry;
     NumericEntry y1_line_entry;
     NumericEntry z1_line_entry;
     NumericEntry x2_line_entry;
     NumericEntry y2_line_entry;
     NumericEntry z2_line_entry;
+    NumericEntry x1_wireframes_entry;
+    NumericEntry y1_wireframes_entry;
+    NumericEntry z1_wireframes_entry;
+
 
     Gtk::Button ok_button;
     Gtk::Button cancel_button;
@@ -64,6 +82,7 @@ protected:
     Gtk::Separator button_separator;
 
     MainWindow &mainwindow;
+    std::vector<Point> wireframes_points;
     static const int width = 300;
     static const int height = 340;
 };

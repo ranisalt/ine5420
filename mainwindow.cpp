@@ -122,6 +122,10 @@ MainWindow::MainWindow()
     down_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::down_click));
     right_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::right_click));
 
+    x_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::x_button_clicked));
+    y_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::y_button_clicked));
+    z_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::z_button_clicked));
+
     projection_box.set_border_width(5);
     projection_frame.add(projection_box);
     projection_box.pack_start(parallel_radio_button, Gtk::PACK_EXPAND_WIDGET);
@@ -159,6 +163,47 @@ void MainWindow::log(std::string l)
 bool MainWindow::add_button_clicked(GdkEventButton* button_event)
 {
     popup.show();
+    return true;
+}
+
+bool MainWindow::x_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        axis_window.show();
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
+    return true;
+}
+
+bool MainWindow::y_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        // auto row = objects_tree_view.get_selection()->get_selected();
+        // const auto &name = row->get_value(objects_records.object);
+        axis_window.show();
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
+    return true;
+}
+
+bool MainWindow::z_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        axis_window.show();
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
     return true;
 }
 

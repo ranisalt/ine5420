@@ -4,6 +4,7 @@
 #include <gtkmm.h>
 #include <string>
 
+#include "axiswindow.h"
 #include "includeobjectwindow.h"
 #include "numericentry.h"
 #include "shapes.h"
@@ -20,6 +21,9 @@ public:
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
     bool remove_button_clicked(GdkEventButton* button_event);
+    bool x_button_clicked(GdkEventButton* button_event);
+    bool y_button_clicked(GdkEventButton* button_event);
+    bool z_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -94,6 +98,7 @@ protected:
     Gtk::RadioButton perspective_radio_button;
 
     IncludeObjectWindow popup;
+    AxisWindow axis_window;
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 
