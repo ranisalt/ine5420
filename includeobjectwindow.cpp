@@ -256,6 +256,7 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
 
 bool IncludeObjectWindow::cancel_button_clicked(GdkEventButton* button_event)
 {
+    clear_fields();
     close();
     return true;
 }

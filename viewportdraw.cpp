@@ -95,14 +95,15 @@ void ViewPortDraw::right_click()
 
 void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
 {
-    auto shape = df.at(std::move(shape_name));
+    auto shape = df.at(shape_name);
 
     if (shape.type() == "point") {
-        // auto x = std::get<0>(coordinate) + std::get<0>(p.coordinates);
-        // auto y = std::get<1>(coordinate) + std::get<1>(p.coordinates);
-        // auto z = std::get<2>(coordinate) + std::get<2>(p.coordinates);
+        auto point = dynamic_cast<Point&>(shape);
+        // auto x = std::get<0>(coordinates) + std::get<0>(point.coordinates);
+        // auto y = std::get<1>(coordinates) + std::get<1>(point.coordinates);
+        // auto z = std::get<2>(coordinates) + std::get<2>(point.coordinates);
         // auto new_coordinates = Coordinates{x, y, z};
-        shape = Point{new_coordinates};
+        // shape = Point{x, y, z};
     } else if (shape.type() == "line") {
 
     } else if (shape.type() == "polygon") {
