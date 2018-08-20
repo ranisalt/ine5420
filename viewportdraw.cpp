@@ -6,14 +6,12 @@
 void ViewPortDraw::add_shape(std::string name, Shape shape)
 {
     df.emplace(std::move(name), std::move(shape));
-
     queue_draw();
 }
 
 void ViewPortDraw::remove_shape(const std::string& name)
 {
     df.erase(name);
-
     queue_draw();
 }
 
@@ -92,6 +90,24 @@ void ViewPortDraw::right_click()
     x_min += w_width / 2;
     x_max += w_width / 2;
 
+    queue_draw();
+}
+
+void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
+{
+    auto shape = df.at(std::move(shape_name));
+
+    if (shape.type() == "point") {
+        // auto x = std::get<0>(coordinate) + std::get<0>(p.coordinates);
+        // auto y = std::get<1>(coordinate) + std::get<1>(p.coordinates);
+        // auto z = std::get<2>(coordinate) + std::get<2>(p.coordinates);
+        // auto new_coordinates = Coordinates{x, y, z};
+        shape = Point{new_coordinates};
+    } else if (shape.type() == "line") {
+
+    } else if (shape.type() == "polygon") {
+
+    }
     queue_draw();
 }
 

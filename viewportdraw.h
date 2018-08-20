@@ -2,6 +2,7 @@
 #define VIEWPORTDRAW_H
 
 #include "displayfile.h"
+#include "matrixmanager.h"
 
 #include <gtkmm.h>
 
@@ -19,11 +20,14 @@ public:
     void down_click();
     void right_click();
 
+    void translate(Coordinates coordinates, std::string shape_name);
+
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     void on_realize() override;
 
     DisplayFile df;
+    // MatrixManager matrix;
 
     double pen_width = 2.0;
     double x_max, y_max, x_min, y_min;

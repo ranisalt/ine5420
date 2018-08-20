@@ -1,10 +1,7 @@
-#ifndef MATRIX_MANAGER_H
-#define MATRIX_MANAGER_H
+#ifndef MATRIXMANAGER_H
+#define MATRIXMANAGER_H
 
 #include "shapes.h"
-
-template <size_t... Is>
-struct index_sequence;
 
 class MatrixManager
 {

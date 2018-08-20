@@ -34,6 +34,7 @@ MainWindow::MainWindow()
 , parallel_radio_button("Parallel")
 , perspective_radio_button("Perspective")
 , popup{*this}
+, axis_window{*this}
 {
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
@@ -170,6 +171,7 @@ bool MainWindow::x_button_clicked(GdkEventButton* button_event)
 {
     auto row = objects_tree_view.get_selection()->get_selected();
     if (row) {
+        axis_window.set_axis("x");
         axis_window.show();
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
@@ -183,8 +185,7 @@ bool MainWindow::y_button_clicked(GdkEventButton* button_event)
 {
     auto row = objects_tree_view.get_selection()->get_selected();
     if (row) {
-        // auto row = objects_tree_view.get_selection()->get_selected();
-        // const auto &name = row->get_value(objects_records.object);
+        axis_window.set_axis("y");
         axis_window.show();
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
@@ -196,14 +197,15 @@ bool MainWindow::y_button_clicked(GdkEventButton* button_event)
 
 bool MainWindow::z_button_clicked(GdkEventButton* button_event)
 {
-    auto row = objects_tree_view.get_selection()->get_selected();
-    if (row) {
-        axis_window.show();
-    } else {
-        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
-            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
-        dialog.run();
-    }
+    // auto row = objects_tree_view.get_selection()->get_selected();
+    // if (row) {
+    //     axis_window.set_axis("z");
+    //     axis_window.show();
+    // } else {
+    //     Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+    //         false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+    //     dialog.run();
+    // }
     return true;
 }
 
@@ -223,4 +225,10 @@ void MainWindow::add_shape(std::string object_name, Shape s)
     row[objects_records.object] = object_name;
 
     drawing_area.add_shape(std::move(object_name), std::move(s));
+}
+
+void MainWindow::translate(Coordinates coordinates)
+{
+    const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
+    drawing_area.translate(coordinates, name);
 }

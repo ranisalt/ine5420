@@ -17,6 +17,7 @@ public:
     virtual ~MainWindow();
 
     void add_shape(std::string, Shape);
+    void translate(Coordinates coordinates);
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
