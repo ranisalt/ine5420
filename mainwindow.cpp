@@ -27,10 +27,10 @@ MainWindow::MainWindow()
 , in_button("In"), out_button("Out")
 , x_button("X"), y_button("Y")
 , z_button("Z")
-, zoom_in_button("+"), zoom_out_button("-")
+, up_scale_button("Up scale"), down_scale_button("Down scale")
 , set_window_button("Set Window")
 , step_label("Step:"), degree_label("Degree:")
-, zoom_label("Zoom:")
+, scale_label("Scale:")
 , parallel_radio_button("Parallel")
 , perspective_radio_button("Perspective")
 , popup{*this}
@@ -111,12 +111,12 @@ MainWindow::MainWindow()
     rotation2_box.pack_start(z_button, Gtk::PACK_EXPAND_WIDGET);
 
     zoom_box.set_border_width(5);
-    zoom_box.pack_start(zoom_label, Gtk::PACK_EXPAND_WIDGET);
-    zoom_box.pack_start(zoom_in_button, Gtk::PACK_EXPAND_WIDGET);
-    zoom_box.pack_start(zoom_out_button, Gtk::PACK_EXPAND_WIDGET);
+    zoom_box.pack_start(scale_label, Gtk::PACK_EXPAND_WIDGET);
+    zoom_box.pack_start(up_scale_button, Gtk::PACK_EXPAND_WIDGET);
+    zoom_box.pack_start(down_scale_button, Gtk::PACK_EXPAND_WIDGET);
 
-    zoom_in_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_in_click));
-    zoom_out_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_zoom_out_click));
+    in_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_in_click));
+    out_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::on_out_click));
 
     up_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::up_click));
     left_button.signal_clicked().connect(sigc::mem_fun(&drawing_area, &ViewPortDraw::left_click));
@@ -126,6 +126,9 @@ MainWindow::MainWindow()
     x_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::x_button_clicked));
     y_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::y_button_clicked));
     z_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::z_button_clicked));
+
+    up_scale_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::up_scale_button_clicked));
+    down_scale_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::down_scale_button_clicked));
 
     projection_box.set_border_width(5);
     projection_frame.add(projection_box);
@@ -206,6 +209,48 @@ bool MainWindow::z_button_clicked(GdkEventButton* button_event)
     //         false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
     //     dialog.run();
     // }
+    return true;
+}
+
+bool MainWindow::up_scale_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
+        auto shape = drawing_area.get_shape_by_name(name);
+        if (shape.type() != "polygon") {
+            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
+                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            dialog.run();
+        } else {
+            drawing_area.scale_up(shape, name);
+        }
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
+    return true;
+}
+
+bool MainWindow::down_scale_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
+        auto shape = drawing_area.get_shape_by_name(name);
+        if (shape.type() != "polygon") {
+            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
+                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            dialog.run();
+        } else {
+            drawing_area.scale_down(shape, name);
+        }
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
     return true;
 }
 

@@ -12,8 +12,8 @@ public:
     void add_shape(std::string, Shape);
     void remove_shape(const std::string&);
 
-    void on_zoom_in_click();
-    void on_zoom_out_click();
+    void on_in_click();
+    void on_out_click();
 
     void up_click();
     void left_click();
@@ -21,6 +21,10 @@ public:
     void right_click();
 
     void translate(Coordinates coordinates, std::string shape_name);
+    void scale_up(Shape s, std::string shape_name);
+    void scale_down(Shape s, std::string shape_name);
+
+    Shape get_shape_by_name(std::string shape_name);
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;

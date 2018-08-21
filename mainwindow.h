@@ -25,6 +25,8 @@ protected:
     bool x_button_clicked(GdkEventButton* button_event);
     bool y_button_clicked(GdkEventButton* button_event);
     bool z_button_clicked(GdkEventButton* button_event);
+    bool up_scale_button_clicked(GdkEventButton* button_event);
+    bool down_scale_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -77,15 +79,15 @@ protected:
     Gtk::Button x_button;
     Gtk::Button y_button;
     Gtk::Button z_button;
-    Gtk::Button zoom_in_button;
-    Gtk::Button zoom_out_button;
+    Gtk::Button up_scale_button;
+    Gtk::Button down_scale_button;
     Gtk::Button set_window_button;
 
     Gtk::Separator step_row3_box_separator;
 
     Gtk::Label step_label;
     Gtk::Label degree_label;
-    Gtk::Label zoom_label;
+    Gtk::Label scale_label;
 
     ViewPortDraw drawing_area;
 

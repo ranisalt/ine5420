@@ -15,7 +15,7 @@ void ViewPortDraw::remove_shape(const std::string& name)
     queue_draw();
 }
 
-void ViewPortDraw::on_zoom_in_click()
+void ViewPortDraw::on_in_click()
 {
     constexpr auto DELTA = 0.05;
 
@@ -32,7 +32,7 @@ void ViewPortDraw::on_zoom_in_click()
     queue_draw();
 }
 
-void ViewPortDraw::on_zoom_out_click()
+void ViewPortDraw::on_out_click()
 {
     constexpr auto DELTA = 0.05 / 1.05;
 
@@ -135,7 +135,43 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
         remove_shape(shape_name);
         add_shape(shape_name, polygon);
     }
-    queue_draw();
+}
+
+void ViewPortDraw::scale_up(Shape s, std::string shape_name)
+{
+    constexpr auto DELTA = 1.05;
+    std::vector<Coordinates> new_coordinates;
+
+    for(auto coordinate: s.coordinates()) {
+        auto x = DELTA * std::get<0>(coordinate);
+        auto y = DELTA * std::get<1>(coordinate);
+        auto z = DELTA * std::get<2>(coordinate);
+        new_coordinates.push_back(Coordinates{x, y, z});
+    }
+    auto polygon = Polygon{new_coordinates};
+    remove_shape(shape_name);
+    add_shape(shape_name, polygon);
+}
+
+void ViewPortDraw::scale_down(Shape s, std::string shape_name)
+{
+    constexpr auto DELTA = 0.95;
+    std::vector<Coordinates> new_coordinates;
+
+    for(auto coordinate: s.coordinates()) {
+        auto x = DELTA / std::get<0>(coordinate);
+        auto y = DELTA / std::get<1>(coordinate);
+        auto z = DELTA / std::get<2>(coordinate);
+        new_coordinates.push_back(Coordinates{x, y, z});
+    }
+    auto polygon = Polygon{new_coordinates};
+    remove_shape(shape_name);
+    add_shape(shape_name, polygon);
+}
+
+Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
+{
+    return df.at(shape_name);
 }
 
 bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
