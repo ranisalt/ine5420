@@ -82,7 +82,7 @@ protected:
     Gtk::Separator button_separator;
 
     MainWindow &mainwindow;
-    std::vector<Point> wireframes_points;
+    std::vector<Coordinates> wireframes_points;
     static const int width = 300;
     static const int height = 340;
 };

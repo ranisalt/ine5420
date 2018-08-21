@@ -225,7 +225,7 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
                     y1 = std::stod(y1_wireframes_entry.get_text());
                     z1 = std::stod(z1_wireframes_entry.get_text());
 
-                    wireframes_points.push_back(Point{x1, y1, z1});
+                    wireframes_points.push_back({x1, y1, z1});
 
                     x1_wireframes_entry.set_text("");
                     y1_wireframes_entry.set_text("");

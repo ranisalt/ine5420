@@ -98,7 +98,7 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
     auto shape = df.at(shape_name);
 
     if (shape.type() == "point") {
-        auto point = dynamic_cast<Point&>(shape);
+        auto coordinates = shape.coordinates();
         // auto x = std::get<0>(coordinates) + std::get<0>(point.coordinates);
         // auto y = std::get<1>(coordinates) + std::get<1>(point.coordinates);
         // auto z = std::get<2>(coordinates) + std::get<2>(point.coordinates);

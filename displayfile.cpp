@@ -14,7 +14,7 @@ std::vector<std::string> split(const std::string& s, const std::string& sep)
     };
 }
 
-Point parse_point(const std::string& coordinates)
+Coordinates parse_coordinates(const std::string& coordinates)
 {
     auto parsed = split(coordinates, ",");
     double x, y, z;
@@ -40,19 +40,19 @@ DisplayFile parse_stream(std::istream& is)
             std::string coordinates;
             iss >> coordinates;
 
-            df.emplace(std::move(name), parse_point(coordinates));
+            df.emplace(std::move(name), Point{parse_coordinates(coordinates)});
         } else if (shape == "line") {
             std::string vertices[2];
             iss >> vertices[0] >> vertices[1];
 
-            Point parsed[2] = {parse_point(vertices[0]), parse_point(vertices[1])};
+            Coordinates parsed[2] = {parse_coordinates(vertices[0]), parse_coordinates(vertices[1])};
 
             df.emplace(std::move(name), Line{parsed[0], parsed[1]});
         } else if (shape == "polygon") {
-            std::vector<Point> vertices;
+            std::vector<Coordinates> vertices;
             std::string coordinates;
             while (iss >> coordinates) {
-                vertices.push_back(parse_point(coordinates));
+                vertices.push_back(parse_coordinates(coordinates));
             }
 
             df.emplace(std::move(name), Polygon{std::move(vertices)});

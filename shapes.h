@@ -60,10 +60,12 @@ class Shape
         bool operator!=(const Shape& other) const
         { return not (*ptr == *other.ptr); }
 
+        std::vector<Coordinates> coordinates() const
+        { return ptr ? ptr->coordinates() : std::vector<Coordinates>{}; }
+
         bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
-                  const WindowMapping& window) const {
-            return ptr ? ptr->draw(ctx, window) : true;
-        }
+                  const WindowMapping& window) const
+        { return ptr ? ptr->draw(ctx, window) : true; }
 
         size_t hash() const {
             return std::hash<decltype(ptr)>{}(ptr);
@@ -81,6 +83,7 @@ class Shape
             virtual ~concept() = default;
             virtual bool operator==(const concept&) const = 0;
             virtual std::unique_ptr<concept> copy() const = 0;
+            virtual std::vector<Coordinates> coordinates() const = 0;
             virtual bool draw(const Cairo::RefPtr<Cairo::Context>&,
                               const WindowMapping&) const = 0;
             virtual std::string type() const = 0;
@@ -98,6 +101,9 @@ class Shape
 
             std::unique_ptr<concept> copy() const override
             { return std::make_unique<model<T>>(data); }
+
+            std::vector<Coordinates> coordinates() const
+            { return data.coordinates(); }
 
             bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
                       const WindowMapping& window) const override
@@ -128,17 +134,23 @@ struct hash<Shape>
 
 struct Point
 {
-    constexpr Point(double x, double y, double z = 1.): coordinates{x, y, z} {}
+    constexpr Point(double x, double y, double z = 1.):
+        coordinates_{x, y, z} {}
+    constexpr Point(Coordinates coordinates):
+        coordinates_{std::move(coordinates)} {}
 
     bool operator==(const Point& rhs) const
-    { return coordinates == rhs.coordinates; };
+    { return coordinates_ == rhs.coordinates_; };
+
+    std::vector<Coordinates> coordinates() const
+    { return {coordinates_}; }
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
     {
         cairo_context_guard guard{ctx};
         double x, y;
-        std::tie(x, y, std::ignore) = window(coordinates);
+        std::tie(x, y, std::ignore) = window(coordinates_);
         constexpr auto tau = std::atan(1) * 8;
         ctx->arc(x, y, 1., 0, tau);
         return true;
@@ -146,40 +158,49 @@ struct Point
 
     std::string type() const { return "point"; }
 
-    const Coordinates coordinates;
+    const Coordinates coordinates_;
 };
 
 struct Line
 {
-    constexpr Line(Point first, Point second): vertices{first, second} {}
+    constexpr Line(Coordinates first, Coordinates second):
+        vertices{first, second} {}
 
     bool operator==(const Line& rhs) const
     { return vertices == rhs.vertices; };
+
+    std::vector<Coordinates> coordinates() const
+    { return {vertices.first, vertices.second}; }
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
     {
         cairo_context_guard guard{ctx};
         double x, y;
-        std::tie(x, y, std::ignore) = window(vertices.first.coordinates);
+        std::tie(x, y, std::ignore) = window(vertices.first);
         ctx->move_to(x, y);
-        std::tie(x, y, std::ignore) = window(vertices.second.coordinates);
+        std::tie(x, y, std::ignore) = window(vertices.second);
         ctx->line_to(x, y);
         return true;
     }
 
     std::string type() const { return "line"; }
 
-    const std::pair<Point, Point> vertices;
+    const std::pair<Coordinates, Coordinates> vertices;
 };
 
 struct Polygon
 {
-    Polygon(std::vector<Point> vertices): vertices{std::move(vertices)} {}
-    Polygon(std::initializer_list<Point> init): vertices{std::move(init)} {}
+    Polygon(std::vector<Coordinates> vertices):
+        vertices{std::move(vertices)} {}
+    Polygon(std::initializer_list<Coordinates> init):
+        vertices{std::move(init)} {}
 
     bool operator==(const Polygon& rhs) const
     { return vertices == rhs.vertices; };
+
+    std::vector<Coordinates> coordinates() const
+    { return vertices; }
 
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
@@ -187,10 +208,10 @@ struct Polygon
         cairo_context_guard guard{ctx};
         auto begin = std::begin(vertices);
         double x, y;
-        std::tie(x, y, std::ignore) = window(begin->coordinates);
+        std::tie(x, y, std::ignore) = window(*begin);
         ctx->move_to(x, y);
         for (auto it = begin + 1; it != std::end(vertices); ++it) {
-            std::tie(x, y, std::ignore) = window(begin->coordinates);
+            std::tie(x, y, std::ignore) = window(*it);
             ctx->line_to(x, y);
         }
         return true;
@@ -198,5 +219,5 @@ struct Polygon
 
     std::string type() const { return "polygon"; }
 
-    const std::vector<Point> vertices;
+    const std::vector<Coordinates> vertices;
 };

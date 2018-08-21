@@ -20,13 +20,13 @@ TEST_CASE("shapes#point", "[shape]") {
 }
 
 TEST_CASE("shapes#line", "[shape]") {
-    Shape line = Line{{1.0, 3.0}, {2.0, 5.0}};
+    Shape line = Line{{1.0, 3.0, 1.0}, {2.0, 5.0, 1.0}};
 
     SECTION("Line == Line") {
-        Shape line2 = Line{{1.0, 3.0}, {2.0, 5.0}};
+        Shape line2 = Line{{1.0, 3.0, 1.0}, {2.0, 5.0, 1.0}};
         REQUIRE(line == line2);
 
-        Shape line3 = Line{{2.0, 4.0}, {3.0, 6.0}};
+        Shape line3 = Line{{2.0, 4.0, 1.0}, {3.0, 6.0, 1.0}};
         REQUIRE(line != line3);
     }
 
@@ -36,13 +36,13 @@ TEST_CASE("shapes#line", "[shape]") {
 }
 
 TEST_CASE("shapes#polygon", "[shape]") {
-    Shape polygon = Polygon{{1.0, 3.0}, {2.0, 5.0}, {0.0, 4.0}};
+    Shape polygon = Polygon{{1.0, 3.0, 1.0}, {2.0, 5.0, 1.0}, {0.0, 4.0, 1.0}};
 
     SECTION("Polygon == Polygon") {
-        Shape polygon2 = Polygon{{1.0, 3.0}, {2.0, 5.0}, {0.0, 4.0}};
+        Shape polygon2 = Polygon{{1.0, 3.0, 1.0}, {2.0, 5.0, 1.0}, {0.0, 4.0, 1.0}};
         REQUIRE(polygon == polygon2);
 
-        Shape polygon3 = Polygon{{2.0, 2.0}, {3.0, 4.0}, {1.0, 3.0}};
+        Shape polygon3 = Polygon{{2.0, 2.0, 1.0}, {3.0, 4.0, 1.0}, {1.0, 3.0, 1.0}};
         REQUIRE(polygon != polygon3);
     }
 
