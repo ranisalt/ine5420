@@ -28,6 +28,12 @@ bool NumericEntry::on_key_press_event(GdkEventKey* key_event)
       case GDK_KEY_9:
           set_text(old_num + std::to_string(key_event->keyval - GDK_KEY_0));
           break;
+      // minus signal
+      case 45:
+          if (old_num.find(".") == std::string::npos && get_position() == 0) {
+              set_text("-");
+          }
+          break;
       // dot
       case 46:
           if (!is_int && old_num.find(".") == std::string::npos) {

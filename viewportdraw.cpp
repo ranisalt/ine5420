@@ -1,6 +1,6 @@
 #include "shapes.h"
 #include "viewportdraw.h"
-
+#include <iostream>
 #include <cairomm/context.h>
 
 void ViewPortDraw::add_shape(std::string name, Shape shape)
@@ -98,16 +98,42 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
     auto shape = df.at(shape_name);
 
     if (shape.type() == "point") {
-        auto coordinates = shape.coordinates();
-        // auto x = std::get<0>(coordinates) + std::get<0>(point.coordinates);
-        // auto y = std::get<1>(coordinates) + std::get<1>(point.coordinates);
-        // auto z = std::get<2>(coordinates) + std::get<2>(point.coordinates);
-        // auto new_coordinates = Coordinates{x, y, z};
-        // shape = Point{x, y, z};
+        auto coordinates_from_point = shape.coordinates()[0];
+
+        auto x = std::get<0>(coordinates) + std::get<0>(coordinates_from_point);
+        auto y = std::get<1>(coordinates) + std::get<1>(coordinates_from_point);
+        auto z = std::get<2>(coordinates) + std::get<2>(coordinates_from_point);
+
+        auto point = Point{x, y, z};
+        remove_shape(shape_name);
+        add_shape(shape_name, point);
     } else if (shape.type() == "line") {
+        auto coordinates_from_start = shape.coordinates()[0];
+        auto coordinates_from_end = shape.coordinates()[1];
 
+        auto x1 = std::get<0>(coordinates) + std::get<0>(coordinates_from_start);
+        auto y1 = std::get<1>(coordinates) + std::get<1>(coordinates_from_start);
+        auto z1 = std::get<2>(coordinates) + std::get<2>(coordinates_from_start);
+
+        auto x2 = std::get<0>(coordinates) + std::get<0>(coordinates_from_end);
+        auto y2 = std::get<1>(coordinates) + std::get<1>(coordinates_from_end);
+        auto z2 = std::get<2>(coordinates) + std::get<2>(coordinates_from_end);
+
+        auto line = Line{Coordinates{x1,y1,z1}, Coordinates{x2,y2,z2}};
+        remove_shape(shape_name);
+        add_shape(shape_name, line);
     } else if (shape.type() == "polygon") {
+        std::vector<Coordinates> new_coordinates;
 
+        for(auto coordinate: shape.coordinates()) {
+            auto x = std::get<0>(coordinates) + std::get<0>(coordinate);
+            auto y = std::get<1>(coordinates) + std::get<1>(coordinate);
+            auto z = std::get<2>(coordinates) + std::get<2>(coordinate);
+            new_coordinates.push_back(Coordinates{x, y, z});
+        }
+        auto polygon = Polygon{new_coordinates};
+        remove_shape(shape_name);
+        add_shape(shape_name, polygon);
     }
     queue_draw();
 }
