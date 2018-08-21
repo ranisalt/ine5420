@@ -153,6 +153,7 @@ struct Point
         std::tie(x, y, std::ignore) = window(coordinates_);
         constexpr auto tau = std::atan(1) * 8;
         ctx->arc(x, y, 1., 0, tau);
+        ctx->stroke();
         return true;
     }
 
@@ -181,6 +182,7 @@ struct Line
         ctx->move_to(x, y);
         std::tie(x, y, std::ignore) = window(vertices.second);
         ctx->line_to(x, y);
+        ctx->stroke();
         return true;
     }
 
@@ -214,6 +216,10 @@ struct Polygon
             std::tie(x, y, std::ignore) = window(*it);
             ctx->line_to(x, y);
         }
+        begin = std::begin(vertices);
+        std::tie(x, y, std::ignore) = window(*begin);
+        ctx->line_to(x, y);
+        ctx->stroke();
         return true;
     }
 
