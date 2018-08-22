@@ -2,16 +2,17 @@
 #define MATRIXMANAGER_H
 
 #include "shapes.h"
+#include <math.h>
 
 class MatrixManager
 {
 public:
-    MatrixManager();
-    virtual ~MatrixManager();
 
-    Coordinates translate(Point p, Coordinates coordinates);
-    // std::vector<std::vector<double>> schedule(Point p);
-    // std::vector<std::vector<double>> rotate(Point p);
+    Coordinates translate(Coordinates coordinates_from_point, Coordinates coordinates);
+    Coordinates scale_up(Coordinates coordinates_from_point, double scale);
+    Coordinates scale_down(Coordinates coordinates_from_point, double scale);
+    Coordinates rotate_acw(Coordinates coordinates_from_point, double angle);
+    // Coordinates turn_cw(Coordinates coordinates_from_point, double angle);
 };
 
 #endif

@@ -13,6 +13,7 @@ MainWindow::MainWindow()
 , rotation_main_box(Gtk::ORIENTATION_VERTICAL)
 , rotation1_box(Gtk::ORIENTATION_HORIZONTAL)
 , rotation2_box(Gtk::ORIENTATION_HORIZONTAL)
+, rotation3_box(Gtk::ORIENTATION_HORIZONTAL)
 , zoom_box(Gtk::ORIENTATION_HORIZONTAL)
 , projection_box(Gtk::ORIENTATION_VERTICAL)
 , viewport_box(Gtk::ORIENTATION_VERTICAL)
@@ -25,6 +26,7 @@ MainWindow::MainWindow()
 , up_button("Up"), left_button("Left")
 , down_button("Down"), right_button("Right")
 , in_button("In"), out_button("Out")
+, apply_rotation_button("Apply")
 , x_button("X"), y_button("Y")
 , z_button("Z")
 , up_scale_button("Up scale"), down_scale_button("Down scale")
@@ -103,9 +105,11 @@ MainWindow::MainWindow()
     rotation_frame.add(rotation_main_box);
     // Add buttons
     rotation_main_box.pack_start(rotation1_box, Gtk::PACK_EXPAND_WIDGET);
+    rotation_main_box.pack_start(rotation3_box, Gtk::PACK_EXPAND_WIDGET);
     rotation_main_box.pack_start(rotation2_box, Gtk::PACK_EXPAND_WIDGET);
     rotation1_box.pack_start(degree_label, Gtk::PACK_EXPAND_WIDGET);
-    rotation1_box.pack_start(degree_entry, Gtk::PACK_EXPAND_WIDGET);
+    rotation1_box.pack_start(degree_entry, Gtk::PACK_SHRINK);
+    rotation3_box.pack_start(apply_rotation_button, Gtk::PACK_EXPAND_WIDGET);
     rotation2_box.pack_start(x_button, Gtk::PACK_EXPAND_WIDGET);
     rotation2_box.pack_start(y_button, Gtk::PACK_EXPAND_WIDGET);
     rotation2_box.pack_start(z_button, Gtk::PACK_EXPAND_WIDGET);
@@ -126,6 +130,8 @@ MainWindow::MainWindow()
     x_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::x_button_clicked));
     y_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::y_button_clicked));
     z_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::z_button_clicked));
+
+    apply_rotation_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::apply_rotation_button_clicked));
 
     up_scale_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::up_scale_button_clicked));
     down_scale_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::down_scale_button_clicked));
@@ -245,6 +251,32 @@ bool MainWindow::down_scale_button_clicked(GdkEventButton* button_event)
             dialog.run();
         } else {
             drawing_area.scale_down(shape, name);
+        }
+    } else {
+        Gtk::MessageDialog dialog(*this, "A shape must be selected!",
+            false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();
+    }
+    return true;
+}
+
+bool MainWindow::apply_rotation_button_clicked(GdkEventButton* button_event)
+{
+    auto row = objects_tree_view.get_selection()->get_selected();
+    if (row) {
+        const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
+        auto shape = drawing_area.get_shape_by_name(name);
+        if (shape.type() != "polygon") {
+            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
+                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            dialog.run();
+        } else {
+            auto value = degree_entry.get_text();
+            double angle = 0;
+            if (!value.empty()) {
+                angle = std::stod(value);
+            }
+            drawing_area.rotate_acw(shape, name, angle);
         }
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",

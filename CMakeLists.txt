@@ -19,7 +19,6 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 add_library(cg
     displayfile.cpp
     shapes.cpp
-    matrixmanager.cpp
     )
 
 target_link_libraries(cg ${GTKMM_LIBRARIES})
@@ -30,6 +29,7 @@ add_library(ui
     numericentry.cpp
     viewportdraw.cpp
     axiswindow.cpp
+    matrixmanager.cpp
     )
 
 add_executable(main main.cpp)

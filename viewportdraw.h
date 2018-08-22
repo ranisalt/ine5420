@@ -23,6 +23,7 @@ public:
     void translate(Coordinates coordinates, std::string shape_name);
     void scale_up(Shape s, std::string shape_name);
     void scale_down(Shape s, std::string shape_name);
+    void rotate_acw(Shape s, std::string shape_name, double angle);
 
     Shape get_shape_by_name(std::string shape_name);
 
@@ -31,7 +32,7 @@ protected:
     void on_realize() override;
 
     DisplayFile df;
-    // MatrixManager matrix;
+    MatrixManager matrix;
 
     double pen_width = 2.0;
     double x_max, y_max, x_min, y_min;

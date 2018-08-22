@@ -27,6 +27,7 @@ protected:
     bool z_button_clicked(GdkEventButton* button_event);
     bool up_scale_button_clicked(GdkEventButton* button_event);
     bool down_scale_button_clicked(GdkEventButton* button_event);
+    bool apply_rotation_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -51,6 +52,7 @@ protected:
     Gtk::Box rotation_main_box;
     Gtk::Box rotation1_box;
     Gtk::Box rotation2_box;
+    Gtk::Box rotation3_box;
     Gtk::Box zoom_box;
     Gtk::Box projection_box;
     Gtk::Box viewport_box;
@@ -76,6 +78,7 @@ protected:
     Gtk::Button right_button;
     Gtk::Button in_button;
     Gtk::Button out_button;
+    Gtk::Button apply_rotation_button;
     Gtk::Button x_button;
     Gtk::Button y_button;
     Gtk::Button z_button;

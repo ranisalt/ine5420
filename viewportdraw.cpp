@@ -99,37 +99,29 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
 
     if (shape.type() == "point") {
         auto coordinates_from_point = shape.coordinates()[0];
+        auto new_coordinates = matrix.translate(coordinates_from_point, coordinates);
+        auto x = std::get<0>(new_coordinates);
+        auto y = std::get<1>(new_coordinates);
+        auto z = std::get<2>(new_coordinates);
+        auto point =  Point{x, y, z};
 
-        auto x = std::get<0>(coordinates) + std::get<0>(coordinates_from_point);
-        auto y = std::get<1>(coordinates) + std::get<1>(coordinates_from_point);
-        auto z = std::get<2>(coordinates) + std::get<2>(coordinates_from_point);
-
-        auto point = Point{x, y, z};
         remove_shape(shape_name);
         add_shape(shape_name, point);
     } else if (shape.type() == "line") {
         auto coordinates_from_start = shape.coordinates()[0];
         auto coordinates_from_end = shape.coordinates()[1];
+        auto coordinates_1 = matrix.translate(coordinates_from_start, coordinates);
+        auto coordinates_2 = matrix.translate(coordinates_from_end, coordinates);
+        auto line = Line{coordinates_1, coordinates_2};
 
-        auto x1 = std::get<0>(coordinates) + std::get<0>(coordinates_from_start);
-        auto y1 = std::get<1>(coordinates) + std::get<1>(coordinates_from_start);
-        auto z1 = std::get<2>(coordinates) + std::get<2>(coordinates_from_start);
-
-        auto x2 = std::get<0>(coordinates) + std::get<0>(coordinates_from_end);
-        auto y2 = std::get<1>(coordinates) + std::get<1>(coordinates_from_end);
-        auto z2 = std::get<2>(coordinates) + std::get<2>(coordinates_from_end);
-
-        auto line = Line{Coordinates{x1,y1,z1}, Coordinates{x2,y2,z2}};
         remove_shape(shape_name);
         add_shape(shape_name, line);
     } else if (shape.type() == "polygon") {
         std::vector<Coordinates> new_coordinates;
 
         for(auto coordinate: shape.coordinates()) {
-            auto x = std::get<0>(coordinates) + std::get<0>(coordinate);
-            auto y = std::get<1>(coordinates) + std::get<1>(coordinate);
-            auto z = std::get<2>(coordinates) + std::get<2>(coordinate);
-            new_coordinates.push_back(Coordinates{x, y, z});
+            auto new_coordinate = matrix.translate(coordinates, coordinate);
+            new_coordinates.push_back(new_coordinate);
         }
         auto polygon = Polygon{new_coordinates};
         remove_shape(shape_name);
@@ -143,10 +135,8 @@ void ViewPortDraw::scale_up(Shape s, std::string shape_name)
     std::vector<Coordinates> new_coordinates;
 
     for(auto coordinate: s.coordinates()) {
-        auto x = DELTA * std::get<0>(coordinate);
-        auto y = DELTA * std::get<1>(coordinate);
-        auto z = DELTA * std::get<2>(coordinate);
-        new_coordinates.push_back(Coordinates{x, y, z});
+        auto coordinate_ = matrix.scale_up(coordinate, DELTA);
+        new_coordinates.push_back(coordinate_);
     }
     auto polygon = Polygon{new_coordinates};
     remove_shape(shape_name);
@@ -159,10 +149,21 @@ void ViewPortDraw::scale_down(Shape s, std::string shape_name)
     std::vector<Coordinates> new_coordinates;
 
     for(auto coordinate: s.coordinates()) {
-        auto x = DELTA / std::get<0>(coordinate);
-        auto y = DELTA / std::get<1>(coordinate);
-        auto z = DELTA / std::get<2>(coordinate);
-        new_coordinates.push_back(Coordinates{x, y, z});
+        auto coordinate_ = matrix.scale_up(coordinate, DELTA);
+        new_coordinates.push_back(coordinate_);
+    }
+    auto polygon = Polygon{new_coordinates};
+    remove_shape(shape_name);
+    add_shape(shape_name, polygon);
+}
+
+void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, double angle)
+{
+    std::vector<Coordinates> new_coordinates;
+
+    for(auto coordinate: s.coordinates()) {
+        auto coordinate_ = matrix.rotate_acw(coordinate, angle);
+        new_coordinates.push_back(coordinate_);
     }
     auto polygon = Polygon{new_coordinates};
     remove_shape(shape_name);

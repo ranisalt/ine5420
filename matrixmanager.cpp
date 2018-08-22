@@ -1,33 +1,33 @@
 #include "matrixmanager.h"
 
-MatrixManager::MatrixManager()
+Coordinates MatrixManager::translate(Coordinates coordinates_from_point, Coordinates coordinates)
 {
-
-}
-
-MatrixManager::~MatrixManager()
-{
-
-}
-
-Coordinates MatrixManager::translate(Point p, Coordinates coordinate)
-{
-    // auto len = std::tuple_size<decltype(coordinate)>::value;
-    auto coordinates = p.coordinates();
-    auto x = std::get<0>(coordinate) + std::get<0>(coordinates[0]);
-    auto y = std::get<1>(coordinate) + std::get<1>(coordinates[0]);
-    auto z = std::get<2>(coordinate) + std::get<2>(coordinates[0]);
+    auto x = std::get<0>(coordinates) + std::get<0>(coordinates_from_point);
+    auto y = std::get<1>(coordinates) + std::get<1>(coordinates_from_point);
+    auto z = std::get<2>(coordinates) + std::get<2>(coordinates_from_point);
     return Coordinates{x, y, z};
 }
 
-// std::vector<double> MatrixManager::schedule(Point p)
-// {
-//     std::vector<std::vector<double>> t;
-//     return t;
-// }
+Coordinates MatrixManager::scale_up(Coordinates coordinates_from_point, double scale)
+{
+    auto x = scale * std::get<0>(coordinates_from_point);
+    auto y = scale * std::get<1>(coordinates_from_point);
+    auto z = scale * std::get<2>(coordinates_from_point);
+    return Coordinates{x, y, z};
+}
 
-// std::vector<double> MatrixManager::rotate(Point p)
-// {
-//     std::vector<std::vector<double>> t;
-//     return t;
-// }
+Coordinates MatrixManager::scale_down(Coordinates coordinates_from_point, double scale)
+{
+    auto x = scale / std::get<0>(coordinates_from_point);
+    auto y = scale / std::get<1>(coordinates_from_point);
+    auto z = scale / std::get<2>(coordinates_from_point);
+    return Coordinates{x, y, z};
+}
+
+Coordinates MatrixManager::rotate_acw(Coordinates coordinates_from_point, double angle)
+{
+    auto x = std::get<0>(coordinates_from_point) * cos( angle * M_PI / 180.0 ) - std::get<1>(coordinates_from_point) * sin( angle * M_PI / 180.0 );
+    auto y = std::get<0>(coordinates_from_point) * sin( angle * M_PI / 180.0 ) + std::get<1>(coordinates_from_point) * cos( angle * M_PI / 180.0 );
+    auto z = 1;
+    return Coordinates{x, y, z};
+}
