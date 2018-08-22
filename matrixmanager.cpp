@@ -10,7 +10,7 @@ Coordinates MatrixManager::translate(Coordinates coordinates_from_point, Coordin
 
 
 
-Coordinates MatrixManager::scale(Coordinates coordinates_from_point, Coordinates center,double scale)
+Coordinates MatrixManager::scale(Coordinates coordinates_from_point, Coordinates center, double scale)
 {
     auto x = (std::get<0>(coordinates_from_point) - std::get<0>(center)) * scale + std::get<0>(center);
     auto y = (std::get<1>(coordinates_from_point) - std::get<1>(center)) * scale + std::get<1>(center);
@@ -18,10 +18,12 @@ Coordinates MatrixManager::scale(Coordinates coordinates_from_point, Coordinates
     return Coordinates{x, y, z};
 }
 
-Coordinates MatrixManager::rotate_acw(Coordinates coordinates_from_point, double angle)
+Coordinates MatrixManager::rotate_acw(Coordinates coordinates_from_point, Coordinates center, double angle)
 {
-    auto x = std::get<0>(coordinates_from_point) * cos( angle * M_PI / 180.0 ) - std::get<1>(coordinates_from_point) * sin( angle * M_PI / 180.0 );
-    auto y = std::get<0>(coordinates_from_point) * sin( angle * M_PI / 180.0 ) + std::get<1>(coordinates_from_point) * cos( angle * M_PI / 180.0 );
+    auto x_ = (cos(angle * M_PI / 180.0) * (std::get<0>(coordinates_from_point) - std::get<0>(center)));
+    auto x = x_ + (sin(angle * M_PI / 180.0) * (std::get<1>(coordinates_from_point) - std::get<1>(center))) + std::get<0>(center);
+    auto y_ =  -1 * sin( angle * M_PI / 180.0 ) * (std::get<0>(coordinates_from_point) - std::get<0>(center));
+    auto y = y_ + cos(angle * M_PI / 180.0) * (std::get<1>(coordinates_from_point) - std::get<1>(center)) + std::get<1>(center);
     auto z = 1;
     return Coordinates{x, y, z};
 }

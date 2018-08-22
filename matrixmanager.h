@@ -10,7 +10,7 @@ public:
 
     Coordinates translate(Coordinates coordinates_from_point, Coordinates coordinates);
     Coordinates scale(Coordinates coordinates_from_point, Coordinates center, double scale);
-    Coordinates rotate_acw(Coordinates coordinates_from_point,double angle);
+    Coordinates rotate_acw(Coordinates coordinates_from_point, Coordinates center, double angle);
     // Coordinates turn_cw(Coordinates coordinates_from_point, double angle);
 
     Coordinates calculate_center_of_polygon(std::vector<Coordinates> coordinates);

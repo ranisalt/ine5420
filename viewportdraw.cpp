@@ -162,9 +162,10 @@ void ViewPortDraw::scale_down(Shape s, std::string shape_name)
 void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, double angle)
 {
     std::vector<Coordinates> new_coordinates;
+    auto center = matrix.calculate_center_of_polygon(s.coordinates());
 
     for(auto coordinate: s.coordinates()) {
-        auto coordinate_ = matrix.rotate_acw(coordinate, angle);
+        auto coordinate_ = matrix.rotate_acw(coordinate, center, angle);
         new_coordinates.push_back(coordinate_);
     }
     auto polygon = Polygon{new_coordinates};
