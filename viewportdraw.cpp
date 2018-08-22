@@ -133,9 +133,10 @@ void ViewPortDraw::scale_up(Shape s, std::string shape_name)
 {
     constexpr auto DELTA = 1.05;
     std::vector<Coordinates> new_coordinates;
+    auto center = matrix.calculate_center_of_polygon(s.coordinates());
 
     for(auto coordinate: s.coordinates()) {
-        auto coordinate_ = matrix.scale_up(coordinate, DELTA);
+        auto coordinate_ = matrix.scale(coordinate, center, DELTA);
         new_coordinates.push_back(coordinate_);
     }
     auto polygon = Polygon{new_coordinates};
@@ -147,9 +148,10 @@ void ViewPortDraw::scale_down(Shape s, std::string shape_name)
 {
     constexpr auto DELTA = 0.95;
     std::vector<Coordinates> new_coordinates;
+    auto center = matrix.calculate_center_of_polygon(s.coordinates());
 
     for(auto coordinate: s.coordinates()) {
-        auto coordinate_ = matrix.scale_up(coordinate, DELTA);
+        auto coordinate_ = matrix.scale(coordinate, center, DELTA);
         new_coordinates.push_back(coordinate_);
     }
     auto polygon = Polygon{new_coordinates};
