@@ -30,6 +30,7 @@ add_library(ui
     viewportdraw.cpp
     axiswindow.cpp
     matrixmanager.cpp
+    turningpointwindow.cpp
     )
 
 add_executable(main main.cpp)

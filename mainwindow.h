@@ -8,6 +8,7 @@
 #include "includeobjectwindow.h"
 #include "numericentry.h"
 #include "shapes.h"
+#include "turningpointwindow.h"
 #include "viewportdraw.h"
 
 class MainWindow : public Gtk::Window
@@ -18,6 +19,7 @@ public:
 
     void add_shape(std::string, Shape);
     void translate(Coordinates coordinates);
+    void rotate(Coordinates coordinates);
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
@@ -53,6 +55,7 @@ protected:
     Gtk::Box rotation1_box;
     Gtk::Box rotation2_box;
     Gtk::Box rotation3_box;
+    Gtk::Box translate_box;
     Gtk::Box zoom_box;
     Gtk::Box projection_box;
     Gtk::Box viewport_box;
@@ -91,6 +94,7 @@ protected:
     Gtk::Label step_label;
     Gtk::Label degree_label;
     Gtk::Label scale_label;
+    Gtk::Label translate_label;
 
     ViewPortDraw drawing_area;
 
@@ -105,6 +109,7 @@ protected:
 
     IncludeObjectWindow popup;
     AxisWindow axis_window;
+    TurningPointWindow tp_window;
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 

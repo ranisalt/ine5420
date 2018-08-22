@@ -14,6 +14,7 @@ MainWindow::MainWindow()
 , rotation1_box(Gtk::ORIENTATION_HORIZONTAL)
 , rotation2_box(Gtk::ORIENTATION_HORIZONTAL)
 , rotation3_box(Gtk::ORIENTATION_HORIZONTAL)
+, translate_box(Gtk::ORIENTATION_HORIZONTAL)
 , zoom_box(Gtk::ORIENTATION_HORIZONTAL)
 , projection_box(Gtk::ORIENTATION_VERTICAL)
 , viewport_box(Gtk::ORIENTATION_VERTICAL)
@@ -32,11 +33,12 @@ MainWindow::MainWindow()
 , up_scale_button("Up scale"), down_scale_button("Down scale")
 , set_window_button("Set Window")
 , step_label("Step:"), degree_label("Degree:")
-, scale_label("Scale:")
+, scale_label("Scale:"), translate_label("Translate:")
 , parallel_radio_button("Parallel")
 , perspective_radio_button("Perspective")
 , popup{*this}
 , axis_window{*this}
+, tp_window{*this}
 {
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
@@ -97,6 +99,7 @@ MainWindow::MainWindow()
     step_row4_box.pack_start(out_button, Gtk::PACK_EXPAND_WIDGET, 20);
 
     window_box.pack_start(rotation_frame, Gtk::PACK_EXPAND_WIDGET);
+    window_box.pack_start(translate_box, Gtk::PACK_EXPAND_WIDGET);
     window_box.pack_start(zoom_box, Gtk::PACK_EXPAND_WIDGET);
     window_box.pack_start(set_window_button, Gtk::PACK_EXPAND_WIDGET);
     window_box.pack_start(projection_frame, Gtk::PACK_EXPAND_WIDGET);
@@ -110,9 +113,11 @@ MainWindow::MainWindow()
     rotation1_box.pack_start(degree_label, Gtk::PACK_EXPAND_WIDGET);
     rotation1_box.pack_start(degree_entry, Gtk::PACK_SHRINK);
     rotation3_box.pack_start(apply_rotation_button, Gtk::PACK_EXPAND_WIDGET);
-    rotation2_box.pack_start(x_button, Gtk::PACK_EXPAND_WIDGET);
-    rotation2_box.pack_start(y_button, Gtk::PACK_EXPAND_WIDGET);
-    rotation2_box.pack_start(z_button, Gtk::PACK_EXPAND_WIDGET);
+
+    translate_box.pack_start(translate_label, Gtk::PACK_EXPAND_WIDGET);
+    translate_box.pack_start(x_button, Gtk::PACK_EXPAND_WIDGET);
+    translate_box.pack_start(y_button, Gtk::PACK_EXPAND_WIDGET);
+    translate_box.pack_start(z_button, Gtk::PACK_EXPAND_WIDGET);
 
     zoom_box.set_border_width(5);
     zoom_box.pack_start(scale_label, Gtk::PACK_EXPAND_WIDGET);
@@ -271,12 +276,7 @@ bool MainWindow::apply_rotation_button_clicked(GdkEventButton* button_event)
                 false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
             dialog.run();
         } else {
-            auto value = degree_entry.get_text();
-            double angle = 0;
-            if (!value.empty()) {
-                angle = std::stod(value);
-            }
-            drawing_area.rotate_acw(shape, name, angle);
+            tp_window.show();
         }
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
@@ -308,4 +308,12 @@ void MainWindow::translate(Coordinates coordinates)
 {
     const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
     drawing_area.translate(coordinates, name);
+}
+
+void MainWindow::rotate(Coordinates coordinates)
+{
+    auto angle = std::stod(degree_entry.get_text());
+    const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
+    auto shape = drawing_area.get_shape_by_name(name);
+    drawing_area.rotate_acw(shape, name, coordinates, angle);
 }

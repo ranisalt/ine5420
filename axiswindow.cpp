@@ -51,6 +51,7 @@ bool AxisWindow::ok_button_clicked(GdkEventButton* button_event)
 
 bool AxisWindow::cancel_button_clicked(GdkEventButton* button_event)
 {
+    axis_entry.set_text("");
     close();
     return true;
 }

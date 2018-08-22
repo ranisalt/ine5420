@@ -23,7 +23,7 @@ public:
     void translate(Coordinates coordinates, std::string shape_name);
     void scale_up(Shape s, std::string shape_name);
     void scale_down(Shape s, std::string shape_name);
-    void rotate_acw(Shape s, std::string shape_name, double angle);
+    void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
 
     Shape get_shape_by_name(std::string shape_name);
 
