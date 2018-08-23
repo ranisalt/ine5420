@@ -8,8 +8,6 @@ Coordinates MatrixManager::translate(Coordinates coordinates_from_point, Coordin
     return Coordinates{x, y, z};
 }
 
-
-
 Coordinates MatrixManager::scale(Coordinates coordinates_from_point, Coordinates center, double scale)
 {
     auto x = (std::get<0>(coordinates_from_point) - std::get<0>(center)) * scale + std::get<0>(center);
