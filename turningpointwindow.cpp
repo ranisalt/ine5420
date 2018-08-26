@@ -35,6 +35,13 @@ TurningPointWindow::~TurningPointWindow()
 
 }
 
+void TurningPointWindow::clear_fields()
+{
+    x_entry.set_text("");
+    y_entry.set_text("");
+    z_entry.set_text("");
+}
+
 bool TurningPointWindow::ok_button_clicked(GdkEventButton* button_event)
 {
     auto x_ = x_entry.get_text();

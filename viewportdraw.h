@@ -25,10 +25,13 @@ public:
     void scale_down(Shape s, std::string shape_name);
     void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
 
+    MatrixManager get_matrix();
+
     Shape get_shape_by_name(std::string shape_name);
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
+    void draw_new_shape(std::string shape_name, std::string type_of_shape, std::vector<Coordinates> new_coordinates);
     void on_realize() override;
 
     DisplayFile df;

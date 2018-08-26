@@ -39,6 +39,7 @@ MainWindow::MainWindow()
 , popup{*this}
 , axis_window{*this}
 , tp_window{*this}
+, point_dialog{*this}
 {
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
@@ -166,6 +167,11 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::show_tp_window()
+{
+    tp_window.show();
+}
+
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
 }
 
@@ -229,13 +235,7 @@ bool MainWindow::up_scale_button_clicked(GdkEventButton* button_event)
     if (row) {
         const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
         auto shape = drawing_area.get_shape_by_name(name);
-        if (shape.type() != "polygon") {
-            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
-                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
-            dialog.run();
-        } else {
-            drawing_area.scale_up(shape, name);
-        }
+        drawing_area.scale_up(shape, name);
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
             false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -250,13 +250,7 @@ bool MainWindow::down_scale_button_clicked(GdkEventButton* button_event)
     if (row) {
         const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
         auto shape = drawing_area.get_shape_by_name(name);
-        if (shape.type() != "polygon") {
-            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
-                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
-            dialog.run();
-        } else {
-            drawing_area.scale_down(shape, name);
-        }
+        drawing_area.scale_down(shape, name);
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
             false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -271,13 +265,8 @@ bool MainWindow::apply_rotation_button_clicked(GdkEventButton* button_event)
     if (row) {
         const auto &name = objects_tree_view.get_selection()->get_selected()->get_value(objects_records.object);
         auto shape = drawing_area.get_shape_by_name(name);
-        if (shape.type() != "polygon") {
-            Gtk::MessageDialog dialog(*this, "The shape must be a polygon!",
-                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
-            dialog.run();
-        } else {
-            tp_window.show();
-        }
+        point_dialog.set_shape(shape);
+        point_dialog.show();
     } else {
         Gtk::MessageDialog dialog(*this, "A shape must be selected!",
             false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);

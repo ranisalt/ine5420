@@ -5,6 +5,7 @@
 #include <string>
 
 #include "axiswindow.h"
+#include "choosepointdialog.h"
 #include "includeobjectwindow.h"
 #include "numericentry.h"
 #include "shapes.h"
@@ -20,6 +21,7 @@ public:
     void add_shape(std::string, Shape);
     void translate(Coordinates coordinates);
     void rotate(Coordinates coordinates);
+    void show_tp_window();
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
@@ -110,6 +112,7 @@ protected:
     IncludeObjectWindow popup;
     AxisWindow axis_window;
     TurningPointWindow tp_window;
+    ChoosePointDialog point_dialog;
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 

@@ -132,44 +132,49 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
 void ViewPortDraw::scale_up(Shape s, std::string shape_name)
 {
     constexpr auto DELTA = 1.05;
+    auto type_of_shape = s.type();
     std::vector<Coordinates> new_coordinates;
-    auto center = matrix.calculate_center_of_polygon(s.coordinates());
+    auto center = matrix.calculate_center_of_shape(s.coordinates());
 
     for(auto coordinate: s.coordinates()) {
         auto coordinate_ = matrix.scale(coordinate, center, DELTA);
         new_coordinates.push_back(coordinate_);
     }
-    auto polygon = Polygon{new_coordinates};
-    remove_shape(shape_name);
-    add_shape(shape_name, polygon);
+
+    draw_new_shape(shape_name, type_of_shape, new_coordinates);
 }
 
 void ViewPortDraw::scale_down(Shape s, std::string shape_name)
 {
     constexpr auto DELTA = 0.95;
+    auto type_of_shape = s.type();
     std::vector<Coordinates> new_coordinates;
-    auto center = matrix.calculate_center_of_polygon(s.coordinates());
+    auto center = matrix.calculate_center_of_shape(s.coordinates());
 
     for(auto coordinate: s.coordinates()) {
         auto coordinate_ = matrix.scale(coordinate, center, DELTA);
         new_coordinates.push_back(coordinate_);
     }
-    auto polygon = Polygon{new_coordinates};
-    remove_shape(shape_name);
-    add_shape(shape_name, polygon);
+
+    draw_new_shape(shape_name, type_of_shape, new_coordinates);
 }
 
 void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle)
 {
     std::vector<Coordinates> new_coordinates;
+    auto type_of_shape = s.type();
 
     for(auto coordinate: s.coordinates()) {
         auto coordinate_ = matrix.rotate_acw(coordinate, point, angle);
         new_coordinates.push_back(coordinate_);
     }
-    auto polygon = Polygon{new_coordinates};
-    remove_shape(shape_name);
-    add_shape(shape_name, polygon);
+
+    draw_new_shape(shape_name, type_of_shape, new_coordinates);
+}
+
+MatrixManager ViewPortDraw::get_matrix()
+{
+    return matrix;
 }
 
 Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
@@ -208,6 +213,21 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     cr->stroke();
 
     return true;
+}
+
+void ViewPortDraw::draw_new_shape(std::string shape_name, std::string type_of_shape, std::vector<Coordinates> new_coordinates)
+{
+    remove_shape(shape_name);
+    if (type_of_shape == "point") {
+        auto point = Point{new_coordinates[0]};
+        add_shape(shape_name, point);
+    } else if (type_of_shape == "line") {
+        auto line = Line{new_coordinates[0], new_coordinates[1]};
+        add_shape(shape_name, line);
+    } else if (type_of_shape == "polygon") {
+        auto polygon = Polygon{new_coordinates};
+        add_shape(shape_name, polygon);
+    }
 }
 
 void ViewPortDraw::on_realize()

@@ -26,7 +26,7 @@ Coordinates MatrixManager::rotate_acw(Coordinates coordinates_from_point, Coordi
     return Coordinates{x, y, z};
 }
 
-Coordinates MatrixManager::calculate_center_of_polygon(std::vector<Coordinates> coordinates)
+Coordinates MatrixManager::calculate_center_of_shape(std::vector<Coordinates> coordinates)
 {
     Coordinates center;
     int i = 0;

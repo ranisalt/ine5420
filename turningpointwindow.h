@@ -18,6 +18,8 @@ public:
     // void set_axis(std::string axis);
 
 protected:
+    void clear_fields();
+
     Gtk::Box main_box;
     Gtk::Box entry_box;
 

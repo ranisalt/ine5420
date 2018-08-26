@@ -31,6 +31,7 @@ add_library(ui
     viewportdraw.cpp
     axiswindow.cpp
     turningpointwindow.cpp
+    choosepointdialog.cpp
     )
 target_link_libraries(ui cg)
 
