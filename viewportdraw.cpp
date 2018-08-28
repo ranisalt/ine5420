@@ -174,7 +174,7 @@ void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, Coordinates point
 
 void ViewPortDraw::calculate_normalized_coordinates(Shape& s)
 {
-    auto point = Coordinates{(x_max + x_min)/2, (y_min+y_max)/2, 0};
+    auto point = matrix.calculate_center_of_shape(s.normalized_coordinates());
     std::vector<Coordinates> new_coordinates;
     for (auto coordinate: s.normalized_coordinates()) {
         auto coordinate_ = matrix.rotate_acw(coordinate, point, total_angle_window);
@@ -190,9 +190,9 @@ void ViewPortDraw::rotate_window(double angle)
     std::vector<Shape> shapes;
     total_angle_window += angle;
 
-    auto point = Coordinates{(x_max + x_min)/2, (y_min+y_max)/2, 0};
     for (auto s: df) {
         auto shape = s.second;
+        auto point = matrix.calculate_center_of_shape(shape.normalized_coordinates());
         for (auto coordinate: shape.normalized_coordinates()) {
             auto coordinate_ = matrix.rotate_acw(coordinate, point, angle);
             new_coordinates.push_back(coordinate_);
