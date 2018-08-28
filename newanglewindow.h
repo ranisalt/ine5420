@@ -1,5 +1,5 @@
-#ifndef GTKMM_AXISWINDOW_H
-#define GTKMM_AXISWINDOW_H
+#ifndef GTKMM_NEWANGLEWINDOW_H
+#define GTKMM_NEWANGLEWINDOW_H
 
 class MainWindow;
 
@@ -8,21 +8,20 @@ class MainWindow;
 
 #include <gtkmm.h>
 
-class AxisWindow : public Gtk::Window
+class NewAngleWindow : public Gtk::Window
 {
 public:
-    AxisWindow(MainWindow &mainwindow);
-    virtual ~AxisWindow();
+    NewAngleWindow(MainWindow &mainwindow);
+    virtual ~NewAngleWindow();
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
-    void set_axis(std::string axis);
 
 protected:
-    Gtk::Box axis_box;
+    Gtk::Box angle_box;
 
-    Gtk::Label axis_label;
+    Gtk::Label angle_label;
 
-    NumericEntry axis_entry;
+    NumericEntry angle_entry;
 
     Gtk::Button ok_button;
     Gtk::Button cancel_button;

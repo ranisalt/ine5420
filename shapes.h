@@ -63,6 +63,12 @@ class Shape
         std::vector<Coordinates> coordinates() const
         { return ptr ? ptr->coordinates() : std::vector<Coordinates>{}; }
 
+        std::vector<Coordinates> normalized_coordinates() const
+        { return ptr ? ptr->normalized_coordinates() : std::vector<Coordinates>{}; }
+
+        void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
+        { ptr? ptr->set_coordinates_normalized(normalized_coordinates) : set_coordinates_normalized(std::vector<Coordinates>{});}
+
         bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
                   const WindowMapping& window) const
         { return ptr ? ptr->draw(ctx, window) : true; }
@@ -84,6 +90,8 @@ class Shape
             virtual bool operator==(const concept&) const = 0;
             virtual std::unique_ptr<concept> copy() const = 0;
             virtual std::vector<Coordinates> coordinates() const = 0;
+            virtual std::vector<Coordinates> normalized_coordinates() const = 0;
+            virtual void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates) = 0;
             virtual bool draw(const Cairo::RefPtr<Cairo::Context>&,
                               const WindowMapping&) const = 0;
             virtual std::string type() const = 0;
@@ -104,6 +112,12 @@ class Shape
 
             std::vector<Coordinates> coordinates() const
             { return data.coordinates(); }
+
+            std::vector<Coordinates> normalized_coordinates() const
+            { return data.normalized_coordinates(); }
+
+            void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
+            { data.set_coordinates_normalized(normalized_coordinates); }
 
             bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
                       const WindowMapping& window) const override
@@ -135,9 +149,12 @@ struct hash<Shape>
 struct Point
 {
     constexpr Point(double x, double y, double z = 1.):
-        coordinates_{x, y, z} {}
+        coordinates_{x, y, z},
+        normalized_coordinates_{x, y, z} {}
+
     constexpr Point(Coordinates coordinates):
-        coordinates_{std::move(coordinates)} {}
+        coordinates_{coordinates},
+        normalized_coordinates_{std::move(coordinates)} {}
 
     bool operator==(const Point& rhs) const
     { return coordinates_ == rhs.coordinates_; };
@@ -145,12 +162,18 @@ struct Point
     std::vector<Coordinates> coordinates() const
     { return {coordinates_}; }
 
+    std::vector<Coordinates> normalized_coordinates() const
+    { return {normalized_coordinates_}; }
+
+    void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
+    { normalized_coordinates_ = std::move(normalized_coordinates[0]); }
+
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
     {
         cairo_context_guard guard{ctx};
         double x, y;
-        std::tie(x, y, std::ignore) = window(coordinates_);
+        std::tie(x, y, std::ignore) = window(normalized_coordinates_);
         constexpr auto tau = std::atan(1) * 8;
         ctx->arc(x, y, 1., 0, tau);
         ctx->stroke();
@@ -160,12 +183,14 @@ struct Point
     std::string type() const { return "point"; }
 
     const Coordinates coordinates_;
+    Coordinates normalized_coordinates_;
 };
 
 struct Line
 {
     constexpr Line(Coordinates first, Coordinates second):
-        vertices{first, second} {}
+        vertices{first, second},
+        normalized_vertices{first, second} {}
 
     bool operator==(const Line& rhs) const
     { return vertices == rhs.vertices; };
@@ -173,14 +198,20 @@ struct Line
     std::vector<Coordinates> coordinates() const
     { return {vertices.first, vertices.second}; }
 
+    std::vector<Coordinates> normalized_coordinates() const
+    { return {normalized_vertices.first, normalized_vertices.second}; }
+
+    void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
+    { normalized_vertices = std::move(std::make_pair(normalized_coordinates[0], normalized_coordinates[1])); }
+
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
     {
         cairo_context_guard guard{ctx};
         double x, y;
-        std::tie(x, y, std::ignore) = window(vertices.first);
+        std::tie(x, y, std::ignore) = window(normalized_vertices.first);
         ctx->move_to(x, y);
-        std::tie(x, y, std::ignore) = window(vertices.second);
+        std::tie(x, y, std::ignore) = window(normalized_vertices.second);
         ctx->line_to(x, y);
         ctx->stroke();
         return true;
@@ -189,14 +220,18 @@ struct Line
     std::string type() const { return "line"; }
 
     const std::pair<Coordinates, Coordinates> vertices;
+    std::pair<Coordinates, Coordinates> normalized_vertices;
 };
 
 struct Polygon
 {
     Polygon(std::vector<Coordinates> vertices):
-        vertices{std::move(vertices)} {}
+        vertices{vertices},
+        normalized_coordinates_{std::move(vertices)} {}
+
     Polygon(std::initializer_list<Coordinates> init):
-        vertices{std::move(init)} {}
+        vertices{init},
+        normalized_coordinates_{std::move(init)} {}
 
     bool operator==(const Polygon& rhs) const
     { return vertices == rhs.vertices; };
@@ -204,19 +239,25 @@ struct Polygon
     std::vector<Coordinates> coordinates() const
     { return vertices; }
 
+    std::vector<Coordinates> normalized_coordinates() const
+    { return normalized_coordinates_; }
+
+    void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
+    { normalized_coordinates_ = std::move(normalized_coordinates); }
+
     bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
               const WindowMapping& window) const
     {
         cairo_context_guard guard{ctx};
-        auto begin = std::begin(vertices);
+        auto begin = std::begin(normalized_coordinates_);
         double x, y;
         std::tie(x, y, std::ignore) = window(*begin);
         ctx->move_to(x, y);
-        for (auto it = begin + 1; it != std::end(vertices); ++it) {
+        for (auto it = begin + 1; it != std::end(normalized_coordinates_); ++it) {
             std::tie(x, y, std::ignore) = window(*it);
             ctx->line_to(x, y);
         }
-        begin = std::begin(vertices);
+        begin = std::begin(normalized_coordinates_);
         std::tie(x, y, std::ignore) = window(*begin);
         ctx->line_to(x, y);
         ctx->stroke();
@@ -226,4 +267,5 @@ struct Polygon
     std::string type() const { return "polygon"; }
 
     const std::vector<Coordinates> vertices;
+    std::vector<Coordinates> normalized_coordinates_;
 };

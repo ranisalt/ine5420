@@ -24,6 +24,8 @@ public:
     void scale_up(Shape s, std::string shape_name);
     void scale_down(Shape s, std::string shape_name);
     void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
+    void calculate_normalized_coordinates(Shape& s);
+    void rotate_window(double angle);
 
     MatrixManager get_matrix();
 
@@ -37,6 +39,7 @@ protected:
     DisplayFile df;
     MatrixManager matrix;
 
+    double total_angle_window = 0;
     double pen_width = 2.0;
     double x_max, y_max, x_min, y_min;
 };

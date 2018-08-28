@@ -5,6 +5,7 @@ MainWindow::MainWindow()
 : main_box(Gtk::ORIENTATION_HORIZONTAL)
 , function_box(Gtk::ORIENTATION_VERTICAL)
 , window_box(Gtk::ORIENTATION_VERTICAL)
+, window_operations_box(Gtk::ORIENTATION_HORIZONTAL)
 , step_box(Gtk::ORIENTATION_VERTICAL)
 , step_row1_box(Gtk::ORIENTATION_HORIZONTAL)
 , step_row2_box(Gtk::ORIENTATION_HORIZONTAL)
@@ -24,6 +25,7 @@ MainWindow::MainWindow()
 , projection_frame("Projection")
 , viewport_frame("Viewport")
 , add_button("Add"), remove_button("Remove")
+, turn_window_button("Turn window")
 , up_button("Up"), left_button("Left")
 , down_button("Down"), right_button("Right")
 , in_button("In"), out_button("Out")
@@ -40,6 +42,7 @@ MainWindow::MainWindow()
 , axis_window{*this}
 , tp_window{*this}
 , point_dialog{*this}
+, angle_window{*this}
 {
     // Basic configuration for window
     set_title("INE5420 - SGI - Gustavo & Ranieri");
@@ -80,6 +83,10 @@ MainWindow::MainWindow()
     window_box.set_border_width(5);
     window_frame.add(window_box);
     // Add buttons
+    window_box.pack_start(window_operations_box, Gtk::PACK_EXPAND_WIDGET);
+    window_operations_box.pack_start(turn_window_button, Gtk::PACK_EXPAND_WIDGET);
+    turn_window_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::turn_window_button_clicked));
+
     window_box.pack_start(step_box, Gtk::PACK_EXPAND_WIDGET);
     step_box.pack_start(step_row1_box, Gtk::PACK_EXPAND_WIDGET);
     step_row1_box.pack_start(step_label, Gtk::PACK_EXPAND_WIDGET, 10);
@@ -170,6 +177,11 @@ MainWindow::~MainWindow()
 void MainWindow::show_tp_window()
 {
     tp_window.show();
+}
+
+void MainWindow::rotate_window(double angle)
+{
+    drawing_area.rotate_window(angle);
 }
 
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
@@ -275,6 +287,12 @@ bool MainWindow::apply_rotation_button_clicked(GdkEventButton* button_event)
     return true;
 }
 
+bool MainWindow::turn_window_button_clicked(GdkEventButton* button_event)
+{
+    angle_window.show();
+    return true;
+}
+
 bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
 {
     auto row = objects_tree_view.get_selection()->get_selected();
@@ -286,10 +304,9 @@ bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
 
 void MainWindow::add_shape(std::string object_name, Shape s)
 {
-    // Lines to add a new object in view
     auto row = *objects_refptr->append();
     row[objects_records.object] = object_name;
-
+    drawing_area.calculate_normalized_coordinates(s);
     drawing_area.add_shape(std::move(object_name), std::move(s));
 }
 

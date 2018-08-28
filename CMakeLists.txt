@@ -32,6 +32,7 @@ add_library(ui
     axiswindow.cpp
     turningpointwindow.cpp
     choosepointdialog.cpp
+    newanglewindow.cpp
     )
 target_link_libraries(ui cg)
 

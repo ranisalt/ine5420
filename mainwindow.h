@@ -7,6 +7,7 @@
 #include "axiswindow.h"
 #include "choosepointdialog.h"
 #include "includeobjectwindow.h"
+#include "newanglewindow.h"
 #include "numericentry.h"
 #include "shapes.h"
 #include "turningpointwindow.h"
@@ -22,6 +23,7 @@ public:
     void translate(Coordinates coordinates);
     void rotate(Coordinates coordinates);
     void show_tp_window();
+    void rotate_window(double angle);
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
@@ -32,6 +34,7 @@ protected:
     bool up_scale_button_clicked(GdkEventButton* button_event);
     bool down_scale_button_clicked(GdkEventButton* button_event);
     bool apply_rotation_button_clicked(GdkEventButton* button_event);
+    bool turn_window_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -48,6 +51,7 @@ protected:
     Gtk::Box main_box;
     Gtk::Box function_box;
     Gtk::Box window_box;
+    Gtk::Box window_operations_box;
     Gtk::Box step_box;
     Gtk::Box step_row1_box;
     Gtk::Box step_row2_box;
@@ -77,6 +81,7 @@ protected:
 
     Gtk::Button add_button;
     Gtk::Button remove_button;
+    Gtk::Button turn_window_button;
     Gtk::Button up_button;
     Gtk::Button left_button;
     Gtk::Button down_button;
@@ -113,6 +118,7 @@ protected:
     AxisWindow axis_window;
     TurningPointWindow tp_window;
     ChoosePointDialog point_dialog;
+    NewAngleWindow angle_window;
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 

@@ -172,6 +172,44 @@ void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, Coordinates point
     draw_new_shape(shape_name, type_of_shape, new_coordinates);
 }
 
+void ViewPortDraw::calculate_normalized_coordinates(Shape& s)
+{
+    auto point = Coordinates{(x_max + x_min)/2, (y_min+y_max)/2, 0};
+    std::vector<Coordinates> new_coordinates;
+    for (auto coordinate: s.normalized_coordinates()) {
+        auto coordinate_ = matrix.rotate_acw(coordinate, point, total_angle_window);
+        new_coordinates.push_back(coordinate_);
+    }
+    s.set_coordinates_normalized(new_coordinates);
+}
+
+void ViewPortDraw::rotate_window(double angle)
+{
+    std::vector<Coordinates> new_coordinates;
+    std::vector<std::string> names;
+    std::vector<Shape> shapes;
+    total_angle_window += angle;
+
+    auto point = Coordinates{(x_max + x_min)/2, (y_min+y_max)/2, 0};
+    for (auto s: df) {
+        auto shape = s.second;
+        for (auto coordinate: shape.normalized_coordinates()) {
+            auto coordinate_ = matrix.rotate_acw(coordinate, point, angle);
+            new_coordinates.push_back(coordinate_);
+        }
+        auto shape_ = Shape(shape);
+        shape_.set_coordinates_normalized(new_coordinates);
+        shapes.push_back(shape_);
+        names.push_back(s.first);
+        new_coordinates.clear();
+    }
+    df.clear();
+
+    for (auto i = 0; i < shapes.size(); ++i) {
+        add_shape(names[i], shapes[i]);
+    }
+}
+
 MatrixManager ViewPortDraw::get_matrix()
 {
     return matrix;
