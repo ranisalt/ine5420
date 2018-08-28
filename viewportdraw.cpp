@@ -257,13 +257,16 @@ void ViewPortDraw::draw_new_shape(std::string shape_name, std::string type_of_sh
 {
     remove_shape(shape_name);
     if (type_of_shape == "point") {
-        auto point = Point{new_coordinates[0]};
+        Shape point = Point{new_coordinates[0]};
+        calculate_normalized_coordinates(point);
         add_shape(shape_name, point);
     } else if (type_of_shape == "line") {
-        auto line = Line{new_coordinates[0], new_coordinates[1]};
+        Shape line = Line{new_coordinates[0], new_coordinates[1]};
+        calculate_normalized_coordinates(line);
         add_shape(shape_name, line);
     } else if (type_of_shape == "polygon") {
-        auto polygon = Polygon{new_coordinates};
+        Shape polygon = Polygon{new_coordinates};
+        calculate_normalized_coordinates(polygon);
         add_shape(shape_name, polygon);
     }
 }

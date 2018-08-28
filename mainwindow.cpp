@@ -25,6 +25,7 @@ MainWindow::MainWindow()
 , projection_frame("Projection")
 , viewport_frame("Viewport")
 , add_button("Add"), remove_button("Remove")
+, load_button("Load .obj file")
 , turn_window_button("Turn window")
 , up_button("Up"), left_button("Left")
 , down_button("Down"), right_button("Right")
@@ -51,7 +52,7 @@ MainWindow::MainWindow()
     text_buffer = Gtk::TextBuffer::create();
     add_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::add_button_clicked));
     remove_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::remove_button_clicked));
-    degree_entry.set_input_purpose(Gtk::INPUT_PURPOSE_PASSWORD);
+    load_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::load_button_clicked));
     console_text_view.set_buffer(text_buffer);
     set_resizable(false);
 
@@ -72,6 +73,7 @@ MainWindow::MainWindow()
     function_frame.add(function_box);
     function_box.pack_start(add_button, Gtk::PACK_SHRINK);
     function_box.pack_start(remove_button, Gtk::PACK_SHRINK);
+    function_box.pack_start(load_button, Gtk::PACK_SHRINK);
     function_box.pack_start(window_frame, Gtk::PACK_EXPAND_WIDGET);
 
     // Create list of objects
@@ -290,6 +292,22 @@ bool MainWindow::apply_rotation_button_clicked(GdkEventButton* button_event)
 bool MainWindow::turn_window_button_clicked(GdkEventButton* button_event)
 {
     angle_window.show();
+    return true;
+}
+
+bool MainWindow::load_button_clicked(GdkEventButton* button_event)
+{
+    Gtk::FileChooserDialog dialog("Please choose a .obj file", Gtk::FILE_CHOOSER_ACTION_OPEN);
+    dialog.set_transient_for(*this);
+    dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+
+    auto filter_text = Gtk::FileFilter::create();
+    filter_text->set_name("Obj files");
+    filter_text->add_mime_type("text/obj");
+    dialog.add_filter(filter_text);
+
+    auto result = dialog.run();
     return true;
 }
 

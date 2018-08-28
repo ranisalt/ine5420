@@ -35,6 +35,7 @@ protected:
     bool down_scale_button_clicked(GdkEventButton* button_event);
     bool apply_rotation_button_clicked(GdkEventButton* button_event);
     bool turn_window_button_clicked(GdkEventButton* button_event);
+    bool load_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -81,6 +82,7 @@ protected:
 
     Gtk::Button add_button;
     Gtk::Button remove_button;
+    Gtk::Button load_button;
     Gtk::Button turn_window_button;
     Gtk::Button up_button;
     Gtk::Button left_button;
