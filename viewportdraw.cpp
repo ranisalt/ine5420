@@ -220,11 +220,6 @@ Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
     return df.at(shape_name);
 }
 
-void ViewPortDraw::export_object_file_(std::string path)
-{
-    export_object_file(df, path);
-}
-
 bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     auto allocation = get_allocation();

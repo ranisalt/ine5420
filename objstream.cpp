@@ -34,6 +34,8 @@ Shape create_shape(std::istringstream& iss, const Vertices& vertices)
     }
 }
 
+using CoordinateMap = std::unordered_map<unsigned, Coordinates>;
+
 }
 
 DisplayFile parse_stream(std::istream& is)
@@ -41,7 +43,7 @@ DisplayFile parse_stream(std::istream& is)
     DisplayFile df;
 
     std::string name;
-    std::unordered_map<unsigned, Coordinates> vertices;
+    CoordinateMap vertices;
 
     auto lineno = 0u;
     for (std::string line; std::getline(is, line); ) {
@@ -68,29 +70,41 @@ DisplayFile parse_stream(std::istream& is)
     return df;
 }
 
-void export_object_file(DisplayFile df, std::string path)
+void dump_stream(const DisplayFile& df, std::ostream& os)
 {
-    auto i = 1;
-    std::vector<int> lines;
-    std::fstream object_file(path, std::fstream::in | std::fstream::out | std::fstream::app);
-    std::string line = "l ";
-    for (auto entry: df) {
-        object_file << "o " << entry.first << std::endl;
+    CoordinateMap vertices;
+
+    auto lineno = 0u;
+    for (const auto& entry: df) {
+        ++lineno;
+        os << "o " << entry.first << std::endl;
         auto shape = entry.second;
-        for (auto coordinate: shape.coordinates()) {
-            auto x = std::to_string(std::get<0>(coordinate));
-            auto y = std::to_string(std::get<1>(coordinate));
-            auto z = std::to_string(std::get<2>(coordinate));
-            object_file << "v " + x + " " + y + " " + z << std::endl;;
-            ++i;
-            lines.push_back(i);
+
+        std::vector<unsigned> v;
+        const auto& coordinates = shape.coordinates();
+        for (const auto& coord: coordinates) {
+            auto it = std::find_if(vertices.begin(), vertices.end(), [&](const CoordinateMap::value_type& kv) {
+                return kv.second == coord;
+            });
+            if (it != vertices.end()) {
+                v.push_back(it->first);
+                continue;
+            }
+
+            ++lineno;
+            std::tie(it, std::ignore) = vertices.emplace(lineno, coord);
+            os << "v " << std::get<0>(coord)
+               << ' '  << std::get<1>(coord)
+               << ' '  << std::get<2>(coord) << std::endl;
+            v.push_back(it->first);
         }
-        for (auto line_: lines) {
-            line += std::to_string(line_) + " ";
+
+        ++lineno;
+        auto it = v.begin();
+        os << "l " << *it;
+        for (++it; it != v.end(); ++it) {
+            os << ' ' << *it;
         }
-        object_file << line << std::endl;
-        line = "";
-        ++i;
+        os << std::endl;
     }
-    object_file.close();
 }

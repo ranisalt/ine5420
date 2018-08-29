@@ -23,6 +23,7 @@ public:
 
     void add_shape(std::string, Shape, bool queue_draw = true);
     void load_shapes_from_file(std::istream&);
+    void export_shapes_to_file(std::ostream&);
     void translate(Coordinates coordinates);
     void rotate(Coordinates coordinates);
     void show_tp_window();

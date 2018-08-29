@@ -338,7 +338,8 @@ bool MainWindow::export_button_clicked(GdkEventButton* button_event)
 
     if (result == Gtk::RESPONSE_OK) {
         auto filename = dialog.get_filename() + ".obj";
-        drawing_area.export_object_file_(filename);
+        std::ofstream object_file{filename};
+        export_shapes_to_file(object_file);
     }
     return true;
 }
@@ -366,6 +367,11 @@ void MainWindow::load_shapes_from_file(std::istream& is)
         add_shape(std::move(entry.first), std::move(entry.second), false);
     }
     drawing_area.queue_draw();
+}
+
+void MainWindow::export_shapes_to_file(std::ostream& os)
+{
+    dump_stream(drawing_area.display_file(), os);
 }
 
 void MainWindow::translate(Coordinates coordinates)
