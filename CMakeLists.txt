@@ -17,9 +17,10 @@ pkg_check_modules(GTKMM gtkmm-3.0)
 include_directories(${GTKMM_INCLUDE_DIRS})
 
 add_library(cg
+    coordinates.cpp
     displayfile.cpp
-    shapes.cpp
     matrixmanager.cpp
+    shapes.cpp
     )
 
 target_link_libraries(cg ${GTKMM_LIBRARIES})

@@ -28,7 +28,7 @@ public:
     void calculate_normalized_coordinates(Shape& s);
     void rotate_window(double angle);
 
-    MatrixManager get_matrix();
+    /* Matrix get_matrix(); */
 
     Shape get_shape_by_name(std::string shape_name);
 
@@ -38,7 +38,7 @@ protected:
     void on_realize() override;
 
     DisplayFile df;
-    MatrixManager matrix;
+    /* Matrix matrix; */
 
     double total_angle_window = 0;
     double pen_width = 2.0;

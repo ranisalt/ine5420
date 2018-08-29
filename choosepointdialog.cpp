@@ -45,7 +45,7 @@ bool ChoosePointDialog::center_world_button_clicked(GdkEventButton* button_event
 
 bool ChoosePointDialog::center_shape_button_clicked(GdkEventButton* button_event)
 {
-    auto center = viewportdraw.get_matrix().calculate_center_of_shape(shape.coordinates());
+    auto center = matrix::calculate_center_of_polygon(shape.coordinates());
     mainwindow.rotate(center);
     close();
     return true;

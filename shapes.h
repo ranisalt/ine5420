@@ -1,5 +1,7 @@
 #pragma once
 
+#include "coordinates.h"
+
 #include <cairomm/context.h>
 
 #include <cmath>
@@ -8,7 +10,6 @@
 #include <vector>
 #include <tuple>
 
-using Coordinates = std::tuple<double, double, double>;
 using WindowMapping = std::function<Coordinates(Coordinates)>;
 
 class cairo_context_guard final
