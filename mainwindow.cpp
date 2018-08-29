@@ -304,10 +304,15 @@ bool MainWindow::load_button_clicked(GdkEventButton* button_event)
 
     auto filter_text = Gtk::FileFilter::create();
     filter_text->set_name("Obj files");
-    filter_text->add_mime_type("text/obj");
+    filter_text->add_pattern("*.obj");
     dialog.add_filter(filter_text);
-
     auto result = dialog.run();
+
+    if (result == Gtk::RESPONSE_OK) {
+        auto filename = dialog.get_filename();
+        std::ifstream object_file(filename);
+        drawing_area.load_shapes_from_file(object_file);
+    }
     return true;
 }
 

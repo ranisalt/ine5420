@@ -1,7 +1,9 @@
 #ifndef GTKMM_MAINWINDOW_H
 #define GTKMM_MAINWINDOW_H
 
+#include <fstream>
 #include <gtkmm.h>
+#include <iostream>
 #include <string>
 
 #include "axiswindow.h"

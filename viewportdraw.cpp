@@ -15,6 +15,16 @@ void ViewPortDraw::remove_shape(const std::string& name)
     queue_draw();
 }
 
+void ViewPortDraw::load_shapes_from_file(std::istream& is)
+{
+    auto df_ = parse_stream(is);
+    std::cout << "HERE" << std::endl;
+    for (auto entry: df_) {
+        std::cout << 1 << std::endl;
+        add_shape(entry.first, entry.second);
+    }
+}
+
 void ViewPortDraw::on_in_click()
 {
     constexpr auto DELTA = 0.05;
