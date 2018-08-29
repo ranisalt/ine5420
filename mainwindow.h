@@ -127,11 +127,11 @@ protected:
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 
-    static const int window_width = 700;
-    static const int window_height = 550;
+    static constexpr int window_width = 700;
+    static constexpr int window_height = 550;
 
-    static const int console_width = 60;
-    static const int console_height = 65;
+    static constexpr int console_width = 60;
+    static constexpr int console_height = 65;
  };
 
 #endif
