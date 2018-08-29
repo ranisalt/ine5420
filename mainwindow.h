@@ -132,8 +132,8 @@ protected:
     static const int window_width = 750;
     static const int window_height = 600;
 
-    static const int console_width = 60;
-    static const int console_height = 65;
+    static constexpr int console_width = 60;
+    static constexpr int console_height = 65;
  };
 
 #endif
