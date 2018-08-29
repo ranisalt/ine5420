@@ -1,4 +1,5 @@
 #include "../displayfile.h"
+#include "../objstream.h"
 
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>

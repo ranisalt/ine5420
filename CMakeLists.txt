@@ -18,8 +18,8 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 
 add_library(cg
     coordinates.cpp
-    displayfile.cpp
-    matrixmanager.cpp
+    matrix.cpp
+    objstream.cpp
     shapes.cpp
     )
 

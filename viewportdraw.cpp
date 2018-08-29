@@ -1,7 +1,10 @@
+#include "objstream.h"
 #include "shapes.h"
 #include "viewportdraw.h"
-#include <iostream>
+
 #include <cairomm/context.h>
+
+#include <iostream>
 
 void ViewPortDraw::add_shape(std::string name, Shape shape)
 {
@@ -184,7 +187,7 @@ void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, Coordinates point
 
 void ViewPortDraw::calculate_normalized_coordinates(Shape& s)
 {
-    auto point = matrix.calculate_center_of_shape(s.normalized_coordinates());
+    auto point = matrix::calculate_center_of_polygon(s.normalized_coordinates());
     std::vector<Coordinates> new_coordinates;
     for (auto coordinate: s.normalized_coordinates()) {
         auto coordinate_ = matrix::rotate_ccw(coordinate, point, total_angle_window);
@@ -202,7 +205,7 @@ void ViewPortDraw::rotate_window(double angle)
 
     for (auto s: df) {
         auto shape = s.second;
-        auto point = matrix.calculate_center_of_shape(shape.normalized_coordinates());
+        auto point = matrix::calculate_center_of_polygon(shape.normalized_coordinates());
         for (auto coordinate: shape.normalized_coordinates()) {
             auto coordinate_ = matrix::rotate_ccw(coordinate, point, angle);
             new_coordinates.push_back(coordinate_);

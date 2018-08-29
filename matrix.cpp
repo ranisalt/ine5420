@@ -1,4 +1,4 @@
-#include "matrixmanager.h"
+#include "matrix.h"
 
 #include <cmath>
 #include <numeric>

@@ -2,7 +2,7 @@
 #define VIEWPORTDRAW_H
 
 #include "displayfile.h"
-#include "matrixmanager.h"
+#include "matrix.h"
 
 #include <gtkmm.h>
 
