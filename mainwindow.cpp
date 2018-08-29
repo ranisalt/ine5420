@@ -30,6 +30,7 @@ MainWindow::MainWindow()
 , viewport_frame("Viewport")
 , add_button("Add"), remove_button("Remove")
 , load_button("Load .obj file")
+, export_button("Export .obj file")
 , turn_window_button("Turn window")
 , up_button("Up"), left_button("Left")
 , down_button("Down"), right_button("Right")
@@ -57,6 +58,7 @@ MainWindow::MainWindow()
     add_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::add_button_clicked));
     remove_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::remove_button_clicked));
     load_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::load_button_clicked));
+    export_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::export_button_clicked));
     console_text_view.set_buffer(text_buffer);
     set_resizable(false);
 
@@ -78,6 +80,7 @@ MainWindow::MainWindow()
     function_box.pack_start(add_button, Gtk::PACK_SHRINK);
     function_box.pack_start(remove_button, Gtk::PACK_SHRINK);
     function_box.pack_start(load_button, Gtk::PACK_SHRINK);
+    function_box.pack_start(export_button, Gtk::PACK_SHRINK);
     function_box.pack_start(window_frame, Gtk::PACK_EXPAND_WIDGET);
 
     // Create list of objects
@@ -316,6 +319,26 @@ bool MainWindow::load_button_clicked(GdkEventButton* button_event)
         auto filename = dialog.get_filename();
         std::ifstream object_file(filename);
         load_shapes_from_file(object_file);
+    }
+    return true;
+}
+
+bool MainWindow::export_button_clicked(GdkEventButton* button_event)
+{
+    Gtk::FileChooserDialog dialog("Please choose a .obj file", Gtk::FILE_CHOOSER_ACTION_SAVE);
+    dialog.set_transient_for(*this);
+    dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+    dialog.add_button("Select", Gtk::RESPONSE_OK);
+
+    auto filter_text = Gtk::FileFilter::create();
+    filter_text->set_name("Export obj file");
+    filter_text->add_pattern("*.obj");
+    dialog.add_filter(filter_text);
+    auto result = dialog.run();
+
+    if (result == Gtk::RESPONSE_OK) {
+        auto filename = dialog.get_filename() + ".obj";
+        drawing_area.export_object_file_(filename);
     }
     return true;
 }

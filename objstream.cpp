@@ -1,6 +1,7 @@
 #include "objstream.h"
 
 #include <iostream>
+#include <fstream>
 #include <regex>
 #include <sstream>
 
@@ -65,4 +66,31 @@ DisplayFile parse_stream(std::istream& is)
         }
     }
     return df;
+}
+
+void export_object_file(DisplayFile df, std::string path)
+{
+    auto i = 1;
+    std::vector<int> lines;
+    std::fstream object_file(path, std::fstream::in | std::fstream::out | std::fstream::app);
+    std::string line = "l ";
+    for (auto entry: df) {
+        object_file << "o " << entry.first << std::endl;
+        auto shape = entry.second;
+        for (auto coordinate: shape.coordinates()) {
+            auto x = std::to_string(std::get<0>(coordinate));
+            auto y = std::to_string(std::get<1>(coordinate));
+            auto z = std::to_string(std::get<2>(coordinate));
+            object_file << "v " + x + " " + y + " " + z << std::endl;;
+            ++i;
+            lines.push_back(i);
+        }
+        for (auto line_: lines) {
+            line += std::to_string(line_) + " ";
+        }
+        object_file << line << std::endl;
+        line = "";
+        ++i;
+    }
+    object_file.close();
 }

@@ -39,6 +39,7 @@ protected:
     bool apply_rotation_button_clicked(GdkEventButton* button_event);
     bool turn_window_button_clicked(GdkEventButton* button_event);
     bool load_button_clicked(GdkEventButton* button_event);
+    bool export_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -86,6 +87,7 @@ protected:
     Gtk::Button add_button;
     Gtk::Button remove_button;
     Gtk::Button load_button;
+    Gtk::Button export_button;
     Gtk::Button turn_window_button;
     Gtk::Button up_button;
     Gtk::Button left_button;
@@ -127,8 +129,8 @@ protected:
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 
-    static const int window_width = 700;
-    static const int window_height = 550;
+    static const int window_width = 750;
+    static const int window_height = 600;
 
     static const int console_width = 60;
     static const int console_height = 65;

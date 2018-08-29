@@ -30,6 +30,7 @@ public:
     /* Matrix get_matrix(); */
 
     Shape get_shape_by_name(std::string shape_name);
+    void export_object_file_(std::string path);
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
