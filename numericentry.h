@@ -2,16 +2,14 @@
 #define GTKMM_NUMERICENTRY_H
 
 #include <gtkmm.h>
-#include <string>
 
-class NumericEntry : public Gtk::Entry
+class NumericEntry final: public Gtk::Entry
 {
 public:
-    NumericEntry(bool is_int=true);
-    virtual ~NumericEntry();
+    explicit NumericEntry(bool is_int = true): is_int{is_int} {}
 
-protected:
-    virtual bool on_key_press_event(GdkEventKey* key_event);
+private:
+    bool on_key_press_event(GdkEventKey* key_event);
 
     bool is_int;
 };

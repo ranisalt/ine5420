@@ -8,14 +8,12 @@ class MainWindow;
 #include "numericentry.h"
 #include "shapes.h"
 
-class IncludeObjectWindow : public Gtk::Window
+class IncludeObjectWindow final: public Gtk::Window
 {
 public:
+    explicit IncludeObjectWindow(MainWindow &mainwindow);
 
-    IncludeObjectWindow(MainWindow &mainwindow);
-    virtual ~IncludeObjectWindow();
-
-protected:
+private:
     void on_notebook_switch_page(Gtk::Widget* page, guint page_num);
     void create_box_point_tab();
     void create_box_line_tab();
@@ -81,10 +79,10 @@ protected:
 
     Gtk::Separator button_separator;
 
-    MainWindow &mainwindow;
+    MainWindow& mainwindow;
     std::vector<Coordinates> wireframes_points;
-    static const int width = 300;
-    static const int height = 340;
+    static constexpr int width = 300;
+    static constexpr int height = 340;
 };
 
 #endif

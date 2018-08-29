@@ -317,7 +317,7 @@ bool MainWindow::load_button_clicked(GdkEventButton* button_event)
 
     if (result == Gtk::RESPONSE_OK) {
         auto filename = dialog.get_filename();
-        std::ifstream object_file(filename);
+        std::ifstream object_file{filename};
         load_shapes_from_file(object_file);
     }
     return true;

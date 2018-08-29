@@ -1,16 +1,6 @@
 #include <iostream>
 #include "numericentry.h"
 
-NumericEntry::NumericEntry(bool is_int/*=true*/)
-{
-  is_int = is_int;
-}
-
-NumericEntry::~NumericEntry()
-{
-
-}
-
 bool NumericEntry::on_key_press_event(GdkEventKey* key_event)
 {
     auto old_num = get_text();
@@ -36,7 +26,7 @@ bool NumericEntry::on_key_press_event(GdkEventKey* key_event)
           break;
       // dot
       case 46:
-          if (!is_int && old_num.find(".") == std::string::npos) {
+          if (not is_int and old_num.find(".") == std::string::npos) {
               set_text(old_num + ".");
           }
           break;

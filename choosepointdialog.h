@@ -8,11 +8,10 @@ class MainWindow;
 
 #include <gtkmm.h>
 
-class ChoosePointDialog : public Gtk::Window
+class ChoosePointDialog final: public Gtk::Window
 {
 public:
-    ChoosePointDialog(MainWindow &mainwindow);
-    virtual ~ChoosePointDialog();
+    explicit ChoosePointDialog(MainWindow& mainwindow);
     bool center_world_button_clicked(GdkEventButton* button_event);
     bool center_shape_button_clicked(GdkEventButton* button_event);
     bool arbitrary_button_clicked(GdkEventButton* button_event);
@@ -27,12 +26,12 @@ protected:
     Gtk::Button center_shape_button;
     Gtk::Button arbitrary_button;
 
-    MainWindow &mainwindow;
-    Shape &shape;
-    ViewPortDraw &viewportdraw;
+    MainWindow& mainwindow;
+    Shape& shape;
+    ViewPortDraw& viewportdraw;
 
-    static const int width = 100;
-    static const int height = 150;
+    static constexpr int width = 100;
+    static constexpr int height = 150;
 };
 
 #endif

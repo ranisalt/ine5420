@@ -24,17 +24,12 @@ NewAngleWindow::NewAngleWindow(MainWindow &mainwindow)
     show_all_children();
 }
 
-NewAngleWindow::~NewAngleWindow()
-{
-
-}
-
 bool NewAngleWindow::ok_button_clicked(GdkEventButton* button_event)
 {
     auto value = angle_entry.get_text();
-    if (!value.empty()) {
+    if (not value.empty()) {
         auto angle = std::stod(value);
-            mainwindow.rotate_window(angle);
+        mainwindow.rotate_window(angle);
         close();
     } else {
         Gtk::MessageDialog dialog(*this, "A new value must be set!",

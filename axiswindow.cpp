@@ -24,21 +24,16 @@ AxisWindow::AxisWindow(MainWindow &mainwindow)
     show_all_children();
 }
 
-AxisWindow::~AxisWindow()
-{
-
-}
-
 bool AxisWindow::ok_button_clicked(GdkEventButton* button_event)
 {
     auto value = axis_entry.get_text();
-    if (!value.empty()) {
+    if (not value.empty()) {
         if (axis == "x") {
             auto x = std::stod(value);
-            mainwindow.translate(Coordinates{x, 0, 0});
+            mainwindow.translate({x, 0, 0});
         } else if (axis == "y") {
             auto y = std::stod(value);
-            mainwindow.translate(Coordinates{0, y, 0});
+            mainwindow.translate({0, y, 0});
         }
         close();
     } else {
@@ -58,5 +53,5 @@ bool AxisWindow::cancel_button_clicked(GdkEventButton* button_event)
 
 void AxisWindow::set_axis(std::string axis)
 {
-    this->axis = axis;
+    this->axis = std::move(axis);
 }

@@ -30,11 +30,6 @@ ChoosePointDialog::ChoosePointDialog(MainWindow &mainwindow)
     show_all_children();
 }
 
-ChoosePointDialog::~ChoosePointDialog()
-{
-
-}
-
 bool ChoosePointDialog::center_world_button_clicked(GdkEventButton* button_event)
 {
     auto coordinates = Coordinates{0, 0, 0};

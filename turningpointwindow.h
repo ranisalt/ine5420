@@ -8,11 +8,10 @@ class MainWindow;
 
 #include <gtkmm.h>
 
-class TurningPointWindow : public Gtk::Window
+class TurningPointWindow final: public Gtk::Window
 {
 public:
-    TurningPointWindow(MainWindow &mainwindow);
-    virtual ~TurningPointWindow();
+    explicit TurningPointWindow(MainWindow& mainwindow);
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
     // void set_axis(std::string axis);
@@ -34,10 +33,10 @@ protected:
     Gtk::Button ok_button;
     Gtk::Button cancel_button;
 
-    MainWindow &mainwindow;
+    MainWindow& mainwindow;
 
-    static const int width = 100;
-    static const int height = 150;
+    static constexpr int width = 100;
+    static constexpr int height = 150;
 };
 
 #endif

@@ -30,11 +30,6 @@ TurningPointWindow::TurningPointWindow(MainWindow &mainwindow)
     show_all_children();
 }
 
-TurningPointWindow::~TurningPointWindow()
-{
-
-}
-
 void TurningPointWindow::clear_fields()
 {
     x_entry.set_text("");

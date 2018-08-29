@@ -15,8 +15,8 @@ using WindowMapping = std::function<Coordinates(Coordinates)>;
 class cairo_context_guard final
 {
     public:
-        cairo_context_guard(const Cairo::RefPtr<Cairo::Context>& ctx): ctx{ctx}
-        { ctx->save(); }
+        explicit cairo_context_guard(const Cairo::RefPtr<Cairo::Context>& ctx):
+            ctx{ctx} { ctx->save(); }
 
         ~cairo_context_guard() { ctx->restore(); }
 
@@ -111,14 +111,14 @@ class Shape
             std::unique_ptr<concept> copy() const override
             { return std::make_unique<model<T>>(data); }
 
-            std::vector<Coordinates> coordinates() const
+            std::vector<Coordinates> coordinates() const override
             { return data.coordinates(); }
 
-            std::vector<Coordinates> normalized_coordinates() const
+            std::vector<Coordinates> normalized_coordinates() const override
             { return data.normalized_coordinates(); }
 
-            void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates)
-            { data.set_coordinates_normalized(normalized_coordinates); }
+            void set_coordinates_normalized(std::vector<Coordinates> normalized_coordinates) override
+            { data.set_coordinates_normalized(std::move(normalized_coordinates)); }
 
             bool draw(const Cairo::RefPtr<Cairo::Context>& ctx,
                       const WindowMapping& window) const override

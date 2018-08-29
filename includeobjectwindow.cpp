@@ -76,11 +76,6 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     show_all_children();
 }
 
-IncludeObjectWindow::~IncludeObjectWindow()
-{
-
-}
-
 void IncludeObjectWindow::on_notebook_switch_page(Gtk::Widget* page, guint page_num)
 {
     clear_fields();
