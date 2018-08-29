@@ -6,26 +6,18 @@
 
 #include <iostream>
 
-void ViewPortDraw::add_shape(std::string name, Shape shape)
+void ViewPortDraw::add_shape(std::string name, Shape shape, bool queue_draw_)
 {
     df.emplace(std::move(name), std::move(shape));
-    queue_draw();
+    if (queue_draw_) {
+        queue_draw();
+    }
 }
 
 void ViewPortDraw::remove_shape(const std::string& name)
 {
     df.erase(name);
     queue_draw();
-}
-
-void ViewPortDraw::load_shapes_from_file(std::istream& is)
-{
-    auto df_ = parse_stream(is);
-    std::cout << "HERE" << std::endl;
-    for (auto entry: df_) {
-        std::cout << 1 << std::endl;
-        add_shape(entry.first, entry.second);
-    }
 }
 
 void ViewPortDraw::on_in_click()
@@ -248,10 +240,9 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
 
-    for (auto& entry: df) {
+    for (const auto& entry: df) {
         entry.second.draw(cr, window);
     }
-    cr->stroke();
 
     return true;
 }

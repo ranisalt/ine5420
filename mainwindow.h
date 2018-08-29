@@ -1,11 +1,6 @@
 #ifndef GTKMM_MAINWINDOW_H
 #define GTKMM_MAINWINDOW_H
 
-#include <fstream>
-#include <gtkmm.h>
-#include <iostream>
-#include <string>
-
 #include "axiswindow.h"
 #include "choosepointdialog.h"
 #include "includeobjectwindow.h"
@@ -15,13 +10,19 @@
 #include "turningpointwindow.h"
 #include "viewportdraw.h"
 
+#include <gtkmm.h>
+
+#include <iosfwd>
+#include <string>
+
 class MainWindow : public Gtk::Window
 {
 public:
     MainWindow();
     virtual ~MainWindow();
 
-    void add_shape(std::string, Shape);
+    void add_shape(std::string, Shape, bool queue_draw = true);
+    void load_shapes_from_file(std::istream&);
     void translate(Coordinates coordinates);
     void rotate(Coordinates coordinates);
     void show_tp_window();

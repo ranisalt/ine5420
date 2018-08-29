@@ -1,4 +1,8 @@
 #include "mainwindow.h"
+
+#include "objstream.h"
+
+#include <fstream>
 #include <iostream>
 
 MainWindow::MainWindow()
@@ -311,7 +315,7 @@ bool MainWindow::load_button_clicked(GdkEventButton* button_event)
     if (result == Gtk::RESPONSE_OK) {
         auto filename = dialog.get_filename();
         std::ifstream object_file(filename);
-        drawing_area.load_shapes_from_file(object_file);
+        load_shapes_from_file(object_file);
     }
     return true;
 }
@@ -325,12 +329,20 @@ bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
     return true;
 }
 
-void MainWindow::add_shape(std::string object_name, Shape s)
+void MainWindow::add_shape(std::string object_name, Shape s, bool queue_draw)
 {
     auto row = *objects_refptr->append();
     row[objects_records.object] = object_name;
     drawing_area.calculate_normalized_coordinates(s);
-    drawing_area.add_shape(std::move(object_name), std::move(s));
+    drawing_area.add_shape(std::move(object_name), std::move(s), queue_draw);
+}
+
+void MainWindow::load_shapes_from_file(std::istream& is)
+{
+    for (auto&& entry: parse_stream(is)) {
+        add_shape(std::move(entry.first), std::move(entry.second), false);
+    }
+    drawing_area.queue_draw();
 }
 
 void MainWindow::translate(Coordinates coordinates)

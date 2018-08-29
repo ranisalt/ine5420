@@ -9,9 +9,8 @@
 class ViewPortDraw final : public Gtk::DrawingArea
 {
 public:
-    void add_shape(std::string, Shape);
+    void add_shape(std::string, Shape, bool queue_draw = true);
     void remove_shape(const std::string&);
-    void load_shapes_from_file(std::istream& is);
 
     void on_in_click();
     void on_out_click();
