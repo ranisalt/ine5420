@@ -235,13 +235,29 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
         return {x, y, z};
     };
 
+    cr->set_line_width(pen_width_cp);
+
+    // draw viewport limits for test clipping
+    x_max_cp = width - 10;
+    y_max_cp = height - 10;
+    x_min_cp = 10;
+    y_min_cp = 10;
+    cr->set_source_rgb(0, 0, 0.8);
+    cr->move_to(x_min_cp, y_min_cp);
+    cr->line_to(x_min_cp, y_max_cp);
+    cr->line_to(x_max_cp, y_max_cp);
+    cr->line_to(x_max_cp, y_min_cp);
+    cr->line_to(x_min_cp, y_min_cp);
+    cr->stroke();
+
     cr->set_line_width(pen_width);
 
     // draw red lines out from the center of the window
     cr->set_source_rgb(0.8, 0.0, 0.0);
 
     for (const auto& entry: df) {
-        entry.second.draw(cr, window);
+        clipping(cr, window, entry.second);
+        // entry.second.draw(cr, window);
     }
 
     return true;
@@ -275,4 +291,24 @@ void ViewPortDraw::on_realize()
     y_max = allocation.get_height();
 
     Gtk::DrawingArea::on_realize();
+}
+
+void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape s)
+{
+    if (s.type() == "point") {
+        clip_point(ctx, window, s);
+    }
+}
+
+void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p)
+{
+    auto coordinates = p.coordinates()[0];
+    auto x = std::get<0>(coordinates);
+    auto y = std::get<1>(coordinates);
+
+    if ((x_min + 10 <= x and x <= x_max - 10) and (y_min + 10 <= y and y <= y_max - 10)) {
+        p.draw(ctx, window);
+    } else {
+        std::cout << "HEREEEE" << std::endl;
+    }
 }

@@ -34,12 +34,16 @@ protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     void draw_new_shape(std::string shape_name, std::string type_of_shape, std::vector<Coordinates> new_coordinates);
     void on_realize() override;
+    void clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape s);
+    void clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p);
 
     DisplayFile df;
 
     double total_angle_window = 0;
     double pen_width = 2.0;
+    const double pen_width_cp = 2.0;
     double x_max, y_max, x_min, y_min;
+    double x_max_cp, y_max_cp, x_min_cp, y_min_cp;
 };
 
 #endif
