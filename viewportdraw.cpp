@@ -305,7 +305,7 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
 
 void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p)
 {
-    auto coordinates = p.coordinates()[0];
+    auto coordinates = p.normalized_coordinates()[0];
     auto x = std::get<0>(coordinates);
     auto y = std::get<1>(coordinates);
 
@@ -346,9 +346,18 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     }
 
     // out -> in
-    if (p1 < 0 and p3 < 0) {
-        zeta1 = std::max(0.0, std::max(r1, r3));
-        zeta2 = std::min(1.0, std::min(r2, r4));
+    if (p1 < 0) {
+        if (p2 < 0) {
+            zeta1 = std::max(0.0, std::max(r1, r2));
+            zeta2 = std::min(1.0, std::min(r3, r4));
+        } else if (p3 < 0) {
+            zeta1 = std::max(0.0, std::max(r1, r3));
+            zeta2 = std::min(1.0, std::min(r2, r4));
+        } else if (p4 < 0) {
+            zeta1 = std::max(0.0, std::max(r1, r4));
+            zeta2 = std::min(1.0, std::min(r2, r3));
+        }
+
         if (zeta1 > zeta2) return;
         if (zeta1 > 0) {
             std::cout << "zeta 1; p1 < 0 and p3 < 0" << std::endl;
@@ -358,24 +367,33 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
 
         if (zeta2 < 1.0) {
             std::cout << "zeta 2; p1 < 0 and p3 < 0" << std::endl;
-            x1 = std::get<0>(point1) + zeta2 * delta_x;
-            y1 = std::get<1>(point1) + zeta2 * delta_y;
+            x2 = std::get<0>(point1) + zeta2 * delta_x;
+            y2 = std::get<1>(point1) + zeta2 * delta_y;
         }
     // in -> out
-    } else if (p1 > 0 and p3 > 0) {
-        zeta1 = std::max(0.0, std::max(r2, r4));
-        zeta2 = std::min(1.0, std::min(r1, r3));
+    } else if (p1 > 0) {
+        if (p2 > 0) {
+            zeta1 = std::max(0.0, std::max(r3, r4));
+            zeta2 = std::min(1.0, std::min(r1, r2));
+        } else if (p3 > 0) {
+            zeta1 = std::max(0.0, std::max(r2, r4));
+            zeta2 = std::min(1.0, std::min(r1, r3));
+        } else if (p4 > 0) {
+            zeta1 = std::max(0.0, std::max(r2, r3));
+            zeta2 = std::min(1.0, std::min(r1, r4));
+        }
+
         if (zeta1 > zeta2) return;
         if (zeta1 > 0) {
             std::cout << "zeta 1; p1 > 0 and p3 > 0" << std::endl;
-            x2 = std::get<0>(point2) + zeta1 * delta_x;
-            y2 = std::get<1>(point2) + zeta1 * delta_y;
+            x1 = std::get<0>(point1) + zeta1 * delta_x;
+            y1 = std::get<1>(point1) + zeta1 * delta_y;
         }
 
         if (zeta2 < 1) {
             std::cout << "zeta 2; p1 > 0 and p3 > 0" << std::endl;
-            x2 = std::get<0>(point2) + zeta2 * delta_x;
-            y2 = std::get<1>(point2) + zeta2 * delta_y;
+            x2 = std::get<0>(point1) + zeta2 * delta_x;
+            y2 = std::get<1>(point1) + zeta2 * delta_y;
         }
     }
 

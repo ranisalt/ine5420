@@ -9,7 +9,6 @@ ChoosePointDialog::ChoosePointDialog(MainWindow &mainwindow)
 , center_shape_button("Center shape point")
 , arbitrary_button("Arbitrary point")
 , mainwindow{mainwindow}
-, shape{shape}
 , viewportdraw{viewportdraw}
 
 {

@@ -27,7 +27,7 @@ protected:
     Gtk::Button arbitrary_button;
 
     MainWindow& mainwindow;
-    Shape& shape;
+    Shape shape;
     ViewPortDraw& viewportdraw;
 
     static constexpr int width = 100;
