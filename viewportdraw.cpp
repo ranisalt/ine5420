@@ -2,6 +2,7 @@
 #include "shapes.h"
 #include "viewportdraw.h"
 
+#include <algorithm>
 #include <cairomm/context.h>
 
 #include <iostream>
@@ -297,6 +298,8 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
 {
     if (s.type() == "point") {
         clip_point(ctx, window, s);
+    } else if (s.type() == "line") {
+        clip_liang_barsky(ctx, window, s);
     }
 }
 
@@ -308,7 +311,74 @@ void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const Wi
 
     if ((x_min + 10 <= x and x <= x_max - 10) and (y_min + 10 <= y and y <= y_max - 10)) {
         p.draw(ctx, window);
-    } else {
-        std::cout << "HEREEEE" << std::endl;
     }
+}
+
+void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l)
+{
+    auto coordinates = l.normalized_coordinates();
+    auto point1 = coordinates[0];
+    auto point2 = coordinates[1];
+    auto x1 = std::get<0>(point1);
+    auto y1 = std::get<1>(point1);
+    auto x2 = std::get<0>(point2);
+    auto y2 = std::get<1>(point2);
+    auto delta_x = std::get<0>(point2) - std::get<0>(point1);
+    auto delta_y = std::get<1>(point2) - std::get<1>(point1);
+    auto p1 = -1 * (delta_x);
+    auto p2 = delta_x;
+    auto p3 = -1 * (delta_y);
+    auto p4 = delta_y;
+    auto q1 = std::get<0>(point1) - (x_min + 10);
+    auto q2 = (x_max - 10) - std::get<0>(point1);
+    auto q3 = std::get<1>(point1) - (y_min + 10);
+    auto q4 = (y_max - 10) - std::get<1>(point1);
+    auto r1 = q1 / p1;
+    auto r2 = q2 / p2;
+    auto r3 = q3 / p3;
+    auto r4 = q4 / p4;
+    double zeta1, zeta2;
+
+    // parallel
+    if (p1 == 0 or p3 == 0) {
+        // out of window
+        if (q1 < 0 or q3 < 0) return;
+    }
+
+    // out -> in
+    if (p1 < 0 and p3 < 0) {
+        zeta1 = std::max(0.0, std::max(r1, r3));
+        zeta2 = std::min(1.0, std::min(r2, r4));
+        if (zeta1 > zeta2) return;
+        if (zeta1 > 0) {
+            std::cout << "zeta 1; p1 < 0 and p3 < 0" << std::endl;
+            x1 = std::get<0>(point1) + zeta1 * delta_x;
+            y1 = std::get<1>(point1) + zeta1 * delta_y;
+        }
+
+        if (zeta2 < 1.0) {
+            std::cout << "zeta 2; p1 < 0 and p3 < 0" << std::endl;
+            x1 = std::get<0>(point1) + zeta2 * delta_x;
+            y1 = std::get<1>(point1) + zeta2 * delta_y;
+        }
+    // in -> out
+    } else if (p1 > 0 and p3 > 0) {
+        zeta1 = std::max(0.0, std::max(r2, r4));
+        zeta2 = std::min(1.0, std::min(r1, r3));
+        if (zeta1 > zeta2) return;
+        if (zeta1 > 0) {
+            std::cout << "zeta 1; p1 > 0 and p3 > 0" << std::endl;
+            x2 = std::get<0>(point2) + zeta1 * delta_x;
+            y2 = std::get<1>(point2) + zeta1 * delta_y;
+        }
+
+        if (zeta2 < 1) {
+            std::cout << "zeta 2; p1 > 0 and p3 > 0" << std::endl;
+            x2 = std::get<0>(point2) + zeta2 * delta_x;
+            y2 = std::get<1>(point2) + zeta2 * delta_y;
+        }
+    }
+
+    auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
+    line.draw(ctx, window);
 }

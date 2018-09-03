@@ -36,6 +36,7 @@ protected:
     void on_realize() override;
     void clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape s);
     void clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p);
+    void clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l);
 
     DisplayFile df;
 
