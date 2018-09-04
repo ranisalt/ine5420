@@ -427,69 +427,55 @@ unsigned direction(const Coordinates& c, const Coordinates& bottom_left,
 void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
 {
     auto coordinates = l.normalized_coordinates();
-    auto point1 = coordinates.at(0);
-    auto point2 = coordinates.at(1);
+    auto p0 = coordinates.at(0), p1 = coordinates.at(1);
 
-    double x1, y1, z1, x2, y2, z2;
-    std::tie(x1, y1, z1) = point1;
-    std::tie(x2, y2, z2) = point2;
+    double x0, y0, z0, x1, y1, z1;
+    std::tie(x0, y0, z0) = p0;
+    std::tie(x1, y1, z1) = p1;
 
-    const auto p1_direction = direction(point1, {x_min_cp(), y_min_cp(), z1}, {x_max_cp(), y_max_cp(), z1});
-    const auto p2_direction = direction(point2, {x_min_cp(), y_min_cp(), z2}, {x_max_cp(), y_max_cp(), z2});
+    Coordinates bl{x_min_cp(), y_min_cp(), 1};
+    Coordinates tr{x_max_cp(), y_max_cp(), 1};
+    auto p0_direction = direction(p0, bl, tr), p1_direction = direction(p1, bl, tr);
 
-    if (p1_direction & p2_direction) {
-        return;
-    }
-    const auto slope = (y2 - y1) / (x2 - x1);
-
-    /* std::cout << Coordinates{x_min, y_min, z1} << ' ' << Coordinates{x_max, y_max, z2} << '\n'; */
-    /* std::cout << point1 << ' ' << point2 << '\n'; */
-    if (p1_direction == LEFT) {
-        double mi = (x2 - x_min_cp()) / (x2 - x1);
-        x1 = x_min_cp();
-        y1 = y2 - (y2 - y1) * mi;
-
-        if (slope > (y_max_cp() - y1) / (x_min_cp() - x1)) {
-            return;
-        } else if (slope > (y_max_cp() - y1) / (x_max_cp() - x1)) {
-            double mi = (y2 - y_max_cp()) / (y2 - y1);
-            x2 = x2 - (x2 - x1) * mi;
-            y2 = y_max_cp();
-        } else if (slope > (y_min_cp() - y1) / (x_max_cp() - x1)) {
-            double mi = (x2 - x_max_cp()) / (x2 - x1);
-            x2 = x_max_cp();
-            y2 = y2 - (y2 - y1) * mi;
-        } else if (slope > (y_min_cp() - y1) / (x_min_cp() - x1)) {
-            double mi = (y1 - y_min_cp()) / (y1 - y2);
-            x2 = x1 - (x1 - x2) * mi;
-            y2 = y_min_cp();
-        } else {
-            return;
+    bool accept = false;
+    while (true) {
+        if (not (p0_direction | p1_direction)) {
+            accept = true;
+            break;
+        } else if (p0_direction & p1_direction) {
+            break;
         }
-    } else if (p1_direction == LEFT | TOP) {
-        /* double mi = (x2 - x_min_cp()) / (x2 - x1); */
-        /* x1 = x_min_cp(); */
-        /* y1 = y2 - (y2 - y1) * mi; */
 
-        if (slope > (y_max_cp() - y1) / (x_max_cp() - x1)) {
-            return;
-        } else if (slope > (y_min_cp() - y1) / (x_max_cp() - x1)) {
-            /* double mi = (y2 - y_max_cp()) / (y2 - y1); */
-            /* x2 = x2 - (x2 - x1) * mi; */
-            /* y2 = y_max_cp(); */
-        } else if (slope > (y_min_cp() - y1) / (x_min_cp() - x1)) {
-            /* double mi = (x2 - x_max_cp()) / (x2 - x1); */
-            /* x2 = x_max_cp(); */
-            /* y2 = y2 - (y2 - y1) * mi; */
-        } else if (slope > (y_max_cp() - y1) / (x_min_cp() - x1)) {
-            /* double mi = (y1 - y_min_cp()) / (y1 - y2); */
-            /* x2 = x1 - (x1 - x2) * mi; */
-            /* y2 = y_min_cp(); */
+        double x, y;
+        auto outcode = p0_direction ? p0_direction : p1_direction;
+
+        if (outcode & TOP) {
+            x = x0 + (x1 - x0) * (y_max_cp() - y0) / (y1 - y0);
+            y = y_max_cp();
+        } else if (outcode & BOTTOM) {
+            x = x0 + (x1 - x0) * (y_min_cp() - y0) / (y1 - y0);
+            y = y_min_cp();
+        } else if (outcode & RIGHT) {
+            x = x_max_cp();
+            y = y0 + (y1 - y0) * (x_max_cp() - x0) / (x1 - x0);
+        } else if (outcode & LEFT) {
+            x = x_min_cp();
+            y = y0 + (y1 - y0) * (x_min_cp() - x0) / (x1 - x0);
+        }
+
+        if (outcode == p0_direction) {
+            x0 = x;
+            y0 = y;
+            p0_direction = direction({x0, y0, z0}, bl, tr);
         } else {
-            return;
+            x1 = x;
+            y1 = y;
+            p1_direction = direction({x1, y1, z1}, bl, tr);
         }
     }
 
-    auto line = Line{{x1, y1, z1}, {x2, y2, z2}};
-    line.draw(ctx, window);
+    if (accept) {
+        Line line{{x0, y0, z0}, {x1, y1, z1}};
+        line.draw(ctx, window);
+    }
 }
