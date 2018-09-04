@@ -299,7 +299,8 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
     if (s.type() == "point") {
         clip_point(ctx, window, s);
     } else if (s.type() == "line") {
-        clip_liang_barsky(ctx, window, s);
+        // clip_liang_barsky(ctx, window, s);
+        clip_nicholl_lee_nicholl(ctx, window, s);
     }
 }
 
@@ -396,6 +397,73 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
             y2 = std::get<1>(point1) + zeta2 * delta_y;
         }
     }
+
+    auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
+    line.draw(ctx, window);
+}
+
+void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l)
+{
+    auto point1 = l.normalized_coordinates()[0];
+    auto point2 = l.normalized_coordinates()[1];
+    auto x1 = std::get<0>(point1);
+    auto y1 = std::get<1>(point1);
+    auto x2 = std::get<0>(point2);
+    auto y2 = std::get<1>(point2);
+    auto pp = (y2 - y1) / (x2 - x1);
+    auto bl = ((y_min + 10) - y1) / ((x_min + 10) - x1);
+    auto tl = ((y_max - 10) - y1) / ((x_min + 10) - x1);
+    auto tr = ((y_max - 10) - y1) / ((x_max - 10) - x1);
+    auto br = ((y_min + 10) - y1) / ((x_max - 10) - x1);
+    double mi;
+
+    // left
+    if (x1 < (x_min + 10) and ((y_min + 10) < y1 and y1 < (y_max - 10))) {
+        if (pp < bl or tl < pp) {
+            return;
+        } else if (bl < pp and pp < br) {
+            mi = ((x_max - 10) - x1) / (x2 - x1);
+        } else if (br < pp and pp < tr) {
+            mi = ((y_max - 10) - y1) / (y2 - y1);
+        } else if (tr < pp and pp < tl) {
+            mi = ((x_min + 10) - x1) / (x2 - x1);
+        }
+        x1 = x1 + (x2 - x1) * mi;
+        y1 = y1 + (y2 - y1) * mi;
+
+    // left top
+    } else if (x1 < (x_min + 10) and (y1 > (y_max - 10))) {
+
+    // top
+    } else if (((x_min + 10) < x1 and x1 < (x_max - 10)) and y1 > (y_max - 10)) {
+
+    // top right
+    } else if ((x_max - 10) < x1 and (y_max - 10) < y1) {
+
+    // right
+    } else if ((x_max - 10) < x1 and ((y_min + 10) < y1 and y1 < (y_max - 10))) {
+
+    // right bottom
+    } else if ((x_max - 10) < x1 and y1 < (y_min + 10)) {
+
+    //bottom
+    } else if (((x_min + 10) < x1 and x1 < (x_max - 10)) and y1 < (y_min + 10)) {
+
+    // left bottom
+    } else if (x1 < (x_min + 10) and y1 < (y_min + 10)) {
+
+    }
+    // if (pp < bl) {
+
+    // } else if (bl < pp and pp < tl) {
+    //     mi = ((x_min - 10) - x) / (x2 - x1);
+    // } else if (tl < pp and pp < br) {
+    //     mi = ((x_max - 10) - x) / (x2 - x1);
+    // } else if (br < pp and pp < tr) {
+    //     mi = ((y_max - 10) - y1) / (y2 - y1);
+    // } else if (tr < pp) {
+    //     // mi =
+    // }
 
     auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
     line.draw(ctx, window);
