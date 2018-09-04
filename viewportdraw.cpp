@@ -108,7 +108,7 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
         auto new_coordinates = matrix::translate(coordinates_from_point, coordinates);
         auto x = std::get<X>(new_coordinates);
         auto y = std::get<Y>(new_coordinates);
-        auto z = std::get<2>(new_coordinates);
+        auto z = std::get<Z>(new_coordinates);
         auto point =  Point{x, y, z};
 
         remove_shape(shape_name);

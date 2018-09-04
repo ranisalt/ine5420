@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <tuple>
@@ -223,6 +224,8 @@ struct Line
     const std::pair<Coordinates, Coordinates> vertices;
     std::pair<Coordinates, Coordinates> normalized_vertices;
 };
+
+std::ostream& operator<<(std::ostream& os, const Line& rhs);
 
 struct Polygon
 {

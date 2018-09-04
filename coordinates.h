@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iosfwd>
 #include <tuple>
 
 enum {
@@ -10,6 +11,7 @@ using Coordinates = std::tuple<double, double, double>;
 
 Coordinates operator+(const Coordinates& lhs, const Coordinates& rhs);
 Coordinates operator-(const Coordinates& lhs, const Coordinates& rhs);
+std::ostream& operator<<(std::ostream& os, const Coordinates& rhs);
 
 /* Coordinates operator+(const Coordinates& lhs, const Coordinates& rhs) */
 /* { */
