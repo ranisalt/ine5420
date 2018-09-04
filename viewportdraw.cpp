@@ -466,10 +466,22 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
         }
         x1 = x1 + (x2 - x1) * mi;
         y1 = y1 + (y2 - y1) * mi;
-
     // left top
     } else if (p1_direction == (LEFT | TOP)) {
-
+        auto x_ = x1 + (x2 - x1) * tl;
+        if (pp <= bl or tr <= pp) {
+            return;
+        } else if (out_of_window(point1) and out_of_window(point2)) {
+            return;
+        } else if (bl <= pp and pp <= tl) {
+            mi = ((x_) - x1) / (x2 - x1);
+        } else if (tl <= pp and pp <= br) {
+            mi = ((x_max - 10) - x1) / (x2 - x1);
+        } else if (br <= pp and pp <= tr) {
+            mi = ((y_max - 10) - y1) / (y2 - y1);
+        }
+        x1 = x1 + (x2 - x1) * mi;
+        y1 = y1 + (y2 - y1) * mi;
     // top
     } else if (p1_direction == TOP) {
 
