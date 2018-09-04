@@ -108,7 +108,7 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
         auto new_coordinates = matrix::translate(coordinates_from_point, coordinates);
         auto x = std::get<X>(new_coordinates);
         auto y = std::get<Y>(new_coordinates);
-        auto z = std::get<2>(new_coordinates);
+        auto z = std::get<Z>(new_coordinates);
         auto point =  Point{x, y, z};
 
         remove_shape(shape_name);
@@ -428,7 +428,7 @@ unsigned direction(const Coordinates& c, const Coordinates& bottom_left,
     return d;
 }
 
-void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l)
+void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
 {
     auto coordinates = l.normalized_coordinates();
     auto point1 = coordinates.at(0);
@@ -440,48 +440,18 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 
     auto p1_direction = direction(point1, {x_min + 10, y_min + 10, z1}, {x_max - 10, y_max - 10, z1});
     auto p2_direction = direction(point2, {x_min + 10, y_min + 10, z2}, {x_max - 10, y_max - 10, z2});
+
     if (p1_direction & p2_direction) {
         return;
     }
-
-    auto pp = (y2 - y1) / (x2 - x1);
-    auto bl = ((y_min + 10) - y1) / ((x_min + 10) - x1);
-    auto tl = ((y_max - 10) - y1) / ((x_min + 10) - x1);
-    auto tr = ((y_max - 10) - y1) / ((x_max - 10) - x1);
-    auto br = ((y_min + 10) - y1) / ((x_max - 10) - x1);
-    double mi;
-
     // left
     if (p1_direction == LEFT) {
-        if (pp < bl or tl < pp) {
-            return;
-        /* } else if (out_of_window(point1) and out_of_window(point2)) { */
-        /*     return; */
-        } else if (bl <= pp and pp <= br) {
-            mi = ((x_max - 10) - x1) / (x2 - x1);
-        } else if (br <= pp and pp <= tr) {
-            mi = ((y_max - 10) - y1) / (y2 - y1);
-        } else if (tr <= pp and pp <= tl) {
-            mi = ((x_min + 10) - x1) / (x2 - x1);
-        }
-        x1 = x1 + (x2 - x1) * mi;
-        y1 = y1 + (y2 - y1) * mi;
+        double mi = (x2 - (x_min + 10)) / (x2 - x1);
+        x1 = x_min + 10;
+        y1 = y2 - (y2 - y1) * mi;
     // left top
     } else if (p1_direction == (LEFT | TOP)) {
-        auto x_ = x1 + (x2 - x1) * tl;
-        if (pp <= bl or tr <= pp) {
-            return;
-        } else if (out_of_window(point1) and out_of_window(point2)) {
-            return;
-        } else if (bl <= pp and pp <= tl) {
-            mi = ((x_) - x1) / (x2 - x1);
-        } else if (tl <= pp and pp <= br) {
-            mi = ((x_max - 10) - x1) / (x2 - x1);
-        } else if (br <= pp and pp <= tr) {
-            mi = ((y_max - 10) - y1) / (y2 - y1);
-        }
-        x1 = x1 + (x2 - x1) * mi;
-        y1 = y1 + (y2 - y1) * mi;
+
     // top
     } else if (p1_direction == TOP) {
 
@@ -504,16 +474,4 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 
     auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
     line.draw(ctx, window);
-}
-
-bool ViewPortDraw::out_of_window(Point p) {
-    auto x = std::get<X>(p.normalized_coordinates()[0]);
-    auto y = std::get<Y>(p.normalized_coordinates()[0]);
-
-    if (x >= x_max - 10 or x <= x_min + 10) {
-        return true;
-    } else if (y >= y_max - 10 or y <= y_min + 10) {
-        return true;
-    }
-    return false;
 }
