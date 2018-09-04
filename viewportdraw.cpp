@@ -216,6 +216,11 @@ void ViewPortDraw::rotate_window(double angle)
     }
 }
 
+void ViewPortDraw::set_algorithm(int i)
+{
+    algorithm = i;
+}
+
 Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
 {
     return df.at(shape_name);
@@ -295,8 +300,13 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
     if (s.type() == "point") {
         clip_point(ctx, window, s);
     } else if (s.type() == "line") {
-        clip_liang_barsky(ctx, window, s);
-        // clip_nicholl_lee_nicholl(ctx, window, s);
+        if (algorithm == 0) {
+                std::cout << "0" << std::endl;
+            clip_liang_barsky(ctx, window, s);
+        } else if (algorithm == 1) {
+            std::cout << "1" << std::endl;
+            clip_cohen_sutherland(ctx, window, s);
+        }
     } else if (s.type() == "polygon") {
         clip_polygon(ctx, window, s);
     }
@@ -344,10 +354,10 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
         }
     }
 
-    x2 = std::get<X>(point1) + zeta2 * delta_x;
-    y2 = std::get<Y>(point1) + zeta2 * delta_y;
     x1 = std::get<X>(point1) + zeta1 * delta_x;
     y1 = std::get<Y>(point1) + zeta1 * delta_y;
+    x2 = std::get<X>(point1) + zeta2 * delta_x;
+    y2 = std::get<Y>(point1) + zeta2 * delta_y;
     auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
     line.draw(ctx, window);
 }
@@ -378,7 +388,7 @@ unsigned direction(const Coordinates& c, const Coordinates& bottom_left,
     return d;
 }
 
-void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
+void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
 {
     auto coordinates = l.normalized_coordinates();
     auto p0 = coordinates.at(0), p1 = coordinates.at(1);

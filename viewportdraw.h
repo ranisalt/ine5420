@@ -26,6 +26,7 @@ public:
     void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
     void calculate_normalized_coordinates(Shape& s);
     void rotate_window(double angle);
+    void set_algorithm(int i);
 
     Shape get_shape_by_name(std::string shape_name);
     const DisplayFile& display_file() const { return df; }
@@ -37,7 +38,7 @@ private:
     void clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape s);
     void clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p);
     void clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l);
-    void clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape&);
+    void clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape&);
     void clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape p);
 
     DisplayFile df;
@@ -45,6 +46,7 @@ private:
     double total_angle_window = 0;
     double pen_width = 2.0;
     const double pen_width_cp = 2.0;
+    int algorithm;
 
     double x_max, y_max, x_min, y_min;
     double x_max_cp() const { return x_max - 10; }

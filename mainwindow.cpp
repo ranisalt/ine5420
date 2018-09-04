@@ -42,6 +42,8 @@ MainWindow::MainWindow()
 , set_window_button("Set Window")
 , step_label("Step:"), degree_label("Degree:")
 , scale_label("Scale:"), translate_label("Translate:")
+, liang_barsky_button("Liang Barsky")
+, cohen_sutherland_button("Cohen Sutherland")
 , parallel_radio_button("Parallel")
 , perspective_radio_button("Perspective")
 , popup{*this}
@@ -64,6 +66,8 @@ MainWindow::MainWindow()
 
     main_box.set_homogeneous(false);
     perspective_radio_button.join_group(parallel_radio_button);
+    liang_barsky_button.join_group(cohen_sutherland_button);
+    liang_barsky_button.set_active();
     objects_scrolled_window.add(objects_tree_view);
     objects_scrolled_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
     console_scrolled_window.add(console_text_view);
@@ -98,8 +102,10 @@ MainWindow::MainWindow()
 
     window_box.pack_start(step_box, Gtk::PACK_EXPAND_WIDGET);
     step_box.pack_start(step_row1_box, Gtk::PACK_EXPAND_WIDGET);
-    step_row1_box.pack_start(step_label, Gtk::PACK_EXPAND_WIDGET, 10);
-    step_row1_box.pack_start(step_entry, Gtk::PACK_EXPAND_WIDGET);
+    step_row1_box.pack_start(liang_barsky_button, Gtk::PACK_EXPAND_WIDGET);
+    step_row1_box.pack_start(cohen_sutherland_button, Gtk::PACK_EXPAND_WIDGET);
+    liang_barsky_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::algorithm_button_clicked));
+    cohen_sutherland_button.signal_button_release_event().connect(sigc::mem_fun(*this, &MainWindow::algorithm_button_clicked));
 
     step_box.pack_start(step_row2_box, Gtk::PACK_EXPAND_WIDGET);
     step_row2_box.pack_start(up_button, Gtk::PACK_EXPAND_WIDGET, 20);
@@ -341,6 +347,17 @@ bool MainWindow::export_button_clicked(GdkEventButton* button_event)
         std::ofstream object_file{filename};
         export_shapes_to_file(object_file);
     }
+    return true;
+}
+
+bool MainWindow::algorithm_button_clicked(GdkEventButton* button_event)
+{
+    if (liang_barsky_button.get_active()) {
+        drawing_area.set_algorithm(0);
+    } else if (cohen_sutherland_button.get_active()) {
+        drawing_area.set_algorithm(1);
+    }
+
     return true;
 }
 

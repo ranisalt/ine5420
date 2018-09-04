@@ -41,6 +41,7 @@ protected:
     bool turn_window_button_clicked(GdkEventButton* button_event);
     bool load_button_clicked(GdkEventButton* button_event);
     bool export_button_clicked(GdkEventButton* button_event);
+    bool algorithm_button_clicked(GdkEventButton* button_event);
     void on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column);
     void log(std::string l);
 
@@ -119,6 +120,8 @@ protected:
     NumericEntry step_entry;
     NumericEntry degree_entry;
 
+    Gtk::RadioButton liang_barsky_button;
+    Gtk::RadioButton cohen_sutherland_button;
     Gtk::RadioButton parallel_radio_button;
     Gtk::RadioButton perspective_radio_button;
 
