@@ -239,16 +239,12 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     cr->set_line_width(pen_width_cp);
 
     // draw viewport limits for test clipping
-    x_max_cp = width - 10;
-    y_max_cp = height - 10;
-    x_min_cp = 10;
-    y_min_cp = 10;
     cr->set_source_rgb(0, 0, 0.8);
-    cr->move_to(x_min_cp, y_min_cp);
-    cr->line_to(x_min_cp, y_max_cp);
-    cr->line_to(x_max_cp, y_max_cp);
-    cr->line_to(x_max_cp, y_min_cp);
-    cr->line_to(x_min_cp, y_min_cp);
+    cr->move_to(10, 10);
+    cr->line_to(10, height - 10);
+    cr->line_to(width - 10, height - 10);
+    cr->line_to(width - 10, 10);
+    cr->line_to(10, 10);
     cr->stroke();
 
     cr->set_line_width(pen_width);
@@ -310,7 +306,7 @@ void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const Wi
     auto x = std::get<X>(coordinates);
     auto y = std::get<Y>(coordinates);
 
-    if ((x_min + 10 <= x and x <= x_max - 10) and (y_min + 10 <= y and y <= y_max - 10)) {
+    if ((x_min_cp() <= x and x <= x_max_cp()) and (y_min_cp() <= y and y <= y_max_cp())) {
         p.draw(ctx, window);
     }
 }
@@ -330,10 +326,10 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     auto p2 = delta_x;
     auto p3 = -1 * (delta_y);
     auto p4 = delta_y;
-    auto q1 = std::get<X>(point1) - (x_min + 10);
-    auto q2 = (x_max - 10) - std::get<X>(point1);
-    auto q3 = std::get<Y>(point1) - (y_min + 10);
-    auto q4 = (y_max - 10) - std::get<Y>(point1);
+    auto q1 = std::get<X>(point1) - x_min_cp();
+    auto q2 = x_max_cp() - std::get<X>(point1);
+    auto q3 = std::get<Y>(point1) - y_min_cp();
+    auto q4 = y_max_cp() - std::get<Y>(point1);
     auto r1 = q1 / p1;
     auto r2 = q2 / p2;
     auto r3 = q3 / p3;
@@ -438,41 +434,63 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
     std::tie(x1, y1, z1) = point1;
     std::tie(x2, y2, z2) = point2;
 
-    auto p1_direction = direction(point1, {x_min + 10, y_min + 10, z1}, {x_max - 10, y_max - 10, z1});
-    auto p2_direction = direction(point2, {x_min + 10, y_min + 10, z2}, {x_max - 10, y_max - 10, z2});
+    const auto p1_direction = direction(point1, {x_min_cp(), y_min_cp(), z1}, {x_max_cp(), y_max_cp(), z1});
+    const auto p2_direction = direction(point2, {x_min_cp(), y_min_cp(), z2}, {x_max_cp(), y_max_cp(), z2});
 
     if (p1_direction & p2_direction) {
         return;
     }
 
-    // left
+    const auto slope = (y2 - y1) / (x2 - x1);
+
+    /* std::cout << Coordinates{x_min, y_min, z1} << ' ' << Coordinates{x_max, y_max, z2} << '\n'; */
+    /* std::cout << point1 << ' ' << point2 << '\n'; */
     if (p1_direction == LEFT) {
-        double mi = (x2 - (x_min + 10)) / (x2 - x1);
-        x1 = x_min + 10;
+        double mi = (x2 - x_min_cp()) / (x2 - x1);
+        x1 = x_min_cp();
         y1 = y2 - (y2 - y1) * mi;
-    // left top
-    } else if (p1_direction == (LEFT | TOP)) {
 
-    // top
-    } else if (p1_direction == TOP) {
+        if (slope > (y_max_cp() - y1) / (x_min_cp() - x1)) {
+            return;
+        } else if (slope > (y_max_cp() - y1) / (x_max_cp() - x1)) {
+            double mi = (y2 - y_max_cp()) / (y2 - y1);
+            x2 = x2 - (x2 - x1) * mi;
+            y2 = y_max_cp();
+        } else if (slope > (y_min_cp() - y1) / (x_max_cp() - x1)) {
+            double mi = (x2 - x_max_cp()) / (x2 - x1);
+            x2 = x_max_cp();
+            y2 = y2 - (y2 - y1) * mi;
+        } else if (slope > (y_min_cp() - y1) / (x_min_cp() - x1)) {
+            double mi = (y1 - y_min_cp()) / (y1 - y2);
+            x2 = x1 - (x1 - x2) * mi;
+            y2 = y_min_cp();
+        } else {
+            return;
+        }
+    } else if (p1_direction == LEFT | TOP) {
+        /* double mi = (x2 - x_min_cp()) / (x2 - x1); */
+        /* x1 = x_min_cp(); */
+        /* y1 = y2 - (y2 - y1) * mi; */
 
-    // top right
-    } else if (p1_direction == (TOP | RIGHT)) {
-
-    // right
-    } else if (p1_direction == RIGHT) {
-
-    // right bottom
-    } else if (p1_direction == (RIGHT | BOTTOM)) {
-
-    //bottom
-    } else if (p1_direction == BOTTOM) {
-
-    // left bottom
-    } else if (p1_direction == (LEFT | BOTTOM)) {
-
+        if (slope > (y_max_cp() - y1) / (x_max_cp() - x1)) {
+            return;
+        } else if (slope > (y_min_cp() - y1) / (x_max_cp() - x1)) {
+            /* double mi = (y2 - y_max_cp()) / (y2 - y1); */
+            /* x2 = x2 - (x2 - x1) * mi; */
+            /* y2 = y_max_cp(); */
+        } else if (slope > (y_min_cp() - y1) / (x_min_cp() - x1)) {
+            /* double mi = (x2 - x_max_cp()) / (x2 - x1); */
+            /* x2 = x_max_cp(); */
+            /* y2 = y2 - (y2 - y1) * mi; */
+        } else if (slope > (y_max_cp() - y1) / (x_min_cp() - x1)) {
+            /* double mi = (y1 - y_min_cp()) / (y1 - y2); */
+            /* x2 = x1 - (x1 - x2) * mi; */
+            /* y2 = y_min_cp(); */
+        } else {
+            return;
+        }
     }
 
-    auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
+    auto line = Line{{x1, y1, z1}, {x2, y2, z2}};
     line.draw(ctx, window);
 }

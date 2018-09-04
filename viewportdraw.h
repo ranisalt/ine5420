@@ -30,7 +30,7 @@ public:
     Shape get_shape_by_name(std::string shape_name);
     const DisplayFile& display_file() const { return df; }
 
-protected:
+private:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     void draw_new_shape(std::string shape_name, std::string type_of_shape, std::vector<Coordinates> new_coordinates);
     void on_realize() override;
@@ -44,8 +44,12 @@ protected:
     double total_angle_window = 0;
     double pen_width = 2.0;
     const double pen_width_cp = 2.0;
+
     double x_max, y_max, x_min, y_min;
-    double x_max_cp, y_max_cp, x_min_cp, y_min_cp;
+    double x_max_cp() const { return x_max - 10; }
+    double y_max_cp() const { return y_max - 10; }
+    double x_min_cp() const { return x_min + 10; }
+    double y_min_cp() const { return y_min + 10; }
 };
 
 #endif
