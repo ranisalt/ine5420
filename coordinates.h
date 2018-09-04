@@ -2,6 +2,10 @@
 
 #include <tuple>
 
+enum {
+    X, Y, Z
+};
+
 using Coordinates = std::tuple<double, double, double>;
 
 Coordinates operator+(const Coordinates& lhs, const Coordinates& rhs);

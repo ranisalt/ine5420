@@ -106,8 +106,8 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
     if (shape.type() == "point") {
         auto coordinates_from_point = shape.coordinates()[0];
         auto new_coordinates = matrix::translate(coordinates_from_point, coordinates);
-        auto x = std::get<0>(new_coordinates);
-        auto y = std::get<1>(new_coordinates);
+        auto x = std::get<X>(new_coordinates);
+        auto y = std::get<Y>(new_coordinates);
         auto z = std::get<2>(new_coordinates);
         auto point =  Point{x, y, z};
 
@@ -307,8 +307,8 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
 void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p)
 {
     auto coordinates = p.normalized_coordinates()[0];
-    auto x = std::get<0>(coordinates);
-    auto y = std::get<1>(coordinates);
+    auto x = std::get<X>(coordinates);
+    auto y = std::get<Y>(coordinates);
 
     if ((x_min + 10 <= x and x <= x_max - 10) and (y_min + 10 <= y and y <= y_max - 10)) {
         p.draw(ctx, window);
@@ -320,20 +320,20 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     auto coordinates = l.normalized_coordinates();
     auto point1 = coordinates[0];
     auto point2 = coordinates[1];
-    auto x1 = std::get<0>(point1);
-    auto y1 = std::get<1>(point1);
-    auto x2 = std::get<0>(point2);
-    auto y2 = std::get<1>(point2);
-    auto delta_x = std::get<0>(point2) - std::get<0>(point1);
-    auto delta_y = std::get<1>(point2) - std::get<1>(point1);
+    auto x1 = std::get<X>(point1);
+    auto y1 = std::get<Y>(point1);
+    auto x2 = std::get<X>(point2);
+    auto y2 = std::get<Y>(point2);
+    auto delta_x = std::get<X>(point2) - std::get<X>(point1);
+    auto delta_y = std::get<Y>(point2) - std::get<Y>(point1);
     auto p1 = -1 * (delta_x);
     auto p2 = delta_x;
     auto p3 = -1 * (delta_y);
     auto p4 = delta_y;
-    auto q1 = std::get<0>(point1) - (x_min + 10);
-    auto q2 = (x_max - 10) - std::get<0>(point1);
-    auto q3 = std::get<1>(point1) - (y_min + 10);
-    auto q4 = (y_max - 10) - std::get<1>(point1);
+    auto q1 = std::get<X>(point1) - (x_min + 10);
+    auto q2 = (x_max - 10) - std::get<X>(point1);
+    auto q3 = std::get<Y>(point1) - (y_min + 10);
+    auto q4 = (y_max - 10) - std::get<Y>(point1);
     auto r1 = q1 / p1;
     auto r2 = q2 / p2;
     auto r3 = q3 / p3;
@@ -362,14 +362,14 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
         if (zeta1 > zeta2) return;
         if (zeta1 > 0) {
             std::cout << "zeta 1; p1 < 0 and p3 < 0" << std::endl;
-            x1 = std::get<0>(point1) + zeta1 * delta_x;
-            y1 = std::get<1>(point1) + zeta1 * delta_y;
+            x1 = std::get<X>(point1) + zeta1 * delta_x;
+            y1 = std::get<Y>(point1) + zeta1 * delta_y;
         }
 
         if (zeta2 < 1.0) {
             std::cout << "zeta 2; p1 < 0 and p3 < 0" << std::endl;
-            x2 = std::get<0>(point1) + zeta2 * delta_x;
-            y2 = std::get<1>(point1) + zeta2 * delta_y;
+            x2 = std::get<X>(point1) + zeta2 * delta_x;
+            y2 = std::get<Y>(point1) + zeta2 * delta_y;
         }
     // in -> out
     } else if (p1 > 0) {
@@ -387,14 +387,14 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
         if (zeta1 > zeta2) return;
         if (zeta1 > 0) {
             std::cout << "zeta 1; p1 > 0 and p3 > 0" << std::endl;
-            x1 = std::get<0>(point1) + zeta1 * delta_x;
-            y1 = std::get<1>(point1) + zeta1 * delta_y;
+            x1 = std::get<X>(point1) + zeta1 * delta_x;
+            y1 = std::get<Y>(point1) + zeta1 * delta_y;
         }
 
         if (zeta2 < 1) {
             std::cout << "zeta 2; p1 > 0 and p3 > 0" << std::endl;
-            x2 = std::get<0>(point1) + zeta2 * delta_x;
-            y2 = std::get<1>(point1) + zeta2 * delta_y;
+            x2 = std::get<X>(point1) + zeta2 * delta_x;
+            y2 = std::get<Y>(point1) + zeta2 * delta_y;
         }
     }
 
@@ -406,10 +406,10 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 {
     auto point1 = l.normalized_coordinates()[0];
     auto point2 = l.normalized_coordinates()[1];
-    auto x1 = std::get<0>(point1);
-    auto y1 = std::get<1>(point1);
-    auto x2 = std::get<0>(point2);
-    auto y2 = std::get<1>(point2);
+    auto x1 = std::get<X>(point1);
+    auto y1 = std::get<Y>(point1);
+    auto x2 = std::get<X>(point2);
+    auto y2 = std::get<Y>(point2);
     auto pp = (y2 - y1) / (x2 - x1);
     auto bl = ((y_min + 10) - y1) / ((x_min + 10) - x1);
     auto tl = ((y_max - 10) - y1) / ((x_min + 10) - x1);
@@ -461,8 +461,8 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 }
 
 bool ViewPortDraw::out_of_window(Point p) {
-    auto x = std::get<0>(p.normalized_coordinates()[0]);
-    auto y = std::get<1>(p.normalized_coordinates()[0]);
+    auto x = std::get<X>(p.normalized_coordinates()[0]);
+    auto y = std::get<Y>(p.normalized_coordinates()[0]);
 
     if (x >= x_max - 10 or x <= x_min + 10) {
         return true;
