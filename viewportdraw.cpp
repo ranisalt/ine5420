@@ -414,15 +414,15 @@ unsigned direction(const Coordinates& c, const Coordinates& bottom_left,
         const Coordinates& top_right)
 {
     unsigned d = CENTER;
-    if (std::get<0>(c) > std::get<0>(top_right)) {
+    if (std::get<X>(c) > std::get<X>(top_right)) {
         d |= RIGHT;
-    } else if (std::get<0>(c) < std::get<0>(bottom_left)) {
+    } else if (std::get<X>(c) < std::get<X>(bottom_left)) {
         d |= LEFT;
     }
 
-    if (std::get<1>(c) > std::get<1>(top_right)) {
+    if (std::get<Y>(c) > std::get<Y>(top_right)) {
         d |= TOP;
-    } else if (std::get<1>(c) < std::get<1>(bottom_left)) {
+    } else if (std::get<Y>(c) < std::get<Y>(bottom_left)) {
         d |= BOTTOM;
     }
     return d;
