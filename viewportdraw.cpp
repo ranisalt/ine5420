@@ -455,8 +455,6 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
     if (p1_direction == LEFT) {
         if (pp < bl or tl < pp) {
             return;
-        /* } else if (out_of_window(point1) and out_of_window(point2)) { */
-        /*     return; */
         } else if (bl <= pp and pp <= br) {
             mi = ((x_max - 10) - x1) / (x2 - x1);
         } else if (br <= pp and pp <= tr) {
@@ -492,16 +490,4 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 
     auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
     line.draw(ctx, window);
-}
-
-bool ViewPortDraw::out_of_window(Point p) {
-    auto x = std::get<X>(p.normalized_coordinates()[0]);
-    auto y = std::get<Y>(p.normalized_coordinates()[0]);
-
-    if (x >= x_max - 10 or x <= x_min + 10) {
-        return true;
-    } else if (y >= y_max - 10 or y <= y_min + 10) {
-        return true;
-    }
-    return false;
 }
