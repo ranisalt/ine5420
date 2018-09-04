@@ -130,8 +130,8 @@ protected:
 
     std::map<Gtk::TreeModel::iterator, std::string> shape_objects;
 
-    static const int window_width = 750;
-    static const int window_height = 600;
+    static const int window_width = 800;
+    static const int window_height = 650;
 
     static constexpr int console_width = 60;
     static constexpr int console_height = 65;

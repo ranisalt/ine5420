@@ -295,8 +295,10 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
     if (s.type() == "point") {
         clip_point(ctx, window, s);
     } else if (s.type() == "line") {
-        // clip_liang_barsky(ctx, window, s);
-        clip_nicholl_lee_nicholl(ctx, window, s);
+        clip_liang_barsky(ctx, window, s);
+        // clip_nicholl_lee_nicholl(ctx, window, s);
+    } else if (s.type() == "polygon") {
+        clip_polygon(ctx, window, s);
     }
 }
 
@@ -322,78 +324,30 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     auto y2 = std::get<Y>(point2);
     auto delta_x = std::get<X>(point2) - std::get<X>(point1);
     auto delta_y = std::get<Y>(point2) - std::get<Y>(point1);
-    auto p1 = -1 * (delta_x);
-    auto p2 = delta_x;
-    auto p3 = -1 * (delta_y);
-    auto p4 = delta_y;
-    auto q1 = std::get<X>(point1) - x_min_cp();
-    auto q2 = x_max_cp() - std::get<X>(point1);
-    auto q3 = std::get<Y>(point1) - y_min_cp();
-    auto q4 = y_max_cp() - std::get<Y>(point1);
-    auto r1 = q1 / p1;
-    auto r2 = q2 / p2;
-    auto r3 = q3 / p3;
-    auto r4 = q4 / p4;
-    double zeta1, zeta2;
+    std::vector<double> p {-1 * (delta_x), delta_x, -1 * (delta_y), delta_y};
+    std::vector<double> q {std::get<X>(point1) - x_min_cp(), x_max_cp() - std::get<X>(point1),
+              std::get<Y>(point1) - y_min_cp(), y_max_cp() - std::get<Y>(point1)};
+    std::vector<double> r;
+    for (auto i = 0; i < p.size(); ++i)
+        r.push_back(q[i]/p[i]);
+    auto zeta1 = 0.0;
+    auto zeta2 = 1.0;
 
-    // parallel
-    if (p1 == 0 or p3 == 0) {
-        // out of window
-        if (q1 < 0 or q3 < 0) return;
-    }
-
-    // out -> in
-    if (p1 < 0) {
-        if (p2 < 0) {
-            zeta1 = std::max(0.0, std::max(r1, r2));
-            zeta2 = std::min(1.0, std::min(r3, r4));
-        } else if (p3 < 0) {
-            zeta1 = std::max(0.0, std::max(r1, r3));
-            zeta2 = std::min(1.0, std::min(r2, r4));
-        } else if (p4 < 0) {
-            zeta1 = std::max(0.0, std::max(r1, r4));
-            zeta2 = std::min(1.0, std::min(r2, r3));
-        }
-
-        if (zeta1 > zeta2) return;
-        if (zeta1 > 0) {
-            std::cout << "zeta 1; p1 < 0 and p3 < 0" << std::endl;
-            x1 = std::get<X>(point1) + zeta1 * delta_x;
-            y1 = std::get<Y>(point1) + zeta1 * delta_y;
-        }
-
-        if (zeta2 < 1.0) {
-            std::cout << "zeta 2; p1 < 0 and p3 < 0" << std::endl;
-            x2 = std::get<X>(point1) + zeta2 * delta_x;
-            y2 = std::get<Y>(point1) + zeta2 * delta_y;
-        }
-    // in -> out
-    } else if (p1 > 0) {
-        if (p2 > 0) {
-            zeta1 = std::max(0.0, std::max(r3, r4));
-            zeta2 = std::min(1.0, std::min(r1, r2));
-        } else if (p3 > 0) {
-            zeta1 = std::max(0.0, std::max(r2, r4));
-            zeta2 = std::min(1.0, std::min(r1, r3));
-        } else if (p4 > 0) {
-            zeta1 = std::max(0.0, std::max(r2, r3));
-            zeta2 = std::min(1.0, std::min(r1, r4));
-        }
-
-        if (zeta1 > zeta2) return;
-        if (zeta1 > 0) {
-            std::cout << "zeta 1; p1 > 0 and p3 > 0" << std::endl;
-            x1 = std::get<X>(point1) + zeta1 * delta_x;
-            y1 = std::get<Y>(point1) + zeta1 * delta_y;
-        }
-
-        if (zeta2 < 1) {
-            std::cout << "zeta 2; p1 > 0 and p3 > 0" << std::endl;
-            x2 = std::get<X>(point1) + zeta2 * delta_x;
-            y2 = std::get<Y>(point1) + zeta2 * delta_y;
+    for (auto i = 0; i < p.size(); ++i) {
+        if (p[i] == 0 and q[i] < 0) return;
+        if (p[i] < 0) {
+            if (r[i] > zeta2) return;
+            if (r[i] > zeta1) zeta1 = r[i];
+        } else if (p[i] > 0) {
+            if (r[i] < zeta1) return;
+            if (r[i] < zeta2) zeta2 = r[i];
         }
     }
 
+    x2 = std::get<X>(point1) + zeta2 * delta_x;
+    y2 = std::get<Y>(point1) + zeta2 * delta_y;
+    x1 = std::get<X>(point1) + zeta1 * delta_x;
+    y1 = std::get<Y>(point1) + zeta1 * delta_y;
     auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
     line.draw(ctx, window);
 }
@@ -492,4 +446,17 @@ void ViewPortDraw::clip_nicholl_lee_nicholl(const Cairo::RefPtr<Cairo::Context>&
 
     auto line = Line{{x1, y1, z1}, {x2, y2, z2}};
     line.draw(ctx, window);
+}
+
+void ViewPortDraw::clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape p)
+{
+    auto coordinates = p.normalized_coordinates();
+
+    for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;
+        it2 != coordinates.end(); ++it, ++it2) {
+
+        auto l = Line{*it, *it2};
+        clip_liang_barsky(ctx, window, l);
+    }
+
 }
