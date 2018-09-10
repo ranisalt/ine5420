@@ -220,11 +220,12 @@ void ViewPortDraw::rotate_window(double angle)
 void ViewPortDraw::draw_curve_bezier(double k, std::vector<Coordinates> coordinates)
 {
     std::vector<Coordinates> coordinates_;
+    auto t = 0.0;
     const double inc = 1 / k;
 
-    for (double t = 0; t <= 1; t += inc) {
-        std::cout << t << std::endl;
+    for (auto i = 0; i < k; ++i) {
         coordinates_.push_back(bezier.calculate_point(t, coordinates));
+        t = i * inc;
     }
 
     for(auto it = coordinates_.begin(), it2 = coordinates_.begin() + 1;

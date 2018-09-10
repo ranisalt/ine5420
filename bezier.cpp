@@ -5,10 +5,10 @@
 Coordinates  Bezier::calculate_point(double t, std::vector<Coordinates> coordinates)
 {
     std::vector<double> result;
-    auto sum = 0;
-    auto x = 0;
-    auto y = 0;
-    auto z = 0;
+    auto sum = 0.0;
+    auto x = 0.0;
+    auto y = 0.0;
+    auto z = 0.0;
     auto t_square =  t * t;
     auto t_cube = t * t_square;
     const std::vector<double> t_matrix = {2 * t_cube - 3 * t_square + 1,
