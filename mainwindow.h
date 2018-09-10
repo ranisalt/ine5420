@@ -28,7 +28,7 @@ public:
     void rotate(Coordinates coordinates);
     void show_tp_window();
     void rotate_window(double angle);
-    void calculate_bezier(std::vector<Coordinates> coordinates, double k=500);
+    void calculate_bezier(std::string name, std::vector<Coordinates> coordinates, double k=500);
 
 protected:
     bool add_button_clicked(GdkEventButton* button_event);
@@ -139,6 +139,8 @@ protected:
 
     static constexpr int console_width = 60;
     static constexpr int console_height = 65;
+
+    int bezier_count = 0;
  };
 
 #endif

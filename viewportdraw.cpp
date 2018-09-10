@@ -22,6 +22,23 @@ void ViewPortDraw::remove_shape(const std::string& name)
     queue_draw();
 }
 
+void ViewPortDraw::remove_bezier(const std::string& name)
+{
+    auto i = 0;
+    std::vector<std::string> to_remove;
+    for (auto entry: df) {
+        if (entry.first.find("Bezier") != std::string::npos) {
+            to_remove.push_back(entry.first);
+            ++i;
+        }
+        if (i == 500) break;
+    }
+
+    for (auto name: to_remove) {
+        remove_shape(name);
+    }
+}
+
 void ViewPortDraw::on_in_click()
 {
     constexpr auto DELTA = 0.05;

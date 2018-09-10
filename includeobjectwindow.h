@@ -37,10 +37,7 @@ private:
     Gtk::Box curve_box;
     Gtk::Box initial_coordinates_box;
     Gtk::Box final_coordinates_box;
-    Gtk::Box curve_box_1;
-    Gtk::Box curve_box_2;
-    Gtk::Box curve_box_3;
-    Gtk::Box curve_box_4;
+    std::vector<Gtk::Box> curve_box_;
     Gtk::Box buttons_box;
 
     Gtk::Frame point_frame;
@@ -62,18 +59,9 @@ private:
     Gtk::Label x1_wireframes_label;
     Gtk::Label y1_wireframes_label;
     Gtk::Label z1_wireframes_label;
-    Gtk::Label x1_curve_label;
-    Gtk::Label y1_curve_label;
-    Gtk::Label z1_curve_label;
-    Gtk::Label x2_curve_label;
-    Gtk::Label y2_curve_label;
-    Gtk::Label z2_curve_label;
-    Gtk::Label x3_curve_label;
-    Gtk::Label y3_curve_label;
-    Gtk::Label z3_curve_label;
-    Gtk::Label x4_curve_label;
-    Gtk::Label y4_curve_label;
-    Gtk::Label z4_curve_label;
+    std::vector<Gtk::Label> x_curve_label;
+    std::vector<Gtk::Label> y_curve_label;
+    std::vector<Gtk::Label> z_curve_label;
 
     Gtk::Entry name_entry;
     NumericEntry x1_point_entry;
@@ -88,18 +76,9 @@ private:
     NumericEntry x1_wireframes_entry;
     NumericEntry y1_wireframes_entry;
     NumericEntry z1_wireframes_entry;
-    NumericEntry x1_curve_entry;
-    NumericEntry y1_curve_entry;
-    NumericEntry z1_curve_entry;
-    NumericEntry x2_curve_entry;
-    NumericEntry y2_curve_entry;
-    NumericEntry z2_curve_entry;
-    NumericEntry x3_curve_entry;
-    NumericEntry y3_curve_entry;
-    NumericEntry z3_curve_entry;
-    NumericEntry x4_curve_entry;
-    NumericEntry y4_curve_entry;
-    NumericEntry z4_curve_entry;
+    std::vector<NumericEntry> x_curve_entry;
+    std::vector<NumericEntry> y_curve_entry;
+    std::vector<NumericEntry> z_curve_entry;
 
 
     Gtk::Button ok_button;

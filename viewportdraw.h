@@ -12,6 +12,7 @@ class ViewPortDraw final : public Gtk::DrawingArea
 public:
     void add_shape(std::string, Shape, bool queue_draw = true);
     void remove_shape(const std::string&);
+    void remove_bezier(const std::string&);
 
     void on_in_click();
     void on_out_click();

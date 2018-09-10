@@ -199,9 +199,12 @@ void MainWindow::rotate_window(double angle)
     drawing_area.rotate_window(angle);
 }
 
-void MainWindow::calculate_bezier(std::vector<Coordinates> coordinates, double k)
+void MainWindow::calculate_bezier(std::string name, std::vector<Coordinates> coordinates, double k)
 {
     drawing_area.draw_curve_bezier(k, coordinates);
+    auto row = *objects_refptr->append();
+    row[objects_records.object] = "Bezier " + name;
+    ++bezier_count;
 }
 
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
@@ -371,7 +374,11 @@ bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
     auto row = objects_tree_view.get_selection()->get_selected();
     const auto &name = row->get_value(objects_records.object);
     objects_refptr->erase(row);
-    drawing_area.remove_shape(name);
+    if (name.find("Bezier") != std::string::npos) {
+        drawing_area.remove_bezier(name);
+    } else {
+        drawing_area.remove_shape(name);
+    }
     return true;
 }
 
