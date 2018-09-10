@@ -21,6 +21,7 @@ add_library(cg
     matrix.cpp
     objstream.cpp
     shapes.cpp
+    bezier.cpp
     )
 
 target_link_libraries(cg ${GTKMM_LIBRARIES})

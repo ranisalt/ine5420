@@ -1,3 +1,4 @@
+#include "bezier.h"
 #include "objstream.h"
 #include "shapes.h"
 #include "viewportdraw.h"
@@ -216,6 +217,25 @@ void ViewPortDraw::rotate_window(double angle)
     }
 }
 
+void ViewPortDraw::draw_curve_bezier(double k, std::vector<Coordinates> coordinates)
+{
+    std::vector<Coordinates> coordinates_;
+    const double inc = 1 / k;
+
+    for (double t = 0; t <= 1; t += inc) {
+        std::cout << t << std::endl;
+        coordinates_.push_back(bezier.calculate_point(t, coordinates));
+    }
+
+    for(auto it = coordinates_.begin(), it2 = coordinates_.begin() + 1;
+        it2 != coordinates_.end(); ++it, ++it2) {
+
+        auto l = Line{*it, *it2};
+        draw_new_shape(bezier_s + std::to_string(bezier_count), "line", l.normalized_coordinates());
+        ++bezier_count;
+    }
+}
+
 void ViewPortDraw::set_algorithm(int i)
 {
     algorithm = i;
@@ -301,10 +321,8 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
         clip_point(ctx, window, s);
     } else if (s.type() == "line") {
         if (algorithm == 0) {
-                std::cout << "0" << std::endl;
             clip_liang_barsky(ctx, window, s);
         } else if (algorithm == 1) {
-            std::cout << "1" << std::endl;
             clip_cohen_sutherland(ctx, window, s);
         }
     } else if (s.type() == "polygon") {
@@ -345,7 +363,7 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
 
     for (auto i = 0; i < p.size(); ++i) {
         if (p[i] == 0 and q[i] < 0) return;
-        if (p[i] < 0) {
+           if (p[i] < 0) {
             if (r[i] > zeta2) return;
             if (r[i] > zeta1) zeta1 = r[i];
         } else if (p[i] > 0) {

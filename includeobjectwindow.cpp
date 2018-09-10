@@ -9,9 +9,13 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
 , point_box(Gtk::ORIENTATION_HORIZONTAL)
 , line_box(Gtk::ORIENTATION_VERTICAL)
 , wireframes_box(Gtk::ORIENTATION_HORIZONTAL)
-, curves_box(Gtk::ORIENTATION_VERTICAL)
+, curve_box(Gtk::ORIENTATION_VERTICAL)
 , initial_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , final_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
+, curve_box_1(Gtk::ORIENTATION_HORIZONTAL)
+, curve_box_2(Gtk::ORIENTATION_HORIZONTAL)
+, curve_box_3(Gtk::ORIENTATION_HORIZONTAL)
+, curve_box_4(Gtk::ORIENTATION_HORIZONTAL)
 , buttons_box(Gtk::ORIENTATION_HORIZONTAL)
 , point_frame("Point coordinates")
 , initial_coordinates_frame("Initial point coordinates")
@@ -26,12 +30,32 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
 , wireframes_message_label("To stop to add points, leave all fields in blank")
 , x1_wireframes_label("x1:")
 , y1_wireframes_label("y1:"), z1_wireframes_label("z1:")
+, x1_curve_label("x1:")
+, y1_curve_label("y1:"), z1_curve_label("z1:")
+, x2_curve_label("x2:")
+, y2_curve_label("y2:"), z2_curve_label("z2:")
+, x3_curve_label("x3:")
+, y3_curve_label("y3:"), z3_curve_label("z3:")
+, x4_curve_label("x4:")
+, y4_curve_label("y4:"), z4_curve_label("z4:")
 , x1_line_entry(false)
 , y1_line_entry(false)
 , z1_line_entry(false)
 , x2_line_entry(false)
 , y2_line_entry(false)
 , z2_line_entry(false)
+, x1_curve_entry(false)
+, y1_curve_entry(false)
+, z1_curve_entry(false)
+, x2_curve_entry(false)
+, y2_curve_entry(false)
+, z2_curve_entry(false)
+, x3_curve_entry(false)
+, y3_curve_entry(false)
+, z3_curve_entry(false)
+, x4_curve_entry(false)
+, y4_curve_entry(false)
+, z4_curve_entry(false)
 , ok_button("OK")
 , cancel_button("Cancel")
 , mainwindow{mainwindow}
@@ -69,7 +93,7 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     notebook.append_page(point_box, "Point");
     notebook.append_page(line_box, "Line");
     notebook.append_page(wireframes_box, "Wireframe");
-    notebook.append_page(curves_box, "Curves");
+    notebook.append_page(curve_box, "Curves");
     notebook.signal_switch_page().connect(sigc::mem_fun(
         *this, &IncludeObjectWindow::on_notebook_switch_page));
 
@@ -138,7 +162,37 @@ void IncludeObjectWindow::create_box_wireframes_tab()
 
 void IncludeObjectWindow::create_box_curves_tab()
 {
-  // TODO
+    curve_box.pack_start(curve_box_1, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box.pack_start(curve_box_2, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box.pack_start(curve_box_3, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box.pack_start(curve_box_4, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(x1_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(x1_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(y1_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(y1_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(z1_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_1.pack_start(z1_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+
+    curve_box_2.pack_start(x2_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_2.pack_start(x2_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_2.pack_start(y2_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_2.pack_start(y2_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_2.pack_start(z2_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_2.pack_start(z2_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+
+    curve_box_3.pack_start(x3_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_3.pack_start(x3_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_3.pack_start(y3_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_3.pack_start(y3_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_3.pack_start(z3_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_3.pack_start(z3_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+
+    curve_box_4.pack_start(x4_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_4.pack_start(x4_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_4.pack_start(y4_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_4.pack_start(y4_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_4.pack_start(z4_curve_label, Gtk::PACK_EXPAND_WIDGET, 5);
+    curve_box_4.pack_start(z4_curve_entry, Gtk::PACK_EXPAND_WIDGET, 5);
 }
 
 void IncludeObjectWindow::clear_fields()
@@ -238,7 +292,27 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
         case 3:
             is_valid = validate_curve();
             if (is_valid) {
+                std::vector<Coordinates> coordinates;
+                auto x1 = std::stod(x1_curve_entry.get_text());
+                auto y1 = std::stod(y1_curve_entry.get_text());
+                auto z1 = std::stod(z1_curve_entry.get_text());
+                auto x2 = std::stod(x2_curve_entry.get_text());
+                auto y2 = std::stod(y2_curve_entry.get_text());
+                auto z2 = std::stod(z2_curve_entry.get_text());
+                auto x3 = std::stod(x3_curve_entry.get_text());
+                auto y3 = std::stod(y3_curve_entry.get_text());
+                auto z3 = std::stod(z3_curve_entry.get_text());
+                auto x4 = std::stod(x4_curve_entry.get_text());
+                auto y4 = std::stod(y4_curve_entry.get_text());
+                auto z4 = std::stod(z4_curve_entry.get_text());
 
+                coordinates.push_back(Coordinates{x1, y1, z1});
+                coordinates.push_back(Coordinates{x2, y2, z2});
+                coordinates.push_back(Coordinates{x3, y3, z3});
+                coordinates.push_back(Coordinates{x4, y4, z4});
+                mainwindow.calculate_bezier(coordinates);
+                clear_fields();
+                close();
             } else {
                 Gtk::MessageDialog dialog(*this, "Every field must be filled!",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -307,5 +381,26 @@ bool IncludeObjectWindow::validate_wireframe()
 
 bool IncludeObjectWindow::validate_curve()
 {
-    return false;
+    auto name = name_entry.get_text();
+    auto t_x1 = x1_curve_entry.get_text();
+    auto t_y1 = y1_curve_entry.get_text();
+    auto t_z1 = z1_curve_entry.get_text();
+    auto t_x2 = x2_curve_entry.get_text();
+    auto t_y2 = y2_curve_entry.get_text();
+    auto t_z2 = z2_curve_entry.get_text();
+    auto t_x3 = x3_curve_entry.get_text();
+    auto t_y3 = y3_curve_entry.get_text();
+    auto t_z3 = z3_curve_entry.get_text();
+    auto t_x4 = x4_curve_entry.get_text();
+    auto t_y4 = y4_curve_entry.get_text();
+    auto t_z4 = z4_curve_entry.get_text();
+    if (t_x1.empty() || t_y1.empty() || t_z1.empty()
+        || t_x2.empty() || t_y2.empty() || t_z2.empty()
+        || t_x3.empty() || t_y3.empty() || t_z3.empty()
+        || t_x4.empty() || t_y4.empty() || t_z4.empty()
+        || name.empty()) {
+        return false;
+    } else {
+        return true;
+    }
 }

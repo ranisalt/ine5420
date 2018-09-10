@@ -199,6 +199,11 @@ void MainWindow::rotate_window(double angle)
     drawing_area.rotate_window(angle);
 }
 
+void MainWindow::calculate_bezier(std::vector<Coordinates> coordinates, double k)
+{
+    drawing_area.draw_curve_bezier(k, coordinates);
+}
+
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
 }
 

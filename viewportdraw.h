@@ -1,6 +1,7 @@
 #ifndef VIEWPORTDRAW_H
 #define VIEWPORTDRAW_H
 
+#include "bezier.h"
 #include "displayfile.h"
 #include "matrix.h"
 
@@ -26,6 +27,7 @@ public:
     void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
     void calculate_normalized_coordinates(Shape& s);
     void rotate_window(double angle);
+    void draw_curve_bezier(double k, std::vector<Coordinates> coordinates);
     void set_algorithm(int i);
 
     Shape get_shape_by_name(std::string shape_name);
@@ -42,11 +44,14 @@ private:
     void clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape p);
 
     DisplayFile df;
+    Bezier bezier;
 
     double total_angle_window = 0;
     double pen_width = 2.0;
     const double pen_width_cp = 2.0;
+    int bezier_count = 1;
     int algorithm;
+    const std::string bezier_s = "Bezier ";
 
     double x_max, y_max, x_min, y_min;
     double x_max_cp() const { return x_max - 10; }
