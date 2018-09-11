@@ -314,6 +314,8 @@ void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const Wi
     auto y = std::get<Y>(coordinates);
 
     if ((x_min_cp() <= x and x <= x_max_cp()) and (y_min_cp() <= y and y <= y_max_cp())) {
+        cairo_context_guard guard{ctx};
+        std::tie(x, y, std::ignore) = window(p.vertices()[0]);
         constexpr auto tau = std::atan(1) * 8;
         ctx->arc(x, y, 1., 0, tau);
         ctx->stroke();
@@ -351,11 +353,15 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
         }
     }
 
+    cairo_context_guard guard{ctx};
     x1 = std::get<X>(point1) + zeta1 * delta_x;
     y1 = std::get<Y>(point1) + zeta1 * delta_y;
     x2 = std::get<X>(point1) + zeta2 * delta_x;
     y2 = std::get<Y>(point1) + zeta2 * delta_y;
+    auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
+    std::tie(x1, y1, std::ignore) = window(line.vertices()[0]);
     ctx->move_to(x1, y1);
+    std::tie(x2, y2, std::ignore) = window(line.vertices()[1]);
     ctx->line_to(x2, y2);
     ctx->stroke();
 }
@@ -437,7 +443,11 @@ void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ct
     }
 
     if (accept) {
+        cairo_context_guard guard{ctx};
+        auto line = Line{{x0, y0, 1}, {x1, y1, 1}};
+        std::tie(x0, y0, std::ignore) = window(line.vertices()[0]);
         ctx->move_to(x0, y0);
+        std::tie(x1, y1, std::ignore) = window(line.vertices()[1]);
         ctx->line_to(x1, y1);
         ctx->stroke();
     }
@@ -446,13 +456,23 @@ void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ct
 void ViewPortDraw::clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& p)
 {
     const auto& coordinates = p.vertices();
-    std::cout << coordinates.size() << '\n';
 
-    for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;
-        it2 != coordinates.end(); ++it, ++it2) {
+    switch (algorithm_) {
+        case LIANG_BARSKY:
+            for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;
+                it2 != coordinates.end(); ++it, ++it2) {
 
-        auto l = Line{*it, *it2};
-        clip_liang_barsky(ctx, window, l);
+                auto l = Line{*it, *it2};
+                clip_liang_barsky(ctx, window, l);
+            }
+            break;
+        case COHEN_SUTHERLAND:
+            for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;
+                it2 != coordinates.end(); ++it, ++it2) {
+
+                auto l = Line{*it, *it2};
+                clip_cohen_sutherland(ctx, window, l);
+            }
+            break;
     }
-
 }

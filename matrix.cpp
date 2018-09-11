@@ -14,6 +14,8 @@ double hypot(double x, double y, double z)
 }
 #endif
 
+#define PI 3.14159265359
+
 namespace matrix {
 
 constexpr auto coef = std::atan(1) * 45;
@@ -39,7 +41,8 @@ Coordinates scale(Coordinates coordinates_from_point, Coordinates center, double
 
 Coordinates rotate_ccw(Coordinates coordinates_from_point, Coordinates center, double angle)
 {
-    auto rads = deg2rad(angle);
+    auto rads = angle * PI / 180.0;
+    std::cout << rads << std::endl;
     auto x = std::cos(rads) * (std::get<0>(coordinates_from_point) - std::get<0>(center));
     x += std::sin(rads) * (std::get<1>(coordinates_from_point) - std::get<1>(center)) + std::get<0>(center);
     auto y =  -1 * std::sin(rads) * (std::get<0>(coordinates_from_point) - std::get<0>(center));
