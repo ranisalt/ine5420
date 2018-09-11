@@ -6,6 +6,8 @@
 
 #include <gtkmm.h>
 
+std::array<Coordinates, 4> vector_to_array_coordinates(std::vector<Coordinates> coordinates);
+
 class ViewPortDraw final : public Gtk::DrawingArea
 {
 public:

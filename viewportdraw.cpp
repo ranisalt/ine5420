@@ -7,6 +7,15 @@
 
 #include <iostream>
 
+std::array<Coordinates, 4> vector_to_array_coordinates(std::vector<Coordinates> coordinates)
+{
+    std::array<Coordinates, 4> new_coordinates;
+    for (auto i = 0; i < 4; ++i) {
+        new_coordinates[i] = coordinates[i];
+    }
+    return new_coordinates;
+}
+
 void ViewPortDraw::add_shape(std::string name, Shape shape, bool queue_draw_)
 {
     df.emplace(std::move(name), std::move(shape));
@@ -130,6 +139,15 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
             new_coordinates.push_back(new_coordinate);
         }
         auto polygon = Polygon{new_coordinates};
+        remove_shape(shape_name);
+        add_shape(shape_name, polygon);
+    } else if (shape.type() == "bezier") {
+        std::array<Coordinates, 4> new_coordinates;
+        for(auto i = 0; i < shape.coordinates().size(); ++i) {
+            auto new_coordinate = matrix::translate(coordinates, shape.coordinates()[i]);
+            new_coordinates[i] = new_coordinate;
+        }
+        auto polygon = Bezier{new_coordinates};
         remove_shape(shape_name);
         add_shape(shape_name, polygon);
     }
@@ -274,6 +292,11 @@ void ViewPortDraw::draw_new_shape(std::string shape_name, std::string type_of_sh
         Shape polygon = Polygon{new_coordinates};
         polygon.normalized(calculate_normalized(polygon));
         add_shape(shape_name, polygon);
+    } else if (type_of_shape == "bezier") {
+        auto coordinates = vector_to_array_coordinates(new_coordinates);
+        Shape bezier = Bezier{std::move(coordinates)};
+        bezier.normalized(calculate_normalized(bezier));
+        add_shape(shape_name, bezier);
     }
 }
 
