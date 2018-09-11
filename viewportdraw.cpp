@@ -255,11 +255,6 @@ void ViewPortDraw::draw_curve_bezier(std::string name, std::vector<Coordinates> 
     }
 }
 
-void ViewPortDraw::set_algorithm(int i)
-{
-    algorithm = i;
-}
-
 Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
 {
     return df.at(shape_name);
@@ -339,10 +334,13 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
     if (s.type() == "point") {
         clip_point(ctx, window, s);
     } else if (s.type() == "line") {
-        if (algorithm == 0) {
-            clip_liang_barsky(ctx, window, s);
-        } else if (algorithm == 1) {
-            clip_cohen_sutherland(ctx, window, s);
+        switch (algorithm_) {
+            case LIANG_BARSKY:
+                clip_liang_barsky(ctx, window, s);
+                break;
+            case COHEN_SUTHERLAND:
+                clip_cohen_sutherland(ctx, window, s);
+                break;
         }
     } else if (s.type() == "polygon") {
         clip_polygon(ctx, window, s);

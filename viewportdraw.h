@@ -10,6 +10,11 @@
 class ViewPortDraw final : public Gtk::DrawingArea
 {
 public:
+    enum Algorithm {
+        COHEN_SUTHERLAND,
+        LIANG_BARSKY,
+    };
+
     void add_shape(std::string, Shape, bool queue_draw = true);
     void remove_shape(const std::string&);
     void remove_bezier(const std::string&);
@@ -29,7 +34,7 @@ public:
     void calculate_normalized_coordinates(Shape& s);
     void rotate_window(double angle);
     void draw_curve_bezier(std::string name, std::vector<Coordinates> coordinates, double k);
-    void set_algorithm(int i);
+    void algorithm(Algorithm algorithm) { algorithm_ = algorithm; }
 
     Shape get_shape_by_name(std::string shape_name);
     const DisplayFile& display_file() const { return df; }
@@ -51,7 +56,7 @@ private:
     double pen_width = 2.0;
     const double pen_width_cp = 2.0;
     int bezier_count = 1;
-    int algorithm;
+    Algorithm algorithm_ = LIANG_BARSKY;
     const std::string bezier_s = "Bezier ";
 
     double x_max, y_max, x_min, y_min;

@@ -361,9 +361,9 @@ bool MainWindow::export_button_clicked(GdkEventButton* button_event)
 bool MainWindow::algorithm_button_clicked(GdkEventButton* button_event)
 {
     if (liang_barsky_button.get_active()) {
-        drawing_area.set_algorithm(0);
+        drawing_area.algorithm(ViewPortDraw::LIANG_BARSKY);
     } else if (cohen_sutherland_button.get_active()) {
-        drawing_area.set_algorithm(1);
+        drawing_area.algorithm(ViewPortDraw::COHEN_SUTHERLAND);
     }
 
     return true;
