@@ -1,4 +1,3 @@
-#include "bezier.h"
 #include "objstream.h"
 #include "shapes.h"
 #include "viewportdraw.h"
@@ -20,24 +19,6 @@ void ViewPortDraw::remove_shape(const std::string& name)
 {
     df.erase(name);
     queue_draw();
-}
-
-void ViewPortDraw::remove_bezier(const std::string& name)
-{
-    auto i = 0;
-    std::vector<std::string> to_remove;
-    for (auto entry: df) {
-        if (entry.first.find("Bezier") != std::string::npos and
-            entry.first.find(name) != std::string::npos) {
-            to_remove.push_back(entry.first);
-            ++i;
-        }
-        if (i == 500) break;
-    }
-
-    for (auto name: to_remove) {
-        remove_shape(name);
-    }
 }
 
 void ViewPortDraw::on_in_click()
@@ -197,15 +178,15 @@ void ViewPortDraw::rotate_acw(Shape s, std::string shape_name, Coordinates point
     draw_new_shape(shape_name, type_of_shape, new_coordinates);
 }
 
-void ViewPortDraw::calculate_normalized_coordinates(Shape& s)
+std::vector<Coordinates> ViewPortDraw::calculate_normalized(Shape& s)
 {
-    auto point = matrix::calculate_center_of_polygon(s.normalized_coordinates());
+    auto point = matrix::calculate_center_of_polygon(s.normalized());
     std::vector<Coordinates> new_coordinates;
-    for (auto coordinate: s.normalized_coordinates()) {
-        auto coordinate_ = matrix::rotate_ccw(coordinate, point, total_angle_window);
-        new_coordinates.push_back(coordinate_);
+    for (auto coordinate: s.normalized()) {
+        auto c = matrix::rotate_ccw(coordinate, point, total_angle_window);
+        new_coordinates.push_back(c);
     }
-    s.set_coordinates_normalized(new_coordinates);
+    return new_coordinates;
 }
 
 void ViewPortDraw::rotate_window(double angle)
@@ -217,13 +198,13 @@ void ViewPortDraw::rotate_window(double angle)
 
     for (auto s: df) {
         auto shape = s.second;
-        auto point = matrix::calculate_center_of_polygon(shape.normalized_coordinates());
-        for (auto coordinate: shape.normalized_coordinates()) {
+        auto point = matrix::calculate_center_of_polygon(shape.normalized());
+        for (auto coordinate: shape.normalized()) {
             auto coordinate_ = matrix::rotate_ccw(coordinate, point, angle);
             new_coordinates.push_back(coordinate_);
         }
         auto shape_ = Shape(shape);
-        shape_.set_coordinates_normalized(new_coordinates);
+        shape_.normalized(new_coordinates);
         shapes.push_back(shape_);
         names.push_back(s.first);
         new_coordinates.clear();
@@ -235,27 +216,7 @@ void ViewPortDraw::rotate_window(double angle)
     }
 }
 
-void ViewPortDraw::draw_curve_bezier(std::string name, std::vector<Coordinates> coordinates, double k)
-{
-    std::vector<Coordinates> coordinates_;
-    auto t = 0.0;
-    const double inc = 1 / k;
-
-    for (auto i = 0; i < k; ++i) {
-        coordinates_.push_back(bezier.calculate_point(t, coordinates));
-        t = i * inc;
-    }
-
-    for(auto it = coordinates_.begin(), it2 = coordinates_.begin() + 1;
-        it2 != coordinates_.end(); ++it, ++it2) {
-
-        auto l = Line{*it, *it2};
-        draw_new_shape(bezier_s + name + std::to_string(bezier_count), "line", l.coordinates());
-        ++bezier_count;
-    }
-}
-
-Shape ViewPortDraw::get_shape_by_name(std::string shape_name)
+Shape ViewPortDraw::get_shape_by_name(const std::string& shape_name)
 {
     return df.at(shape_name);
 }
@@ -293,7 +254,6 @@ bool ViewPortDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     for (const auto& entry: df) {
         clipping(cr, window, entry.second);
-        // entry.second.draw(cr, window);
     }
 
     return true;
@@ -304,15 +264,15 @@ void ViewPortDraw::draw_new_shape(std::string shape_name, std::string type_of_sh
     remove_shape(shape_name);
     if (type_of_shape == "point") {
         Shape point = Point{new_coordinates[0]};
-        calculate_normalized_coordinates(point);
+        point.normalized(calculate_normalized(point));
         add_shape(shape_name, point);
     } else if (type_of_shape == "line") {
         Shape line = Line{new_coordinates[0], new_coordinates[1]};
-        calculate_normalized_coordinates(line);
+        line.normalized(calculate_normalized(line));
         add_shape(shape_name, line);
     } else if (type_of_shape == "polygon") {
         Shape polygon = Polygon{new_coordinates};
-        calculate_normalized_coordinates(polygon);
+        polygon.normalized(calculate_normalized(polygon));
         add_shape(shape_name, polygon);
     }
 }
@@ -329,7 +289,7 @@ void ViewPortDraw::on_realize()
     Gtk::DrawingArea::on_realize();
 }
 
-void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape s)
+void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& s)
 {
     if (s.type() == "point") {
         clip_point(ctx, window, s);
@@ -342,25 +302,27 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
                 clip_cohen_sutherland(ctx, window, s);
                 break;
         }
-    } else if (s.type() == "polygon") {
+    } else if (s.type() == "polygon" or s.type() == "bezier") {
         clip_polygon(ctx, window, s);
     }
 }
 
-void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape p)
+void ViewPortDraw::clip_point(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& p)
 {
-    auto coordinates = p.normalized_coordinates()[0];
+    auto coordinates = p.vertices().front();
     auto x = std::get<X>(coordinates);
     auto y = std::get<Y>(coordinates);
 
     if ((x_min_cp() <= x and x <= x_max_cp()) and (y_min_cp() <= y and y <= y_max_cp())) {
-        p.draw(ctx, window);
+        constexpr auto tau = std::atan(1) * 8;
+        ctx->arc(x, y, 1., 0, tau);
+        ctx->stroke();
     }
 }
 
-void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, Shape l)
+void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
 {
-    auto coordinates = l.normalized_coordinates();
+    auto coordinates = l.vertices();
     auto point1 = coordinates[0];
     auto point2 = coordinates[1];
     auto x1 = std::get<X>(point1);
@@ -393,8 +355,9 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     y1 = std::get<Y>(point1) + zeta1 * delta_y;
     x2 = std::get<X>(point1) + zeta2 * delta_x;
     y2 = std::get<Y>(point1) + zeta2 * delta_y;
-    auto line = Line{{x1, y1, 1}, {x2, y2, 1}};
-    line.draw(ctx, window);
+    ctx->move_to(x1, y1);
+    ctx->line_to(x2, y2);
+    ctx->stroke();
 }
 
 enum Direction {
@@ -425,7 +388,7 @@ unsigned direction(const Coordinates& c, const Coordinates& bottom_left,
 
 void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& l)
 {
-    auto coordinates = l.normalized_coordinates();
+    auto coordinates = l.vertices();
     auto p0 = coordinates.at(0), p1 = coordinates.at(1);
 
     double x0, y0, z0, x1, y1, z1;
@@ -474,14 +437,16 @@ void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ct
     }
 
     if (accept) {
-        Line line{{x0, y0, z0}, {x1, y1, z1}};
-        line.draw(ctx, window);
+        ctx->move_to(x0, y0);
+        ctx->line_to(x1, y1);
+        ctx->stroke();
     }
 }
 
-void ViewPortDraw::clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape p)
+void ViewPortDraw::clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& p)
 {
-    auto coordinates = p.normalized_coordinates();
+    const auto& coordinates = p.vertices();
+    std::cout << coordinates.size() << '\n';
 
     for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;
         it2 != coordinates.end(); ++it, ++it2) {

@@ -199,14 +199,6 @@ void MainWindow::rotate_window(double angle)
     drawing_area.rotate_window(angle);
 }
 
-void MainWindow::calculate_bezier(std::string name, std::vector<Coordinates> coordinates, double k)
-{
-    drawing_area.draw_curve_bezier(name, coordinates, k);
-    auto row = *objects_refptr->append();
-    row[objects_records.object] = "Bezier " + name;
-    ++bezier_count;
-}
-
 void MainWindow::on_tree_view_row_activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn* column) {
 }
 
@@ -374,11 +366,7 @@ bool MainWindow::remove_button_clicked(GdkEventButton* button_event)
     auto row = objects_tree_view.get_selection()->get_selected();
     const auto &name = row->get_value(objects_records.object);
     objects_refptr->erase(row);
-    if (name.find("Bezier") != std::string::npos) {
-        drawing_area.remove_bezier(name);
-    } else {
-        drawing_area.remove_shape(name);
-    }
+    drawing_area.remove_shape(name);
     return true;
 }
 
@@ -386,7 +374,7 @@ void MainWindow::add_shape(std::string object_name, Shape s, bool queue_draw)
 {
     auto row = *objects_refptr->append();
     row[objects_records.object] = object_name;
-    drawing_area.calculate_normalized_coordinates(s);
+    s.normalized(drawing_area.calculate_normalized(s));
     drawing_area.add_shape(std::move(object_name), std::move(s), queue_draw);
 }
 

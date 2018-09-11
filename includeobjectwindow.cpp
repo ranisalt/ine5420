@@ -1,5 +1,6 @@
 #include "includeobjectwindow.h"
 #include "mainwindow.h"
+#include "shapes.h"
 
 #include <iostream>
 #include <string>
@@ -153,8 +154,6 @@ void IncludeObjectWindow::create_box_wireframes_tab()
 
 void IncludeObjectWindow::clear_fields()
 {
-    name_entry.set_text("");
-
   x1_point_entry.set_text("");
   y1_point_entry.set_text("");
   z1_point_entry.set_text("");
@@ -248,15 +247,15 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
         case 3:
             is_valid = validate_curve();
             if (is_valid) {
-                std::vector<Coordinates> coordinates;
-                for (const auto& entry: curve_entries) {
+                std::array<Coordinates, 4> coordinates;
+                for (auto i = 0; i < 4; ++i) {
+                    const auto& entry = curve_entries[i];
                     auto x = std::stod(std::get<X>(entry).get_text());
                     auto y = std::stod(std::get<Y>(entry).get_text());
                     auto z = std::stod(std::get<Z>(entry).get_text());
-                    coordinates.push_back(Coordinates{x, y, z});
+                    coordinates[i] = {x, y, z};
                 }
-                auto name = name_entry.get_text();
-                mainwindow.calculate_bezier(name, coordinates);
+                mainwindow.add_shape(std::move(name), Bezier{std::move(coordinates)});
                 clear_fields();
                 close();
             } else {

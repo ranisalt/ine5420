@@ -5,8 +5,8 @@ class MainWindow;
 
 #include <gtkmm.h>
 
+#include "coordinates.h"
 #include "numericentry.h"
-#include "shapes.h"
 
 class IncludeObjectWindow final: public Gtk::Window
 {
