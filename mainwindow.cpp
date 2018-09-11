@@ -201,7 +201,7 @@ void MainWindow::rotate_window(double angle)
 
 void MainWindow::calculate_bezier(std::string name, std::vector<Coordinates> coordinates, double k)
 {
-    drawing_area.draw_curve_bezier(k, coordinates);
+    drawing_area.draw_curve_bezier(name, coordinates, k);
     auto row = *objects_refptr->append();
     row[objects_records.object] = "Bezier " + name;
     ++bezier_count;

@@ -27,7 +27,8 @@ void ViewPortDraw::remove_bezier(const std::string& name)
     auto i = 0;
     std::vector<std::string> to_remove;
     for (auto entry: df) {
-        if (entry.first.find("Bezier") != std::string::npos) {
+        if (entry.first.find("Bezier") != std::string::npos and
+            entry.first.find(name) != std::string::npos) {
             to_remove.push_back(entry.first);
             ++i;
         }
@@ -234,7 +235,7 @@ void ViewPortDraw::rotate_window(double angle)
     }
 }
 
-void ViewPortDraw::draw_curve_bezier(double k, std::vector<Coordinates> coordinates)
+void ViewPortDraw::draw_curve_bezier(std::string name, std::vector<Coordinates> coordinates, double k)
 {
     std::vector<Coordinates> coordinates_;
     auto t = 0.0;
@@ -249,7 +250,7 @@ void ViewPortDraw::draw_curve_bezier(double k, std::vector<Coordinates> coordina
         it2 != coordinates_.end(); ++it, ++it2) {
 
         auto l = Line{*it, *it2};
-        draw_new_shape(bezier_s + std::to_string(bezier_count), "line", l.normalized_coordinates());
+        draw_new_shape(bezier_s + name + std::to_string(bezier_count), "line", l.coordinates());
         ++bezier_count;
     }
 }

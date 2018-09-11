@@ -28,7 +28,7 @@ public:
     void rotate_acw(Shape s, std::string shape_name, Coordinates point, double angle);
     void calculate_normalized_coordinates(Shape& s);
     void rotate_window(double angle);
-    void draw_curve_bezier(double k, std::vector<Coordinates> coordinates);
+    void draw_curve_bezier(std::string name, std::vector<Coordinates> coordinates, double k);
     void set_algorithm(int i);
 
     Shape get_shape_by_name(std::string shape_name);
