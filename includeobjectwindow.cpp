@@ -43,15 +43,19 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     set_resizable(false);
 
     for (auto i = 0; i < 4; ++i) {
-        curve_box_.push_back(Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+        Gtk::Box* box = Gtk::manage(new Gtk::Box{Gtk::ORIENTATION_HORIZONTAL});
 
-        x_curve_label.push_back(Gtk::Label(("x" + std::to_string(i + 1))));
-        y_curve_label.push_back(Gtk::Label(("y" + std::to_string(i + 1))));
-        z_curve_label.push_back(Gtk::Label(("z" + std::to_string(i + 1))));
+        curve_box.pack_start(*box, Gtk::PACK_EXPAND_WIDGET, 5);
 
-        x_curve_entry.push_back(NumericEntry(false));
-        y_curve_entry.push_back(NumericEntry(false));
-        z_curve_entry.push_back(NumericEntry(false));
+        curve_entries.push_back({NumericEntry{false}, NumericEntry{false}, NumericEntry{false}});
+
+        auto& entry = curve_entries.back();
+        box->pack_start(*Gtk::manage(new Gtk::Label{"x" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<X>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"y" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Y>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"z" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Z>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
     }
 
     ok_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::ok_button_clicked));
@@ -60,7 +64,6 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     create_box_point_tab();
     create_box_line_tab();
     create_box_wireframes_tab();
-    create_box_curves_tab();
 
     add(notebook_box);
 
@@ -146,19 +149,6 @@ void IncludeObjectWindow::create_box_wireframes_tab()
     wireframes_box.pack_start(y1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
     wireframes_box.pack_start(z1_wireframes_label, Gtk::PACK_EXPAND_WIDGET, 5);
     wireframes_box.pack_start(z1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
-}
-
-void IncludeObjectWindow::create_box_curves_tab()
-{
-    for (auto i = 0; i < x_curve_label.size(); ++i) {
-        curve_box.pack_start(curve_box_[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(x_curve_label[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(x_curve_entry[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(y_curve_label[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(y_curve_entry[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(z_curve_label[i], Gtk::PACK_EXPAND_WIDGET, 5);
-        curve_box_[i].pack_start(z_curve_entry[i], Gtk::PACK_EXPAND_WIDGET, 5);
-    }
 }
 
 void IncludeObjectWindow::clear_fields()
@@ -259,10 +249,10 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
             is_valid = validate_curve();
             if (is_valid) {
                 std::vector<Coordinates> coordinates;
-                for (auto i = 0; i < x_curve_entry.size(); ++i) {
-                    auto x = std::stod(x_curve_entry[i].get_text());
-                    auto y = std::stod(y_curve_entry[i].get_text());
-                    auto z = std::stod(z_curve_entry[i].get_text());
+                for (const auto& entry: curve_entries) {
+                    auto x = std::stod(std::get<X>(entry).get_text());
+                    auto y = std::stod(std::get<Y>(entry).get_text());
+                    auto z = std::stod(std::get<Z>(entry).get_text());
                     coordinates.push_back(Coordinates{x, y, z});
                 }
                 auto name = name_entry.get_text();
@@ -338,15 +328,18 @@ bool IncludeObjectWindow::validate_wireframe()
 bool IncludeObjectWindow::validate_curve()
 {
     auto name = name_entry.get_text();
-    if (not name.empty()) {
-        for (auto i = 0; i < x_curve_entry.size(); ++i) {
-            auto t_x = x_curve_entry[i].get_text();
-            auto t_y = y_curve_entry[i].get_text();
-            auto t_z = z_curve_entry[i].get_text();
-            if (t_x.empty() || t_y.empty() || t_z.empty()) return false;
-        }
-        return true;
-    } else {
+    if (name.empty()) {
         return false;
     }
+
+    for (const auto& entry: curve_entries) {
+        auto x = std::get<X>(entry).get_text();
+        auto y = std::get<Y>(entry).get_text();
+        auto z = std::get<Z>(entry).get_text();
+        if (x.empty() or y.empty() or z.empty()) {
+            return false;
+        }
+    }
+
+    return true;
 }

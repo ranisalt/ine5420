@@ -18,7 +18,6 @@ private:
     void create_box_point_tab();
     void create_box_line_tab();
     void create_box_wireframes_tab();
-    void create_box_curves_tab();
     void clear_fields();
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
@@ -37,7 +36,6 @@ private:
     Gtk::Box curve_box;
     Gtk::Box initial_coordinates_box;
     Gtk::Box final_coordinates_box;
-    std::vector<Gtk::Box> curve_box_;
     Gtk::Box buttons_box;
 
     Gtk::Frame point_frame;
@@ -59,9 +57,6 @@ private:
     Gtk::Label x1_wireframes_label;
     Gtk::Label y1_wireframes_label;
     Gtk::Label z1_wireframes_label;
-    std::vector<Gtk::Label> x_curve_label;
-    std::vector<Gtk::Label> y_curve_label;
-    std::vector<Gtk::Label> z_curve_label;
 
     Gtk::Entry name_entry;
     NumericEntry x1_point_entry;
@@ -76,9 +71,8 @@ private:
     NumericEntry x1_wireframes_entry;
     NumericEntry y1_wireframes_entry;
     NumericEntry z1_wireframes_entry;
-    std::vector<NumericEntry> x_curve_entry;
-    std::vector<NumericEntry> y_curve_entry;
-    std::vector<NumericEntry> z_curve_entry;
+
+    std::vector<std::array<NumericEntry, 3>> curve_entries;
 
 
     Gtk::Button ok_button;
