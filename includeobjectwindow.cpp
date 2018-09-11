@@ -221,7 +221,7 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
                 auto t_y1 = y1_wireframes_entry.get_text();
                 auto t_z1 = z1_wireframes_entry.get_text();
 
-                if (t_x1.empty() && t_y1.empty() && t_z1.empty()) {
+                if (t_x1.empty() and t_y1.empty() and t_z1.empty()) {
                     mainwindow.add_shape(std::move(name), Polygon{wireframes_points});
                     clear_fields();
                     close();
@@ -315,10 +315,10 @@ bool IncludeObjectWindow::validate_wireframe()
     auto t_y1 = y1_wireframes_entry.get_text();
     auto t_z1 = z1_wireframes_entry.get_text();
 
-    if ((t_x1.empty() && t_y1.empty() && t_z1.empty()
-        && !name.empty()) || (!t_x1.empty()
-        && !t_y1.empty()  && !t_z1.empty()
-        && !name.empty())) {
+    if ((t_x1.empty() and t_y1.empty() and t_z1.empty()
+        and not name.empty()) or (not t_x1.empty()
+        and not t_y1.empty()  and not t_z1.empty()
+        and not name.empty())) {
         return true;
     } else {
         return false;
