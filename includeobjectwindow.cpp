@@ -12,6 +12,7 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
 , line_box(Gtk::ORIENTATION_VERTICAL)
 , wireframes_box(Gtk::ORIENTATION_HORIZONTAL)
 , curve_box(Gtk::ORIENTATION_VERTICAL)
+, bspline_box(Gtk::ORIENTATION_VERTICAL)
 , initial_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , final_coordinates_box(Gtk::ORIENTATION_HORIZONTAL)
 , point_frame("Point coordinates")
@@ -43,28 +44,14 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     set_default_size(IncludeObjectWindow::width, IncludeObjectWindow::height);
     set_resizable(false);
 
-    for (auto i = 0; i < 4; ++i) {
-        Gtk::Box* box = Gtk::manage(new Gtk::Box{Gtk::ORIENTATION_HORIZONTAL});
-
-        curve_box.pack_start(*box, Gtk::PACK_EXPAND_WIDGET, 5);
-
-        curve_entries.push_back({NumericEntry{false}, NumericEntry{false}, NumericEntry{false}});
-
-        auto& entry = curve_entries.back();
-        box->pack_start(*Gtk::manage(new Gtk::Label{"x" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
-        box->pack_start(std::get<X>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
-        box->pack_start(*Gtk::manage(new Gtk::Label{"y" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
-        box->pack_start(std::get<Y>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
-        box->pack_start(*Gtk::manage(new Gtk::Label{"z" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
-        box->pack_start(std::get<Z>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
-    }
-
     ok_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::ok_button_clicked));
     cancel_button.signal_button_release_event().connect(sigc::mem_fun(*this, &IncludeObjectWindow::cancel_button_clicked));
 
     create_box_point_tab();
     create_box_line_tab();
     create_box_wireframes_tab();
+    create_box_curves_tab();
+    create_box_bspline_tab();
 
     add(notebook_box);
 
@@ -85,7 +72,8 @@ IncludeObjectWindow::IncludeObjectWindow(MainWindow &mainwindow)
     notebook.append_page(point_box, "Point");
     notebook.append_page(line_box, "Line");
     notebook.append_page(wireframes_box, "Wireframe");
-    notebook.append_page(curve_box, "Curves");
+    notebook.append_page(curve_box, "Bezier");
+    notebook.append_page(bspline_box, "BSpline");
     notebook.signal_switch_page().connect(sigc::mem_fun(
         *this, &IncludeObjectWindow::on_notebook_switch_page));
 
@@ -150,6 +138,44 @@ void IncludeObjectWindow::create_box_wireframes_tab()
     wireframes_box.pack_start(y1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
     wireframes_box.pack_start(z1_wireframes_label, Gtk::PACK_EXPAND_WIDGET, 5);
     wireframes_box.pack_start(z1_wireframes_entry, Gtk::PACK_EXPAND_WIDGET, 5);
+}
+
+void IncludeObjectWindow::create_box_curves_tab()
+{
+    for (auto i = 0; i < 4; ++i) {
+        Gtk::Box* box = Gtk::manage(new Gtk::Box{Gtk::ORIENTATION_HORIZONTAL});
+
+        curve_box.pack_start(*box, Gtk::PACK_EXPAND_WIDGET, 5);
+
+        curve_entries.push_back({NumericEntry{false}, NumericEntry{false}, NumericEntry{false}});
+
+        auto& entry = curve_entries.back();
+        box->pack_start(*Gtk::manage(new Gtk::Label{"x" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<X>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"y" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Y>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"z" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Z>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+    }
+}
+
+void IncludeObjectWindow::create_box_bspline_tab()
+{
+    for (auto i = 0; i < 4; ++i) {
+        Gtk::Box* box = Gtk::manage(new Gtk::Box{Gtk::ORIENTATION_HORIZONTAL});
+
+        bspline_box.pack_start(*box, Gtk::PACK_EXPAND_WIDGET, 5);
+
+        bspline_entries.push_back({NumericEntry{false}, NumericEntry{false}, NumericEntry{false}});
+
+        auto& entry = bspline_entries.back();
+        box->pack_start(*Gtk::manage(new Gtk::Label{"x" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<X>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"y" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Y>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(*Gtk::manage(new Gtk::Label{"z" + std::to_string(i + 1)}), Gtk::PACK_EXPAND_WIDGET, 5);
+        box->pack_start(std::get<Z>(entry), Gtk::PACK_EXPAND_WIDGET, 5);
+    }
 }
 
 void IncludeObjectWindow::clear_fields()
@@ -263,6 +289,26 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
                 dialog.run();
             }
+            break;
+        case 4:
+            // is_valid = validate_curve();
+            // if (is_valid) {
+                std::vector<Coordinates> coordinates;
+                for (auto i = 0; i < 4; ++i) {
+                    const auto& entry = bspline_entries[i];
+                    auto x = std::stod(std::get<X>(entry).get_text());
+                    auto y = std::stod(std::get<Y>(entry).get_text());
+                    auto z = std::stod(std::get<Z>(entry).get_text());
+                    coordinates.push_back(Coordinates{x, y, z});
+                }
+                mainwindow.add_shape(std::move(name), BSpline{std::move(coordinates)});
+                clear_fields();
+                close();
+            // } else {
+            //     Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+            //         false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            //     dialog.run();
+            // }
             break;
     }
     return true;

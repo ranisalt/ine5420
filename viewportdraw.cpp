@@ -143,7 +143,7 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
         add_shape(shape_name, polygon);
     } else if (shape.type() == "bezier") {
         std::array<Coordinates, 4> new_coordinates;
-        for(auto i = 0; i < shape.coordinates().size(); ++i) {
+        for(unsigned int i = 0; i < shape.coordinates().size(); ++i) {
             auto new_coordinate = matrix::translate(coordinates, shape.coordinates()[i]);
             new_coordinates[i] = new_coordinate;
         }
@@ -325,7 +325,7 @@ void ViewPortDraw::clipping(const Cairo::RefPtr<Cairo::Context>& ctx, const Wind
                 clip_cohen_sutherland(ctx, window, s);
                 break;
         }
-    } else if (s.type() == "polygon" or s.type() == "bezier") {
+    } else if (s.type() == "polygon" or s.type() == "bezier" or s.type() == "bspline") {
         clip_polygon(ctx, window, s);
     }
 }
@@ -360,12 +360,12 @@ void ViewPortDraw::clip_liang_barsky(const Cairo::RefPtr<Cairo::Context>& ctx, c
     std::vector<double> q {std::get<X>(point1) - x_min_cp(), x_max_cp() - std::get<X>(point1),
               std::get<Y>(point1) - y_min_cp(), y_max_cp() - std::get<Y>(point1)};
     std::vector<double> r;
-    for (auto i = 0; i < p.size(); ++i)
+    for (unsigned int i = 0; i < p.size(); ++i)
         r.push_back(q[i]/p[i]);
     auto zeta1 = 0.0;
     auto zeta2 = 1.0;
 
-    for (auto i = 0; i < p.size(); ++i) {
+    for (unsigned int i = 0; i < p.size(); ++i) {
         if (p[i] == 0 and q[i] < 0) return;
            if (p[i] < 0) {
             if (r[i] > zeta2) return;
@@ -479,7 +479,6 @@ void ViewPortDraw::clip_cohen_sutherland(const Cairo::RefPtr<Cairo::Context>& ct
 void ViewPortDraw::clip_polygon(const Cairo::RefPtr<Cairo::Context>& ctx, const WindowMapping& window, const Shape& p)
 {
     const auto& coordinates = p.vertices();
-
     switch (algorithm_) {
         case LIANG_BARSKY:
             for(auto it = coordinates.begin(), it2 = coordinates.begin() + 1;

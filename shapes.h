@@ -296,3 +296,108 @@ struct Bezier
     const std::array<Coordinates, 4> vertices_;
     std::array<Coordinates, 4> normalized_;
 };
+
+struct BSpline
+{
+    BSpline(std::vector<Coordinates> vertices):
+        vertices_{vertices}, normalized_{std::move(vertices)} {}
+
+    bool operator==(const BSpline& rhs) const
+    { return vertices_ == rhs.vertices_; };
+
+    std::vector<Coordinates> coordinates() const
+    { return {vertices_.begin(), vertices_.end()}; }
+
+    std::vector<Coordinates> normalized() const
+    { return {normalized_.begin(), normalized_.end()}; }
+
+    void normalized(std::vector<Coordinates> normalized)
+    { std::move(normalized.begin(), normalized.end(), normalized_.begin()); }
+
+    std::vector<Coordinates> vertices() const
+    {
+        std::vector<Coordinates> gbs;
+        std::vector<Coordinates> vertices;
+        constexpr auto n = 500;
+        constexpr auto delta = 1.0/n;
+        constexpr auto delta_square = delta * delta;
+        constexpr auto delta_cube = delta_square * delta;
+        using Row = std::array<double, 4>;
+        std::array<Row, 4> bspline_matrix = {
+            Row{-1.0/6.0,  3.0/6.0, -3.0/6.0,  1.0/6.0},
+            Row{ 3.0/6.0, -6.0/6.0,  3.0/6.0,  0.0/6.0},
+            Row{-3.0/6.0,  0.0/6.0,  3.0/6.0,  0.0/6.0},
+            Row{ 1.0/6.0,  4.0/6.0,  1.0/6.0,  0.0/6.0},
+        };
+        std::array<Row, 4> delta_matrix = {
+            Row{0, 0, 0, 1},
+            Row{delta_cube , delta_square, delta, 0},
+            Row{6 * delta_cube, 2 * delta_square, 0, 0},
+            Row{6 * delta_cube, 0, 0, 0},
+        };
+
+        for (unsigned int i = 0; i <= normalized_.size() - 4; ++i) {
+            for (unsigned int j = 0; j < 4; ++j) {
+                gbs.push_back(normalized_[i+j]);
+            }
+            std::cout << ">>>>>coeficients" << std::endl;
+            auto coeficients = calculate_multiplication(bspline_matrix, gbs);
+            std::cout << ">>>>>differences" << std::endl;
+            auto differences_matrix = calculate_multiplication(delta_matrix, coeficients);
+            auto aux = forward_differences(n, std::get<X>(differences_matrix[0]), std::get<X>(differences_matrix[1]), std::get<X>(differences_matrix[2]), std::get<X>(differences_matrix[3]),
+                                   std::get<Y>(differences_matrix[0]), std::get<Y>(differences_matrix[1]), std::get<Y>(differences_matrix[2]), std::get<Y>(differences_matrix[3]),
+                                   std::get<Z>(differences_matrix[0]), std::get<Z>(differences_matrix[1]), std::get<Z>(differences_matrix[2]), std::get<Z>(differences_matrix[3]));
+            vertices.insert(vertices.end(), aux.begin(), aux.end());
+            gbs.clear();
+        }
+        return vertices;
+    }
+
+    std::vector<Coordinates> calculate_multiplication(const std::array<std::array<double, 4>, 4> matrix,
+                                                      std::vector<Coordinates> gbs) const
+    {
+        std::vector<Coordinates> coeficients;
+        for (unsigned int i = 0; i < gbs.size(); ++i) {
+            double x = 0.0, y = 0.0, z = 0.0;
+            for (unsigned int j = 0; j < gbs.size(); ++j) {
+                x += matrix[i][j] * std::get<X>(gbs[j]);
+                y += matrix[i][j] * std::get<Y>(gbs[j]);
+                z += matrix[i][j] * std::get<Z>(gbs[j]);
+            }
+            coeficients.push_back(Coordinates{x, y, z});
+        }
+        return coeficients;
+    }
+
+    std::vector<Coordinates> forward_differences(int n, double x, double delta_x, double delta_x2, double delta_x3,
+                                                        double y, double delta_y, double delta_y2, double delta_y3,
+                                                        double z, double delta_z, double delta_z2, double delta_z3) const
+    {
+        std::vector<Coordinates> coordinates;
+        auto i = 1;
+        auto old_x = x;
+        auto old_y = y;
+        auto old_z = z;
+        double delta_x2_ = delta_x2;
+        while (i < n) {
+            ++i;
+            std::cout << delta_x2_ << std::endl;
+            x += delta_x; delta_x += delta_x2_; delta_x2_ += delta_x3;
+            y += delta_y; delta_y += delta_y2; delta_y2 += delta_y3;
+            z += delta_z; delta_z += delta_z2; delta_z2 += delta_z3;
+            auto point1 = Coordinates{old_x, old_y, old_z};
+            auto point2 = Coordinates{x, y, z};
+            coordinates.push_back(point1);
+            coordinates.push_back(point2);
+            old_x = x;
+            old_y = y;
+            old_z = z;
+        }
+        return coordinates;
+    }
+
+    std::string type() const { return "bspline"; }
+
+    const std::vector<Coordinates> vertices_;
+    std::vector<Coordinates> normalized_;
+};

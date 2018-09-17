@@ -18,6 +18,8 @@ private:
     void create_box_point_tab();
     void create_box_line_tab();
     void create_box_wireframes_tab();
+    void create_box_curves_tab();
+    void create_box_bspline_tab();
     void clear_fields();
     bool ok_button_clicked(GdkEventButton* button_event);
     bool cancel_button_clicked(GdkEventButton* button_event);
@@ -34,6 +36,7 @@ private:
     Gtk::Box line_box;
     Gtk::Box wireframes_box;
     Gtk::Box curve_box;
+    Gtk::Box bspline_box;
     Gtk::Box initial_coordinates_box;
     Gtk::Box final_coordinates_box;
     Gtk::Box buttons_box;
@@ -73,6 +76,7 @@ private:
     NumericEntry z1_wireframes_entry;
 
     std::vector<std::array<NumericEntry, 3>> curve_entries;
+    std::vector<std::array<NumericEntry, 3>> bspline_entries;
 
 
     Gtk::Button ok_button;
