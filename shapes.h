@@ -340,9 +340,8 @@ struct BSpline
             for (unsigned int j = 0; j < 4; ++j) {
                 gbs.push_back(normalized_[i+j]);
             }
-            std::cout << ">>>>>coeficients" << std::endl;
+
             auto coeficients = calculate_multiplication(bspline_matrix, gbs);
-            std::cout << ">>>>>differences" << std::endl;
             auto differences_matrix = calculate_multiplication(delta_matrix, coeficients);
             auto aux = forward_differences(n, std::get<X>(differences_matrix[0]), std::get<X>(differences_matrix[1]), std::get<X>(differences_matrix[2]), std::get<X>(differences_matrix[3]),
                                    std::get<Y>(differences_matrix[0]), std::get<Y>(differences_matrix[1]), std::get<Y>(differences_matrix[2]), std::get<Y>(differences_matrix[3]),
@@ -381,7 +380,6 @@ struct BSpline
         double delta_x2_ = delta_x2;
         while (i < n) {
             ++i;
-            std::cout << delta_x2_ << std::endl;
             x += delta_x; delta_x += delta_x2_; delta_x2_ += delta_x3;
             y += delta_y; delta_y += delta_y2; delta_y2 += delta_y3;
             z += delta_z; delta_z += delta_z2; delta_z2 += delta_z3;

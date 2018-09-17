@@ -131,16 +131,22 @@ void ViewPortDraw::translate(Coordinates coordinates, std::string shape_name)
 
         remove_shape(shape_name);
         add_shape(shape_name, line);
-    } else if (shape.type() == "polygon") {
+    } else if (shape.type() == "polygon" or shape.type() == "bspline") {
         std::vector<Coordinates> new_coordinates;
 
         for(auto coordinate: shape.coordinates()) {
             auto new_coordinate = matrix::translate(coordinates, coordinate);
             new_coordinates.push_back(new_coordinate);
         }
-        auto polygon = Polygon{new_coordinates};
+
         remove_shape(shape_name);
-        add_shape(shape_name, polygon);
+        if (shape.type() == "polygon") {
+            auto polygon = Polygon{new_coordinates};
+            add_shape(shape_name, polygon);
+        } else {
+            auto spline = BSpline{new_coordinates};
+            add_shape(shape_name, spline);
+        }
     } else if (shape.type() == "bezier") {
         std::array<Coordinates, 4> new_coordinates;
         for(unsigned int i = 0; i < shape.coordinates().size(); ++i) {
@@ -297,6 +303,10 @@ void ViewPortDraw::draw_new_shape(std::string shape_name, std::string type_of_sh
         Shape bezier = Bezier{std::move(coordinates)};
         bezier.normalized(calculate_normalized(bezier));
         add_shape(shape_name, bezier);
+    } else if (type_of_shape == "bspline") {
+        Shape bspline = BSpline{new_coordinates};
+        bspline.normalized(calculate_normalized(bspline));
+        add_shape(shape_name, bspline);
     }
 }
 
