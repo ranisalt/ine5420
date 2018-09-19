@@ -196,6 +196,7 @@ void IncludeObjectWindow::clear_fields()
   z1_wireframes_entry.set_text("");
 
   wireframes_points.clear();
+  bspline_points.clear();
 }
 
 bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
@@ -291,24 +292,54 @@ bool IncludeObjectWindow::ok_button_clicked(GdkEventButton* button_event)
             }
             break;
         case 4:
-            // is_valid = validate_curve();
-            // if (is_valid) {
-                std::vector<Coordinates> coordinates;
+            if (validate_first_time) {
+                auto breaked = false;
+                is_valid = validate_bspline(true);
                 for (auto i = 0; i < 4; ++i) {
                     const auto& entry = bspline_entries[i];
-                    auto x = std::stod(std::get<X>(entry).get_text());
-                    auto y = std::stod(std::get<Y>(entry).get_text());
-                    auto z = std::stod(std::get<Z>(entry).get_text());
-                    coordinates.push_back(Coordinates{x, y, z});
+                    try {
+                        auto x = std::stod(std::get<X>(entry).get_text());
+                        auto y = std::stod(std::get<Y>(entry).get_text());
+                        auto z = std::stod(std::get<Z>(entry).get_text());
+                        bspline_points.push_back(Coordinates{x, y, z});
+                    } catch (const std::invalid_argument&) {
+                        breaked = true;
+                        validate_first_time = false;
+                        break;
+                    }
                 }
-                mainwindow.add_shape(std::move(name), BSpline{std::move(coordinates)});
-                clear_fields();
-                close();
-            // } else {
-            //     Gtk::MessageDialog dialog(*this, "Every field must be filled!",
-            //         false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
-            //     dialog.run();
-            // }
+                if (breaked) {
+                    mainwindow.add_shape(std::move(name), BSpline{std::move(bspline_points)});
+                    clear_fields();
+                    close();
+                } else {
+                    Gtk::MessageDialog dialog(*this, "Point added!");
+                    dialog.run();
+                }
+            } else {
+                is_valid = validate_bspline();
+                if (is_valid) {
+                    for (auto i = 0; i < 4; ++i) {
+                        auto& entry = bspline_entries[i];
+                        auto x = std::stod(std::get<X>(entry).get_text());
+                        std::get<X>(entry).set_text("");
+                        auto y = std::stod(std::get<Y>(entry).get_text());
+                        std::get<Y>(entry).set_text("");
+                        auto z = std::stod(std::get<Z>(entry).get_text());
+                        std::get<Z>(entry).set_text("");
+
+                        bspline_points.push_back(Coordinates{x, y, z});
+                    }
+                    validate_first_time = true;
+
+                    Gtk::MessageDialog dialog(*this, "Point added!");
+                    dialog.run();
+                } else {
+                    Gtk::MessageDialog dialog(*this, "Every field must be filled!",
+                        false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+                    dialog.run();
+                }
+            }
             break;
     }
     return true;
@@ -387,4 +418,32 @@ bool IncludeObjectWindow::validate_curve()
     }
 
     return true;
+}
+
+bool IncludeObjectWindow::validate_bspline(bool validate_first_time)
+{
+    auto name = name_entry.get_text();
+    if (name.empty()) {
+        return false;
+    }
+
+    if (validate_first_time) {
+        for (const auto& entry: bspline_entries) {
+            auto x = std::get<X>(entry).get_text();
+            auto y = std::get<Y>(entry).get_text();
+            auto z = std::get<Z>(entry).get_text();
+            if (x.empty() or y.empty() or z.empty()) return false;
+            if (not x.empty() and not y.empty() and not z.empty()) return true;
+        }
+        return true;
+    } else {
+        for (const auto& entry: bspline_entries) {
+            auto x = std::get<X>(entry).get_text();
+            auto y = std::get<Y>(entry).get_text();
+            auto z = std::get<Z>(entry).get_text();
+            if (x.empty() or y.empty() or z.empty()) return false;
+        }
+        std::cout << ">>>> HERE" << std::endl;
+        return true;
+    }
 }

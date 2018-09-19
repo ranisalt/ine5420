@@ -344,8 +344,8 @@ struct BSpline
             auto coeficients = calculate_multiplication(bspline_matrix, gbs);
             auto differences_matrix = calculate_multiplication(delta_matrix, coeficients);
             auto aux = forward_differences(n, std::get<X>(differences_matrix[0]), std::get<X>(differences_matrix[1]), std::get<X>(differences_matrix[2]), std::get<X>(differences_matrix[3]),
-                                   std::get<Y>(differences_matrix[0]), std::get<Y>(differences_matrix[1]), std::get<Y>(differences_matrix[2]), std::get<Y>(differences_matrix[3]),
-                                   std::get<Z>(differences_matrix[0]), std::get<Z>(differences_matrix[1]), std::get<Z>(differences_matrix[2]), std::get<Z>(differences_matrix[3]));
+                                              std::get<Y>(differences_matrix[0]), std::get<Y>(differences_matrix[1]), std::get<Y>(differences_matrix[2]), std::get<Y>(differences_matrix[3]),
+                                              std::get<Z>(differences_matrix[0]), std::get<Z>(differences_matrix[1]), std::get<Z>(differences_matrix[2]), std::get<Z>(differences_matrix[3]));
             vertices.insert(vertices.end(), aux.begin(), aux.end());
             gbs.clear();
         }
@@ -377,10 +377,9 @@ struct BSpline
         auto old_x = x;
         auto old_y = y;
         auto old_z = z;
-        double delta_x2_ = delta_x2;
         while (i < n) {
             ++i;
-            x += delta_x; delta_x += delta_x2_; delta_x2_ += delta_x3;
+            x += delta_x; delta_x += delta_x2; delta_x2 += delta_x3;
             y += delta_y; delta_y += delta_y2; delta_y2 += delta_y3;
             z += delta_z; delta_z += delta_z2; delta_z2 += delta_z3;
             auto point1 = Coordinates{old_x, old_y, old_z};

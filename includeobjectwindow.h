@@ -27,6 +27,7 @@ private:
     bool validate_line();
     bool validate_wireframe();
     bool validate_curve();
+    bool validate_bspline(bool validate_first_time=false);
 
     Gtk::Notebook notebook;
 
@@ -86,8 +87,10 @@ private:
 
     MainWindow& mainwindow;
     std::vector<Coordinates> wireframes_points;
+    std::vector<Coordinates> bspline_points;
     static constexpr int width = 300;
     static constexpr int height = 340;
+    bool validate_first_time = false;
 };
 
 #endif
